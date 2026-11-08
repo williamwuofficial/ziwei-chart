@@ -281,11 +281,14 @@ export function renderAnalysis(
     ),
   );
   pats.append(legend);
+  const structures = a.patterns.filter((p) => p.rule.kind === 'structure');
   const groups: [string, PatternFinding[]][] = [
+    ['Star structures', structures],
     ['Auspicious patterns', good],
     ['Challenging patterns', bad],
   ];
   for (const [title, list] of groups) {
+    if (!list.length && title === 'Star structures') continue;
     pats.append(h('h4', 'group', `${title} (${list.length})`));
     if (!list.length)
       pats.append(h('p', 'hint', title.startsWith('Auspicious') ? 'None found in this chart. Many charts form few or no named patterns; the palace readings below still apply.' : 'None found in this chart.'));

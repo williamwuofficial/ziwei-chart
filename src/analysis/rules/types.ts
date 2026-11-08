@@ -27,7 +27,7 @@ export interface PatternRule {
   id: string;
   zh: string;
   en: string;
-  kind: 'auspicious' | 'adverse';
+  kind: 'auspicious' | 'adverse' | 'structure';
   sources: Source[];
   /** Returns undefined when the core structure is absent. */
   match(x: Ctx): Match | undefined;

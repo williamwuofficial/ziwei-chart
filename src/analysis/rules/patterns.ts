@@ -2,7 +2,7 @@
 // the general rule that 四煞, 空劫 or 化忌 in the 三方四正 "break" a lucky pattern). Verses are
 // classical 經云 / 賦 lines, public domain. Meanings are paraphrased as tendencies, not fates.
 
-import { anhe, LUCKY6, neighbours, opp, sfsz, SHA4, trines, type Ctx } from '../predicates';
+import { anhe, neighbours, opp, sfsz, SHA4, trines, type Ctx } from '../predicates';
 import type { Match, PatternRule } from './types';
 
 const CATALOGUE = 'Traditional 格局 catalogue: formation conditions';
@@ -41,7 +41,8 @@ export const AUSPICIOUS: PatternRule[] = [
       const others = [...trines(x.ming), opp(x.ming)];
       const zw = others.find((i) => x.has(i, '紫微'));
       const tf = others.find((i) => x.has(i, '天府'));
-      return zw !== undefined && tf !== undefined ? m(x, [`⟨紫微⟩ in ${x.label(zw)}`, `⟨天府⟩ in ${x.label(tf)}`]) : undefined;
+      // The two must salute from different palaces; 紫府 together opposite is 七殺朝斗 territory.
+      return zw !== undefined && tf !== undefined && zw !== tf ? m(x, [`⟨紫微⟩ in ${x.label(zw)}`, `⟨天府⟩ in ${x.label(tf)}`]) : undefined;
     },
     text: 'The two "ruler" stars support the Life palace from outside. Classically associated with a comfortable livelihood and backing from people in authority: you tend to do best inside strong structures, with seniors who recognise you.',
   },
@@ -59,27 +60,45 @@ export const AUSPICIOUS: PatternRule[] = [
     zh: '君臣慶會格',
     en: 'Ruler and ministers in council',
     kind: 'auspicious',
-    sources: [{ verse: '君臣慶會，材善經邦', work: '紫微斗數全書', section: '太微賦', basis: `${CATALOGUE}: 紫微 in 命宮 met by its "ministers" (府相, 輔弼, 昌曲, 魁鉞) in the 三方四正` }],
+    sources: [
+      { verse: '君臣慶會，紫微左右同守命是也，更會相武陰妙上', work: '紫微斗數全書', section: '定貴局', basis: '全書 definition: 紫微 with both 左輔 and 右弼 in 命宮' },
+      { verse: '君臣慶會，材善經邦', work: '紫微斗數全書', section: '太微賦', basis: '全書 verse for this pattern' },
+    ],
+    match: (x) =>
+      x.has(x.ming, '紫微', '左輔', '右弼')
+        ? m(x, [sitsIn(x, x.ming, ['紫微', '左輔', '右弼'])], sfsz(x.ming), x.inSet(sfsz(x.ming), '天相') || x.inSet(sfsz(x.ming), '武曲') || x.inSet(sfsz(x.ming), '太陰') ? 'With 天相, 武曲 or 太陰 also meeting it, the 全書 calls it the best form (妙上).' : undefined)
+        : undefined,
+    text: 'The emperor star sits with both of its ministers. Classically one of the strongest leadership patterns: talent for organising people, being trusted with responsibility, and gathering capable helpers. If malefics sit with 紫微, the classics warn of "servants overpowering the master": being undermined by those you rely on.',
+  },
+  {
+    id: 'ge.fubi-gongzhu',
+    zh: '輔弼拱主格',
+    en: 'Helpers attend the ruler',
+    kind: 'auspicious',
+    sources: [{ verse: '輔弼拱主，紫微守命二星來拱是也，夾之亦然', work: '紫微斗數全書', section: '定貴局', basis: '全書 definition: 紫微 in 命宮 with 左輔 and 右弼 shining on it from the 三方四正, or flanking it' }],
     match: (x) => {
-      if (!x.has(x.ming, '紫微')) return undefined;
-      const ministers = sfsz(x.ming).flatMap((i) => x.hasAny(i, LUCKY6));
-      const uniq = [...new Set(ministers)];
-      return uniq.length >= 2 ? m(x, [`⟨紫微⟩ in ${x.label(x.ming)}`, `ministers in the 三方四正: ${uniq.map((s) => `⟨${s}⟩`).join(', ')}`]) : undefined;
+      if (!x.has(x.ming, '紫微') || x.has(x.ming, '左輔', '右弼')) return undefined;
+      const s = sfsz(x.ming);
+      const inSf = x.inSet(s, '左輔', '右弼');
+      const flank = flanked(x, x.ming, (i) => x.has(i, '左輔'), (i) => x.has(i, '右弼'));
+      return inSf || flank ? m(x, [`⟨紫微⟩ in ${x.label(x.ming)}`, flank ? '⟨左輔⟩ and ⟨右弼⟩ flank it' : '⟨左輔⟩ and ⟨右弼⟩ in its 三方四正']) : undefined;
     },
-    text: 'The emperor star has its court around it. Classically one of the strongest leadership patterns: talent for organising people, being trusted with responsibility, and gathering capable helpers. If malefics sit with 紫微, the classics warn of "servants overpowering the master": being undermined by those you rely on.',
+    text: 'The two helper stars support the emperor star from around it. Classically a leader with dependable support: help arrives from peers and subordinates, and plans get carried through.',
   },
   {
     id: 'ge.fuxiang-chaoyuan',
     zh: '府相朝垣格',
     en: 'Treasury and Seal salute the Life palace',
     kind: 'auspicious',
-    sources: [{ verse: '府相朝垣千鍾食祿', work: '紫微斗數全書', section: '論諸星同垣各司所宜', basis: `${CATALOGUE}: 天府 and 天相 occupy the two trines (財帛 and 官祿) of 命宮` }],
+    sources: [{ verse: '府相朝垣千鍾食祿', work: '紫微斗數全書', section: '論諸星同垣各司所宜', basis: `${CATALOGUE} and the 全書 note (命寅申，府相在財帛宮…上格，別宮次之): 天府 and 天相 both in the 三方四正 of 命宮, including either one in 命宮 itself` }],
     match: (x) => {
-      const [a, b] = trines(x.ming);
-      const ok = (x.has(a, '天府') && x.has(b, '天相')) || (x.has(a, '天相') && x.has(b, '天府'));
-      return ok ? m(x, [`⟨天府⟩ and ⟨天相⟩ in the trines ${x.label(a)} and ${x.label(b)}`]) : undefined;
+      const s = sfsz(x.ming);
+      const fu = s.find((i) => x.has(i, '天府'));
+      const xiang = s.find((i) => x.has(i, '天相'));
+      if (fu === undefined || xiang === undefined) return undefined;
+      return m(x, [`⟨天府⟩ in ${x.label(fu)}`, `⟨天相⟩ in ${x.label(xiang)}`], s, x.at(x.ming, '寅', '申') ? 'With 命宮 in 寅 or 申, the 全書 calls this the top form.' : 'Outside 寅 and 申 the 全書 rates it a lesser form (別宮次之).');
     },
-    text: 'The stars of stored wealth and of the official seal guard your money and career palaces. Classically a sign of secure income and success in public or institutional roles, and of warm ties with family and friends.',
+    text: 'The stars of stored wealth and of the official seal guard your Life palace. Classically a sign of secure income and success in public or institutional roles, and of warm ties with family and friends.',
   },
   {
     id: 'ge.jiyue-tongliang',
@@ -198,6 +217,10 @@ export const AUSPICIOUS: PatternRule[] = [
         return m(x, [`⟨天梁⟩ in ${x.label(x.ming)}`, '⟨太陽⟩ at 巳 and ⟨太陰⟩ at 酉']);
       if (x.at(x.ming, '午') && x.noMain(x.ming) && x.at(sun, '寅') && x.at(moon, '子'))
         return m(x, [`${x.label(x.ming)} has no main star`, '⟨太陽⟩ at 寅 and ⟨太陰⟩ at 子']);
+      // Broader modern reading: both luminaries bright and both shining on the Life palace.
+      const s = sfsz(x.ming);
+      if (s.includes(sun) && s.includes(moon) && sun !== moon && x.bright(sun, '太陽') && x.bright(moon, '太陰'))
+        return m(x, [`⟨太陽⟩ ${x.brightness(sun, '太陽')} in ${x.label(sun)}`, `⟨太陰⟩ ${x.brightness(moon, '太陰')} in ${x.label(moon)}`], s, 'This is the broader modern reading (both luminaries bright and shining on the Life palace), not one of the two catalogue placements.');
       return undefined;
     },
     text: 'Both luminaries are bright and support the Life palace. Classically early learning and reputation, steady promotions and service close to the top of an organisation.',
@@ -207,9 +230,19 @@ export const AUSPICIOUS: PatternRule[] = [
     zh: '月生滄海格',
     en: 'Moon rising over the sea',
     kind: 'auspicious',
-    sources: [{ verse: '太陰居子，號曰水澄桂萼，得清要之職，忠諫之材', work: '紫微斗數全書', section: '太微賦', basis: `${CATALOGUE}: 天同 and 太陰 in 命宮 at 子` }],
-    match: (x) => (x.at(x.ming, '子') && x.has(x.ming, '天同', '太陰') ? m(x, [sitsIn(x, x.ming, ['天同', '太陰'])]) : undefined),
-    text: 'The Moon in clear water with the star of contentment. Classically refined, gentle and well educated, earning both money and a good name; trusted advisers and specialists.',
+    sources: [
+      { verse: '月生滄海，月在子宮守田宅是也', work: '紫微斗數全書', section: '定貴局', basis: '全書 definition: 太陰 in 子 as the 田宅 palace' },
+      { verse: '太陰居子，號曰水澄桂萼，得清要之職，忠諫之材', work: '紫微斗數全書', section: '太微賦', basis: `${CATALOGUE}: 天同 and 太陰 in 命宮 at 子` },
+      { verse: '太陰居子丙丁富貴忠良', work: '紫微斗數全書', section: '論諸星同垣各司所宜', basis: '全書 note: 丙 and 丁 years, and night births (夜生人合局), suit it best' },
+    ],
+    match: (x) => {
+      if (x.at(x.ming, '子') && x.has(x.ming, '天同', '太陰'))
+        return m(x, [sitsIn(x, x.ming, ['天同', '太陰'])], sfsz(x.ming), x.yearStemIs('丙', '丁') && !x.dayBirth ? 'A 丙 or 丁 year and a night birth: the form the 全書 rates best.' : undefined);
+      const t = x.byName('田宅');
+      if (x.at(t, '子') && x.has(t, '太陰')) return m(x, [`⟨太陰⟩ in ${x.label(t)}`], [t, ...sfsz(x.ming)], 'This is the 全書’s own form: the Moon in 子 as the Property palace.');
+      return undefined;
+    },
+    text: 'The Moon in clear water. Classically refined, gentle and well educated, earning both money and a good name; trusted advisers and specialists. In the Property palace it points to a fine home and assets.',
   },
   {
     id: 'ge.shouxing-rumiao',
@@ -260,13 +293,26 @@ export const AUSPICIOUS: PatternRule[] = [
     zh: '馬頭帶箭格',
     en: 'Arrow at the horse’s head',
     kind: 'auspicious',
-    sources: [{ verse: '馬頭帶劍，鎮衛邊疆', work: '紫微斗數全書', section: '太微賦', basis: `${CATALOGUE}: 命宮 at 午 with 擎羊, holding 貪狼 or 天同+太陰 (丙 and 戊 years)` }],
+    sources: [{ verse: '天同貪羊陀居午位', work: '紫微斗數全書', section: '論諸星同垣各司所宜', basis: `${CATALOGUE} and the 全書 note (…丙戊鎮御邊疆，為馬頭帶箭富且貴): 命宮 at 午 with 擎羊, holding 貪狼 or 天同+太陰` }],
     match: (x) =>
       x.at(x.ming, '午') && x.has(x.ming, '擎羊') && (x.has(x.ming, '貪狼') || x.has(x.ming, '天同', '太陰'))
         ? m(x, [`⟨擎羊⟩ with ${x.majors(x.ming).map((s) => `⟨${s}⟩`).join(' + ')} in ${x.label(x.ming)}`])
         : undefined,
     tolerates: ['擎羊', '火星', '鈴星'],
-    text: 'The blade star sits at the horse position and turns into drive. Classically hard early years and success that comes from going far from home; good fortune arrives in mid-life through enterprise or a demanding career.',
+    text: 'The blade star sits at the horse position and turns into drive. Classically hard early years and success that comes from going far from home; good fortune arrives in mid-life through enterprise or a demanding career. Some modern readers apply the name to any 擎羊 in a 午 Life palace; the 全書 ties it to 同陰 or 貪狼.',
+  },
+  {
+    id: 'ge.matou-daijian-ma',
+    zh: '馬頭帶劍格 (天馬擎羊)',
+    en: 'Sword at the horse’s head',
+    kind: 'auspicious',
+    sources: [
+      { verse: '馬頭帶劍，謂馬有刃是也不是居午格', work: '紫微斗數全書', section: '定貴局', basis: '全書 definition: 天馬 together with 擎羊 (the blade) in 命宮; explicitly not the 午 pattern' },
+      { verse: '馬頭帶劍，鎮衛邊疆', work: '紫微斗數全書', section: '太微賦', basis: '全書 verse for this pattern' },
+    ],
+    match: (x) => (x.has(x.ming, '天馬', '擎羊') ? m(x, [`⟨天馬⟩ and ⟨擎羊⟩ in ${x.label(x.ming)}`]) : undefined),
+    tolerates: ['擎羊'],
+    text: 'The horse carries a blade. Classically a guardian of the frontier: courage, mobility and command, success in demanding roles far from home.',
   },
   {
     id: 'ge.juji-tonglin',
@@ -309,13 +355,17 @@ export const AUSPICIOUS: PatternRule[] = [
     zh: '權祿巡逢格',
     en: 'Power and Prosperity meet',
     kind: 'auspicious',
-    sources: [{ verse: '權祿重逢，財官雙美', work: '紫微斗數全書', section: '論諸星同垣各司所宜', basis: `${CATALOGUE}: birth-year 化祿 and 化權 both in the 三方四正, at least one in 命宮` }],
+    sources: [
+      { verse: '權祿重逢，財官雙美', work: '紫微斗數全書', section: '論諸星同垣各司所宜', basis: `${CATALOGUE}: birth-year 化祿 and 化權 both in the 三方四正, at least one in 命宮` },
+      { verse: '權祿生逢，二星守命廟旺是也，陷不是', work: '紫微斗數全書', section: '定貴局', basis: '全書 definition (stricter): both transformations in 命宮 on bright stars' },
+    ],
     match: (x) => {
       const s = sfsz(x.ming);
       const lu = x.findMut('祿');
       const quan = x.findMut('權');
       if (!(s.includes(lu) && s.includes(quan)) || (lu !== x.ming && quan !== x.ming)) return undefined;
-      return m(x, [`化祿 in ${x.label(lu)}`, `化權 in ${x.label(quan)}`]);
+      const strict = lu === x.ming && quan === x.ming && x.muts(x.ming).every(([star]) => !x.fallen(x.ming, star));
+      return m(x, [`化祿 in ${x.label(lu)}`, `化權 in ${x.label(quan)}`], s, strict ? 'Both sit in the Life palace on unfallen stars: the 全書’s strict form (權祿生逢).' : undefined);
     },
     text: 'Wealth and authority arrive together. Classically "both money and position": you can turn influence into income and income into influence.',
   },
@@ -388,12 +438,18 @@ export const AUSPICIOUS: PatternRule[] = [
     zh: '火貪格 / 鈴貪格',
     en: 'Fire (or Bell) and Wolf',
     kind: 'auspicious',
-    sources: [{ verse: '貪狼火星居廟旺名鎮諸邦', work: '紫微斗數全書', section: '斗數骨髓賦', basis: `${CATALOGUE}: 貪狼 in 命宮 with 火星 or 鈴星 in 命宮 or its 三方四正 (best in 辰戌丑未)` }],
+    sources: [
+      { verse: '貪狼火星居廟旺名鎮諸邦', work: '紫微斗數全書', section: '斗數骨髓賦', basis: `${CATALOGUE}: 貪狼 in 命宮 with 火星 or 鈴星 in 命宮 or its 三方四正 (best in 辰戌丑未)` },
+      { verse: '貪火相逢，謂二星守命同居廟旺是也', work: '紫微斗數全書', section: '定貴局', basis: '全書 definition (stricter): both stars in 命宮, both bright' },
+    ],
     match: (x) => {
       if (!x.has(x.ming, '貪狼')) return undefined;
       const fl = sfsz(x.ming).flatMap((i) => x.hasAny(i, ['火星', '鈴星']).map((s) => `⟨${s}⟩ in ${x.label(i)}`));
       return fl.length
-        ? m(x, [`⟨貪狼⟩ in ${x.label(x.ming)}`, ...fl], sfsz(x.ming), x.at(x.ming, '辰', '戌', '丑', '未') ? 'In a 辰戌丑未 palace, which the catalogue calls the finest form.' : undefined)
+        ? m(x, [`⟨貪狼⟩ in ${x.label(x.ming)}`, ...fl], sfsz(x.ming), [
+            x.at(x.ming, '辰', '戌', '丑', '未') ? 'In a 辰戌丑未 palace, which the catalogue calls the finest form.' : '',
+            x.hasAny(x.ming, ['火星', '鈴星']).length && x.bright(x.ming, '貪狼') ? 'Both stars sit bright in the Life palace: the 全書’s strict form (貪火相逢).' : 'The 全書’s strict form needs both stars bright in the Life palace itself; this is the catalogue’s broader reading.',
+          ].filter(Boolean).join(' '))
         : undefined;
     },
     tolerates: ['火星', '鈴星'],
@@ -549,9 +605,54 @@ export const AUSPICIOUS: PatternRule[] = [
     zh: '將星得地格',
     en: 'The general holds the ground',
     kind: 'auspicious',
-    sources: [{ verse: '武曲廟垣，威名赫奕', work: '紫微斗數全書', section: '斗數骨髓賦', basis: `${CATALOGUE}: 武曲 bright (廟/旺) in 命宮` }],
-    match: (x) => (x.bright(x.ming, '武曲') ? m(x, [`⟨武曲⟩ ${x.brightness(x.ming, '武曲')} in ${x.label(x.ming)}`]) : undefined),
+    sources: [
+      { verse: '武曲廟垣，威名赫奕', work: '紫微斗數全書', section: '斗數骨髓賦', basis: `${CATALOGUE}: 武曲 bright (廟/旺) in 命宮` },
+      { verse: '武曲守垣，武守命卯宮是也，餘不是', work: '紫微斗數全書', section: '定貴局', basis: '全書 definition (stricter): 武曲 in 命宮 at 卯 only' },
+    ],
+    match: (x) =>
+      x.bright(x.ming, '武曲') || (x.has(x.ming, '武曲') && x.at(x.ming, '卯'))
+        ? m(x, [`⟨武曲⟩ ${x.brightness(x.ming, '武曲') ?? ''} in ${x.label(x.ming)}`], sfsz(x.ming), x.at(x.ming, '卯') ? 'In 卯: the 全書’s own form (武曲守垣).' : 'The 全書 restricts 武曲守垣 to 卯; this is the catalogue’s broader 將星得地 reading.')
+        : undefined,
     text: 'The wealth-and-command star at strength. Classically decisive, practical and good with money: finance, management, engineering or command roles.',
+  },
+  {
+    id: 'ge.caiyin-jiayin',
+    zh: '財蔭夾印格',
+    en: 'Wealth and Shelter flank the Seal',
+    kind: 'auspicious',
+    sources: [{ verse: '財蔭夾印，相守命武梁來夾是也', work: '紫微斗數全書', section: '定富局', basis: '全書 definition: 天相 in 命宮 flanked by 財 (wealth) and 天梁 (蔭). Read literally (武曲 and 天梁) it can never occur, since 天相’s neighbours are always 巨門 and 天梁; modern practice reads 財 as a 祿 star (祿存 or 化祿) beside 天相' }],
+    match: (x) => {
+      if (!x.has(x.ming, '天相')) return undefined;
+      const lu = (i: number) => x.has(i, '祿存') || x.hasMut(i, '祿');
+      return flanked(x, x.ming, (i) => x.has(i, '天梁'), lu)
+        ? m(x, [`⟨天相⟩ in ${x.label(x.ming)}`, '⟨天梁⟩ on one side, a 祿 star (祿存 or 化祿) on the other'], [...neighbours(x.ming), x.ming])
+        : undefined;
+    },
+    text: 'The seal star is guarded by shelter on one side and wealth on the other. Classically a sign of comfortable means and protection from seniors: a career in administration, finance or institutions that rewards steadiness.',
+  },
+  {
+    id: 'ge.caiyin-jialu',
+    zh: '財印夾祿格',
+    en: 'Wealth and Seal flank Prosperity',
+    kind: 'auspicious',
+    sources: [{ verse: '財印夾祿，祿守命梁相來夾是也', work: '紫微斗數全書', section: '定貴局', basis: '全書 definition: 祿存 in 命宮 flanked by 財 and 印. Read literally (天梁 and 天相) it can never occur, as those two are always adjacent; the workable reading is 武曲 (財) and 天相 (印)' }],
+    match: (x) =>
+      x.has(x.ming, '祿存') && flanked(x, x.ming, (i) => x.has(i, '武曲'), (i) => x.has(i, '天相'))
+        ? m(x, [`⟨祿存⟩ in ${x.label(x.ming)}`, '⟨武曲⟩ and ⟨天相⟩ on either side'], [...neighbours(x.ming), x.ming])
+        : undefined,
+    text: 'Stored prosperity guarded by the wealth star and the seal. Classically honour and income together: positions of trust that pay well.',
+  },
+  {
+    id: 'ge.jinyu-fujia',
+    zh: '金輿扶駕格',
+    en: 'Golden carriage escorts the ruler',
+    kind: 'auspicious',
+    sources: [{ verse: '金輿扶駕，紫微守命前後有日月來夾是也', work: '紫微斗數全書', section: '定貴局', basis: '全書 definition: 紫微 in 命宮 flanked by 太陽 and 太陰' }],
+    match: (x) =>
+      x.has(x.ming, '紫微') && flanked(x, x.ming, (i) => x.has(i, '太陽'), (i) => x.has(i, '太陰'))
+        ? m(x, [`⟨紫微⟩ in ${x.label(x.ming)}`, '⟨太陽⟩ and ⟨太陰⟩ on either side'], [...neighbours(x.ming), x.ming])
+        : undefined,
+    text: 'The emperor star escorted by the sun and moon. Classically high standing with steady support from family and seniors.',
   },
   {
     id: 'ge.minglu-anlu',
@@ -676,7 +777,12 @@ export const ADVERSE: PatternRule[] = [
         x.muts(x.ming).some(([n, k]) => (n === '紫微' && (k === '權' || k === '科')) || (n === '貪狼' && (k === '祿' || k === '權'))) ||
         x.has(x.ming, '祿存') ||
         s.some((i) => x.hasAny(i, ['火星', '鈴星', '左輔', '右弼', '文昌', '文曲']).length);
-      return bad.length && !rescue ? m(x, [sitsIn(x, x.ming, ['紫微', '貪狼']), `meets ${[...new Set(bad)].map((b) => `⟨${b}⟩`).join(', ')}`, 'no rescuing star (祿存, 火鈴, 輔弼, 昌曲, or a good transformation on 紫微 or 貪狼)']) : undefined;
+      return m(
+        x,
+        [sitsIn(x, x.ming, ['紫微', '貪狼']), bad.length ? `meets ${[...new Set(bad)].map((b) => `⟨${b}⟩`).join(', ')}` : 'no 擎羊, 空劫 or 化忌 around it'],
+        s,
+        rescue ? 'Rescuing stars are present (祿存, 火鈴, 輔弼, 昌曲, or a good transformation on 紫微 or 貪狼), so the catalogue says not to read it as a poor or solitary life.' : bad.length ? undefined : 'No malefics meet it, so only the temperament reading applies.',
+      );
     },
     text: 'Classically a pull away from worldly ambition: strong interest in religion, philosophy, metaphysics or healing, and a life where conventional status matters less. Charm and sociability remain strong.',
   },
@@ -776,9 +882,17 @@ export const ADVERSE: PatternRule[] = [
     zh: '刑囚夾印格',
     en: 'Punishment and prison around the seal',
     kind: 'adverse',
-    sources: [{ verse: '刑囚夾印，刑杖惟司', work: '紫微斗數全書', section: '太微賦', basis: `${CATALOGUE}: 廉貞 and 天相 in 命宮 with 擎羊 in the same palace` }],
-    match: (x) => (x.has(x.ming, '廉貞', '天相', '擎羊') ? m(x, [sitsIn(x, x.ming, ['廉貞', '天相', '擎羊'])]) : undefined),
-    text: 'Classically a warning about legal trouble, disputes with authority and surgery or injury. With lucky stars it turns into a career in law, police, the military or compliance: enforcing the rules instead of breaking them.',
+    sources: [
+      { verse: '刑囚夾印，天刑廉貞同臨身命主武勇之人', work: '紫微斗數全書', section: '定貴局', basis: '全書 definition: 天刑 with 廉貞 in 命宮 or 身宮 (the catalogue also counts 擎羊 with 廉貞 and 天相)' },
+      { verse: '刑囚夾印，刑杖惟司', work: '紫微斗數全書', section: '太微賦', basis: '全書 verse for this pattern' },
+    ],
+    match: (x) => {
+      const where = [x.ming, x.body].find((i) => x.has(i, '廉貞') && x.hasAny(i, ['天刑', '擎羊']).length);
+      if (where === undefined) return undefined;
+      const blade = x.hasAny(where, ['天刑', '擎羊']);
+      return m(x, [`⟨廉貞⟩ with ${blade.map((b) => `⟨${b}⟩`).join(', ')} in ${x.label(where)}${where === x.body && where !== x.ming ? ' (身宮)' : ''}`], [where], x.has(where, '天相') ? 'With 天相 too, this is the catalogue’s classic form.' : undefined);
+    },
+    text: 'The 全書 reads this as a brave, martial character (武勇之人). The catalogue adds a warning about legal trouble, disputes with authority and surgery or injury. With lucky stars it becomes a career in law, police, the military or compliance: enforcing the rules instead of breaking them.',
   },
   {
     id: 'ge.yuetong-yusha',
@@ -840,7 +954,7 @@ export const ADVERSE: PatternRule[] = [
     zh: '日月藏輝格 (日月反背)',
     en: 'Sun and Moon hide their light',
     kind: 'adverse',
-    sources: [{ verse: '日月最嫌反背，乃為失輝', work: '紫微斗數全書', section: '斗數骨髓賦', basis: `${CATALOGUE}: 太陽 in 命宮 at 酉戌亥子 for a night birth, or 太陰 at 卯辰巳午 for a day birth, with malefics and no lucky stars` }],
+    sources: [{ verse: '日月藏輝，日月反背又逢巨暗是也', work: '紫微斗數全書', section: '定貧賤局', basis: '全書 definition: luminaries out of their hours that also meet 巨門' }, { verse: '日月最嫌反背，乃為失輝', work: '紫微斗數全書', section: '斗數骨髓賦', basis: `${CATALOGUE}: 太陽 in 命宮 at 酉戌亥子 for a night birth, or 太陰 at 卯辰巳午 for a day birth, with malefics and no lucky stars` }],
     match: (x) => {
       const sun = x.has(x.ming, '太陽') && x.at(x.ming, '酉', '戌', '亥', '子') && !x.dayBirth;
       const moon = x.has(x.ming, '太陰') && x.at(x.ming, '卯', '辰', '巳', '午') && x.dayBirth;
@@ -848,7 +962,7 @@ export const ADVERSE: PatternRule[] = [
       const s = sfsz(x.ming);
       const bad = x.malefic(s);
       return bad.length && !x.support(s).length
-        ? m(x, [`${sun ? '⟨太陽⟩' : '⟨太陰⟩'} in ${x.label(x.ming)}, ${x.dayBirth ? 'day' : 'night'} birth`, `malefics: ${bad.map((b) => `⟨${b}⟩`).join(', ')}`])
+        ? m(x, [`${sun ? '⟨太陽⟩' : '⟨太陰⟩'} in ${x.label(x.ming)}, ${x.dayBirth ? 'day' : 'night'} birth`, `malefics: ${bad.map((b) => `⟨${b}⟩`).join(', ')}`], s, x.inSet(s, '巨門') ? '巨門 meets it too: the 全書’s own definition.' : 'The 全書’s definition also requires 巨門; this is the catalogue’s broader reading.')
         : undefined;
     },
     text: 'A luminary out of its hours. Classically a life of extra effort for the same result. The catalogue notes that, with any lucky stars and no malefics, such people often achieve more than average precisely because they work harder.',
@@ -889,6 +1003,19 @@ export const ADVERSE: PatternRule[] = [
         ? m(x, [`⟨地空⟩ and ⟨地劫⟩ on either side of ${x.label(x.ming)}`], [...neighbours(x.ming), x.ming])
         : undefined,
     text: 'Classically little practical help from family and siblings, and plans that fall through. The catalogue stresses that strong, well-supported stars in the Life palace largely cancel it.',
+  },
+  {
+    id: 'ge.sheng-bu-feng-shi',
+    zh: '生不逢時格',
+    en: 'Born out of season',
+    kind: 'adverse',
+    sources: [{ verse: '生不逢時，命坐空亡逢廉貞是也', work: '紫微斗數全書', section: '定貧賤局', basis: '全書 definition: 廉貞 in 命宮 together with a void star (旬空, 截空 or 空亡)' }],
+    match: (x) => {
+      if (!x.has(x.ming, '廉貞')) return undefined;
+      const voids = x.hasAny(x.ming, ['旬空', '截空', '旬中', '空亡']);
+      return voids.length ? m(x, [`⟨廉貞⟩ with ${voids.map((v) => `⟨${v}⟩`).join(', ')} in ${x.label(x.ming)}`]) : undefined;
+    },
+    text: 'Ability that meets the wrong moment. Classically real talent that struggles to find its opening, so a life steadier than its promise. Patience and choosing your timing carefully are the remedies.',
   },
   {
     id: 'ge.yisheng-gupin',
@@ -971,4 +1098,20 @@ export const ADVERSE: PatternRule[] = [
   },
 ];
 
-export const ALL_PATTERNS: PatternRule[] = [...AUSPICIOUS, ...ADVERSE];
+/** Star-system structures: neither lucky nor unlucky, but they set the shape of a life. */
+export const STRUCTURES: PatternRule[] = [
+  {
+    id: 'st.sha-po-lang',
+    zh: '殺破狼格',
+    en: 'General, Breaker and Wolf',
+    kind: 'structure',
+    sources: [{ basis: 'Standard star-system (星系) reading: 七殺, 破軍 and 貪狼 always fall in each other’s trines, so one of them in 命宮 brings all three onto the life axis' }],
+    match: (x) => {
+      const which = x.hasAny(x.ming, ['七殺', '破軍', '貪狼']);
+      return which.length ? m(x, [`${which.map((s) => `⟨${s}⟩`).join(' + ')} in ${x.label(x.ming)}`, '⟨七殺⟩, ⟨破軍⟩ and ⟨貪狼⟩ hold the 三方四正']) : undefined;
+    },
+    text: 'The three stars of change command your life axis. A life of initiative and turning points: new starts, bold moves, and big swings rather than steady progress. It suits enterprise, competition and anything that rewards nerve.',
+  },
+];
+
+export const ALL_PATTERNS: PatternRule[] = [...AUSPICIOUS, ...ADVERSE, ...STRUCTURES];

@@ -284,3 +284,8 @@ Each phase is shippable on its own.
   - For each of the eleven non-Life palaces, each main star's line and its pairing lines with a co-star: 149 star lines and 350 pairing lines. These are glossed in English and shown on the palace cards.
   - The 命宮 tables (68 lines) of placements by branch and birth-year stem, read automatically (e.g. 紫微 in 子 for a 丁 year gives 貴格) and shown in the Life palace overview.
   - All 656 unique quotes are verified against the section they come from.
+- **Cross-check** (see `docs/CROSS-CHECK.md`):
+  - Rules were checked against the 全書's 定局 definitions, the Renhuai123 engine and a 43-person public case list.
+  - 君臣慶會, 府相朝垣, 紫府朝垣, 月生滄海, 刑囚夾印 and 極居卯酉 were revised. 輔弼拱主, 馬頭帶劍 (天馬擎羊), 財蔭夾印, 財印夾祿, 金輿扶駕, 生不逢時 and the 殺破狼 structure were added.
+  - The 全書's literal 財蔭夾印 and 財印夾祿 definitions turned out to be structurally impossible, so the rules use a workable reading.
+  - Agreement with the case list rose from 21 to 49 labels.

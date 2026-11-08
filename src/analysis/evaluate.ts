@@ -61,8 +61,9 @@ export function evaluatePatterns(x: Ctx): PatternFinding[] {
     const bad = x.malefic(scope, { except: rule.tolerates });
     let status: PatternStatus;
     if (rule.kind === 'auspicious') status = sup.length ? (bad.length ? 'flawed' : 'formed') : bad.length ? 'broken' : 'bare';
+    else if (rule.kind === 'structure') status = 'present';
     else status = sup.length ? 'mitigated' : 'present';
-    const statusText = STATUS_TEXT[status](sup, bad);
+    const statusText = rule.kind === 'structure' ? '' : STATUS_TEXT[status](sup, bad);
     out.push({
       id: rule.id,
       rule,
@@ -149,6 +150,21 @@ function minorFinding(x: Ctx, i: number, idPrefix: string): Finding[] {
   return [{ id: `${idPrefix}.minor`, text: sentences.join(' '), evidence: [`${list(here)} in ${x.label(i)}`], sources: quotes.length ? quotes : [MINOR_BASIS] }];
 }
 
+/** 羊陀夾忌 in any palace: 祿存 (always flanked by 擎羊 and 陀羅) sharing the palace with the birth 化忌. */
+function yangTuoJiaJi(x: Ctx, i: number, idPrefix: string): Finding[] {
+  if (i === x.ming || !x.has(i, '祿存') || !x.hasMut(i, '忌')) return [];
+  const ji = x.muts(i).find(([, k]) => k === '忌')![0];
+  const domain = PALACE_DOMAIN[x.p(i).name].domain;
+  return [
+    {
+      id: `${idPrefix}.yangtuo`,
+      text: `Obstacle trapped between the blades (羊陀夾忌): the birth 化忌 sits with 祿存 here, hemmed in by 擎羊 and 陀羅, so trouble in ${domain} has no easy outlet. The classics call this a losing position (敗局) for the palace’s affairs.`,
+      evidence: [`⟨${ji}⟩化忌 and ⟨祿存⟩ in ${x.label(i)}`, '⟨擎羊⟩ and ⟨陀羅⟩ on either side'],
+      sources: [{ verse: '羊陀夾忌為敗局', work: '紫微斗數全書', section: '論諸星同垣各司所宜', basis: '羊陀夾忌 applied to the palace where it occurs (the named pattern covers the Life palace)' }],
+    },
+  ];
+}
+
 function tone(x: Ctx, i: number): PalaceCard['tone'] {
   const s = sfsz(i);
   const sup = x.support(s).length;
@@ -198,6 +214,7 @@ export function analyse(c: ChartM): Analysis {
         ...(p.index === x.ming ? [] : [palaceClassics(x, p.index)].filter((f): f is Finding => !!f)),
         ...minorFinding(x, p.index, id),
         ...mutFindings(x, p.index, id),
+        ...yangTuoJiaJi(x, p.index, id),
       ],
     };
   });
