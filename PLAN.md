@@ -43,7 +43,7 @@ Full 飛星 chain reading is out of scope for v1, because it cannot meet require
 
 | Dispute | Options | Default |
 |---|---|---|
-| 庚 year-stem 四化 | 陽武陰同 (most common table) / 陽武同相 / 陽武府同 | 陽武陰同 |
+| 庚 year-stem 四化 | 陽武陰同 (most common table) / 陽武同相 / 陽武府同 | 陽武陰同 (setting: 四化 table) |
 | 壬 化科 | 左輔 / 天府 | 左輔 |
 | 戊 化科 | 右弼 / 太陽 | 右弼 |
 | Late 子 hour (23:00–00:00) | Counts as the next day (`dayDivide: forward`) / stays on the same day (`current`) | forward |
@@ -271,4 +271,9 @@ Each phase is shippable on its own.
   - PNG export at a fixed 900 px width;
   - print styles;
   - an offline service worker.
-- Known limitation: decade and year 四化 use iztro's standard stem table, not per-chart overrides. A future 四化-school setting would need to pass its table through `stemMutagens`.
+- The 四化 table setting is live. Several sources agree on three presets, applied to the birth-year, decade and year 四化 alike:
+  - **Common (全書)**: iztro's default. 戊 貪陰弼機, 庚 陽武陰同, 壬 梁紫輔武.
+  - **中州派 (王亭之)**: 左輔 and 右弼 never transform. 戊 太陽化科, 庚 陽武府同, 壬 天府化科.
+  - **北派 (河洛)**: 庚 陽武同相 (天同化科, 天相化忌).
+  
+  Sources: [王亭之：庚干四化的争论](https://haozh.com/post/64.html), [飛星漫談：十干四化的不同版本](https://home9000.wordpress.com/2007/07/02/%E3%80%90%E9%A3%9B%E6%98%9F%E6%BC%AB%E8%AB%87-%E5%9B%9B%E5%8D%81%E4%BA%8C%E3%80%91%E5%8D%81%E5%B9%B2%E5%9B%9B%E5%8C%96%E7%9A%84%E4%B8%8D%E5%90%8C%E7%89%88%E6%9C%AC/), [紫微四化表：庚干爭議](https://tradiculture.com/ziweisihuabiaowanzhengjiexi/). Some sources report that 中州派 students have since returned to 右弼 and 左輔 for 戊 and 壬; this is unconfirmed, so the preset follows 王亭之's published table.

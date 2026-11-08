@@ -1,5 +1,5 @@
 import './style.css';
-import { buildChart, decadeOverlay } from './engine/chart';
+import { buildChart, decadeOverlay, SIHUA_LABEL, SIHUA_TABLES } from './engine/chart';
 import { fmtDate, fmtTime, resolveExact, SHICHEN, timeIndexFor, type LocalDateTime, type ResolvedBirth } from './input/solarTime';
 import { drawLines, renderChart, renderDecades, type ChartView } from './ui/chartGrid';
 import { setupForm, type BirthInput } from './ui/form';
@@ -55,7 +55,10 @@ function show(input: BirthInput, birth: ResolvedBirth): void {
   draw();
   // Rules are written against Traditional names, so analyse a zh-TW build of the same chart.
   const trad = input.settings.script === 'zh-TW' ? chart : buildChart(birth.dateStr, birth.timeIndex, input.gender, { ...input.settings, script: 'zh-TW' });
-  const model = toModel(trad, input.gender, birth.timeIndex);
+  const model = toModel(trad, input.gender, birth.timeIndex, {
+    overrides: SIHUA_TABLES[input.settings.sihua],
+    label: SIHUA_LABEL[input.settings.sihua],
+  });
   const analysis = analyse(model);
   let nowAge: number | undefined;
   try {

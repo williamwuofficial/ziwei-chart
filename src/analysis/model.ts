@@ -44,16 +44,29 @@ export interface ChartM {
   timeIndex: number;
   /** Lunar year of birth (nominal age 1). Optional so hand-built test charts can omit it. */
   lunarYear?: number;
+  /** 四化 overrides for disputed stems (see SIHUA_TABLES), used for decade and year readings. */
+  mutOverrides?: MutOverrides;
+  /** Display label of the 四化 table in use. */
+  sihuaLabel?: string;
 }
+
+export type MutOverrides = Partial<Record<string, [string, string, string, string]>>;
 
 export const BRANCHES = ['寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥', '子', '丑'] as const;
 
-export function toModel(chart: Astrolabe, gender: 'male' | 'female', timeIndex: number): ChartM {
+export function toModel(
+  chart: Astrolabe,
+  gender: 'male' | 'female',
+  timeIndex: number,
+  sihua: { overrides?: MutOverrides; label?: string } = {},
+): ChartM {
   const [yearPillar] = chart.chineseDate.split(' ');
   return {
     gender,
     timeIndex,
     lunarYear: chart.rawDates.lunarDate.lunarYear,
+    mutOverrides: sihua.overrides,
+    sihuaLabel: sihua.label,
     yearStem: yearPillar[0],
     yearBranch: yearPillar[1],
     palaces: chart.palaces.map((p) => ({
@@ -66,7 +79,7 @@ export function toModel(chart: Astrolabe, gender: 'male' | 'female', timeIndex: 
       adjective: p.adjectiveStars.map((s) => s.name),
       isBody: p.isBodyPalace,
       decade: [p.decadal.range[0], p.decadal.range[1]],
-      decadeMut: p.decadal.range[0] <= 95 ? stemMutagens(p.heavenlyStem) : undefined,
+      decadeMut: p.decadal.range[0] <= 95 ? stemMutagens(p.heavenlyStem, sihua.overrides) : undefined,
     })),
   };
 }
@@ -98,7 +111,9 @@ const STEMS = '甲乙丙丁戊己庚辛壬癸';
  * chart.horoscope per decade costs ~30 ms each). If a per-chart 四化 override setting is added
  * later, apply it here too.
  */
-export function stemMutagens(stem: string): PalaceM['decadeMut'] {
+export function stemMutagens(stem: string, overrides?: MutOverrides): PalaceM['decadeMut'] {
+  const o = overrides?.[stem];
+  if (o) return o;
   const key = DATA.HEAVENLY_STEMS[STEMS.indexOf(stem)];
   const keys = key ? DATA.heavenlyStems[key]?.mutagen : undefined;
   const names = keys?.map((k) => ZH_TW_STARS[k]);

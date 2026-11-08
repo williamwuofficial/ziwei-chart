@@ -173,7 +173,10 @@ export function analyse(c: ChartM): Analysis {
         `Birth-year transformations (${c.yearStem} year): ` +
         where.map(([k, i]) => `化${k} in the ${PALACE_DOMAIN[x.p(i).name].en} palace`).join(', ') +
         '. Where 化祿 lands is where life tends to give; where 化忌 lands is where it asks for the most care.',
-      evidence: where.map(([k, i]) => `${x.muts(i).find(([, m]) => m === k)?.[0] ? `⟨${x.muts(i).find(([, m]) => m === k)![0]}⟩` : ''}化${k} in ${x.label(i)}`),
+      evidence: [
+        ...where.map(([k, i]) => `${x.muts(i).find(([, m]) => m === k)?.[0] ? `⟨${x.muts(i).find(([, m]) => m === k)![0]}⟩` : ''}化${k} in ${x.label(i)}`),
+        `四化 table: ${c.sihuaLabel ?? 'Common table (全書)'}`,
+      ],
       sources: [MUT_BASIS],
     });
 

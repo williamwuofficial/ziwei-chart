@@ -73,7 +73,7 @@ export function readYear(c: ChartM, decadePalace: number, year: number): YearRea
   const decadeMut = c.palaces[decadePalace].decadeMut;
   const decadeJi = decadeMut ? x.find(decadeMut[3]) : -1;
   const decadeLu = decadeMut ? x.find(decadeMut[0]) : -1;
-  const muts = stemMutagens(stem);
+  const muts = stemMutagens(stem, c.mutOverrides);
   muts?.forEach((star, k) => {
     const m = MUT_ORDER[k];
     if (m !== '祿' && m !== '忌') return;

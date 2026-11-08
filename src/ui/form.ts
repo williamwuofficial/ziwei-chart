@@ -159,6 +159,7 @@ export function setupForm(form: HTMLFormElement, onSubmit: (input: BirthInput, a
   el<HTMLSelectElement>('select[name="dayDivide"]').value = settings.dayDivide;
   el<HTMLSelectElement>('select[name="algorithm"]').value = settings.algorithm;
   el<HTMLSelectElement>('select[name="script"]').value = settings.script;
+  el<HTMLSelectElement>('select[name="sihua"]').value = settings.sihua;
 
   // --- Read and validate --------------------------------------------------------------
   const read = (): BirthInput | string => {
@@ -176,6 +177,7 @@ export function setupForm(form: HTMLFormElement, onSubmit: (input: BirthInput, a
       dayDivide: data.get('dayDivide') as Settings['dayDivide'],
       algorithm: data.get('algorithm') as Settings['algorithm'],
       script: data.get('script') as Settings['script'],
+      sihua: data.get('sihua') as Settings['sihua'],
     };
     if (timeMode === 'exact') {
       const time = String(data.get('time') ?? '');

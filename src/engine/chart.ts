@@ -13,7 +13,35 @@ export interface Settings {
   script: Script;
   /** Show the miscellaneous stars (雜曜) in each palace. */
   showAdjective: boolean;
+  /** Which four-transformation table to use for the disputed stems (戊, 庚, 壬). */
+  sihua: SihuaTable;
 }
+
+export type SihuaTable = 'common' | 'zhongzhou' | 'beipai';
+
+/**
+ * Overrides for the disputed stems, as [祿, 權, 科, 忌]. Every other stem uses the common table,
+ * which is iztro's default (戊 貪陰弼機, 庚 陽武陰同, 壬 梁紫輔武).
+ * - 中州派 (王亭之): 左輔 and 右弼 never transform, so 戊 化科 is 太陽 and 壬 化科 is 天府; 庚 is 陽武府同.
+ * - 北派 (河洛) and the old 鐵版神算 text: 庚 is 陽武同相 (天同化科, 天相化忌).
+ */
+export const SIHUA_TABLES: Record<SihuaTable, Partial<Record<string, [string, string, string, string]>>> = {
+  common: {},
+  zhongzhou: {
+    戊: ['貪狼', '太陰', '太陽', '天機'],
+    庚: ['太陽', '武曲', '天府', '天同'],
+    壬: ['天梁', '紫微', '天府', '武曲'],
+  },
+  beipai: {
+    庚: ['太陽', '武曲', '天同', '天相'],
+  },
+};
+
+export const SIHUA_LABEL: Record<SihuaTable, string> = {
+  common: 'Common table (全書)',
+  zhongzhou: '中州派 (Wang Ting Zhi)',
+  beipai: '北派 (He Luo)',
+};
 
 export const DEFAULT_SETTINGS: Settings = {
   useSolar: true,
@@ -21,6 +49,7 @@ export const DEFAULT_SETTINGS: Settings = {
   algorithm: 'default',
   script: 'zh-TW',
   showAdjective: true,
+  sihua: 'common',
 };
 
 export type Gender = 'male' | 'female';
@@ -33,7 +62,7 @@ export function buildChart(dateStr: string, timeIndex: number, gender: Gender, s
     gender,
     fixLeap: true,
     language: s.script,
-    config: { algorithm: s.algorithm, dayDivide: s.dayDivide },
+    config: { algorithm: s.algorithm, dayDivide: s.dayDivide, mutagens: SIHUA_TABLES[s.sihua] as never },
   });
 }
 
