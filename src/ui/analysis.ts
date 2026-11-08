@@ -61,9 +61,13 @@ function verseLine(s: Source, script: Script): HTMLElement {
 }
 
 function finding(f: Finding, script: Script, showVerse = true): HTMLElement {
-  const box = h('div', 'finding');
+  const box = h('div', f.advice ? 'finding advice' : 'finding');
   const p = h('p');
-  p.append(rich(f.text, script));
+  if (f.advice) {
+    p.append(h('strong', 'advice-label', 'Advice'), ' ');
+    const t = f.text.replace(/^Advice: /, '');
+    p.append(rich(t.charAt(0).toUpperCase() + t.slice(1), script));
+  } else p.append(rich(f.text, script));
   box.append(p, why(f, script, showVerse));
   return box;
 }

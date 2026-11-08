@@ -7,6 +7,7 @@ import {
 } from './rules/stars';
 import type { PatternRule, PatternStatus, Source } from './rules/types';
 import { mingClassics, palaceClassics } from './juan2Read';
+import { palaceAdvice } from './advice';
 
 /** One statement in the analysis, with everything needed for its "Why?" panel. */
 export interface Finding {
@@ -14,6 +15,8 @@ export interface Finding {
   text: string;
   evidence: string[];
   sources: Source[];
+  /** A note on what the sources advise doing about it (趨吉避凶), shown apart from the readings. */
+  advice?: boolean;
 }
 
 export interface PatternFinding extends Finding {
@@ -289,12 +292,13 @@ export function analyse(c: ChartM): Analysis {
   const palaces: PalaceCard[] = c.palaces.map((p) => {
     const d = PALACE_DOMAIN[p.name];
     const id = `palace.${p.index}`;
+    const t = tone(x, p.index);
     return {
       index: p.index,
       name: p.name,
       en: d.en,
       domain: d.domain,
-      tone: tone(x, p.index),
+      tone: t,
       // The Life palace's main stars are already read in the overview.
       findings: [
         ...(p.index === x.ming ? [] : starFindings(x, p.index, id)),
@@ -303,6 +307,7 @@ export function analyse(c: ChartM): Analysis {
         ...mutFindings(x, p.index, id),
         ...yangTuoJiaJi(x, p.index, id),
         ...palaceFlanks(x, p.index, id),
+        ...palaceAdvice(x, p.index, id, t === 'pressured'),
       ],
     };
   });

@@ -10,6 +10,7 @@
 import type { Finding } from './evaluate';
 import { stemMutagens, type ChartM, type Mut } from './model';
 import { Ctx, opp, sfsz } from './predicates';
+import { yearAdvice } from './advice';
 import { MUT_QUOTE, MUT_TEXT, PALACE_DOMAIN } from './rules/stars';
 import type { Source } from './rules/types';
 import type { DecadeTone } from './decades';
@@ -128,6 +129,7 @@ export function readYear(c: ChartM, decadePalace: number, year: number): YearRea
 
   if (!parts.length) parts.push('0: no strong signals either way');
   const tone: DecadeTone = score >= 2 ? 'favourable' : score <= -2 ? 'challenging' : 'mixed';
+  findings.push(...yearAdvice(x, id, tone === 'challenging', muts ? x.find(muts[3]) : -1));
   return { year, age, stem, branch, palace: yi, tone, score, scoreParts: parts, findings };
 }
 

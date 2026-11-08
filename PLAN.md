@@ -291,3 +291,14 @@ Each phase is shippable on its own.
   - 君臣慶會, 府相朝垣, 紫府朝垣, 月生滄海, 刑囚夾印 and 極居卯酉 were revised. 輔弼拱主, 馬頭帶劍 (天馬擎羊), 財蔭夾印, 財印夾祿, 金輿扶駕, 生不逢時 and the 殺破狼 structure were added.
   - The 全書's literal 財蔭夾印 and 財印夾祿 definitions turned out to be structurally impossible, so the rules use a workable reading.
   - Agreement with the case list rose from 21 to 49 labels.
+- **Advice notes (趨吉避凶), 2026-11-09:** readings now carry sourced notes, set off as "Advice", on what to do about a difficult star, period or year (`src/analysis/advice.ts`). Every note quotes or cites its source:
+  - **Hard decade:** 全書 陰騭 (斗數骨髓賦 「陰騭延年增百福，至於陷地不遭傷」; 卷三 論陰騭延壽).
+  - **陀羅 in the decade palace:** 全書 卷二 陀羅入限吉凶訣 「限遇陀羅事亦多，必然忍耐要謙和」.
+  - **化忌 (birth, decade or year) in 兄弟 or 僕役:** no joint ventures, guarantees or lending with siblings or friends (倪海廈 天紀 10; 范振木 論命實務一, 十一).
+  - **Year 化忌 in or clashing the Spouse palace:** marry after it passes (過忌成婚, 倪 天紀 12).
+  - **Hard year:** study or teach (倪 天紀 12).
+  - **巨門化忌 with 天刑:** suits police, military or legal work (倪 天紀 13).
+  - **Wealth palace under pressure:** property and long-term holdings over speculation (范振木 論命實務十一).
+  - **廉貞 命 with 七殺 in 夫妻:** a partner of steadier temperament (kunde.org.tw).
+  
+  Left out: feng shui remedies (倪's bed and desk directions) and anything about averting illness or death. Modern teachers are paraphrased and cited, not quoted.

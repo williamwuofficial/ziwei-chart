@@ -194,6 +194,8 @@ button.link { font: inherit; color: var(--accent); background: none; border: 0; 
 .term { text-decoration: underline dotted color-mix(in srgb, var(--muted) 60%, transparent); text-underline-offset: 3px; cursor: help; }
 .finding { margin: 0 0 12px; }
 .finding > p { margin: 0 0 4px; font-size: 0.95rem; }
+.finding.advice { border-left: 3px solid var(--lu); padding: 4px 0 4px 10px; background: color-mix(in srgb, var(--lu) 6%, transparent); border-radius: 0 6px 6px 0; }
+.advice-label { color: var(--lu); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.04em; }
 details.why { font-size: 0.82rem; color: var(--muted); }
 details.why summary { cursor: pointer; color: var(--accent); width: fit-content; }
 details.why ul { margin: 6px 0; padding-left: 20px; }

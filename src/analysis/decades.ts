@@ -9,6 +9,7 @@
 import { STATUS_RANK, evaluatePatterns, type Finding, type PatternFinding } from './evaluate';
 import type { ChartM, Mut, PalaceName } from './model';
 import { Ctx, opp, sfsz } from './predicates';
+import { decadeAdvice } from './advice';
 import { MAJOR_NATURE, MUT_TEXT, PALACE_DOMAIN } from './rules/stars';
 import type { Source } from './rules/types';
 
@@ -186,6 +187,7 @@ export function readDecade(c: ChartM, i: number): DecadeReading {
 
   const tone: DecadeTone = score >= 2 ? 'favourable' : score <= -2 ? 'challenging' : 'mixed';
   if (!parts.length) parts.push('0: no strong signals either way');
+  findings.push(...decadeAdvice(natal, i, id, tone === 'challenging', muts ? natal.find(muts[3]) : -1));
   return {
     index: i,
     range: p.decade,
