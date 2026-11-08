@@ -257,3 +257,10 @@ Each phase is shippable on its own.
 4. **Repo:** `williamwuofficial/ziwei-chart`, Pages at `/ziwei-chart/`.
 5. **Unknown birth time:** exact time *or* a direct 時辰 picker is enough for v1. True-solar correction only applies to exact times.
 6. **iztro pinned to 2.6.3.** 2.6.4 and 2.6.5 were under a week old at scaffold time.
+
+## 9. Status
+
+- Phases 0–2 are live: scaffold, then chart, then natal analysis.
+- Phase 2 has 46 auspicious and 19 adverse patterns, 14 star natures, 24 star pairs, transformation and 身宮 rules, 12 palace cards, a "Why?" panel on every statement, and pinyin + English tooltips.
+- Quoted verses are checked against the catalogue text, and the verified list is kept in `tests/fixtures/verses.txt`.
+- The Simplified display uses a generated character map (`npm run t2s`). A test fails if the map is missing a character.

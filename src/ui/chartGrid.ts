@@ -9,6 +9,7 @@ import {
 } from '../engine/chart';
 import { fmtDate, fmtTime, SHICHEN, type ResolvedBirth } from '../input/solarTime';
 import { placeLabel, type Place } from '../input/geocode';
+import { tip } from './zhText';
 
 // iztro palace index 0–11 = branches 寅卯辰巳午未申酉戌亥子丑. Grid (row, col) of each, 1-based,
 // laid out the traditional way: 巳午未申 across the top, 寅丑子亥 across the bottom.
@@ -36,6 +37,8 @@ export interface ChartView {
   settings: Settings;
   decade?: DecadeOverlay;
   selected?: number;
+  /** Palaces highlighted from the analysis ("Show on chart"). */
+  highlight?: number[];
 }
 
 function mutBadge(zhChar: string, title: string, extra = ''): HTMLElement {
@@ -51,7 +54,10 @@ function starLine(
   v: ChartView,
 ): HTMLElement {
   const line = zh(h('span', `star ${cls}`), v.settings.script);
-  line.append(h('span', 'star-name', star.name));
+  const nameEl = h('span', 'star-name', star.name);
+  const t = tip(star.name);
+  if (t) nameEl.title = t;
+  line.append(nameEl);
   if (star.brightness) line.append(h('sup', 'bright', star.brightness));
   const kind = mutagenKind(star.mutagen);
   if (star.mutagen && kind) line.append(mutBadge(star.mutagen, `Birth-year ${MUTAGEN_EN[kind]} (化${star.mutagen})`));
@@ -80,6 +86,7 @@ export function renderChart(root: HTMLElement, v: ChartView, onSelect: (i: numbe
       else if (focus.trines.includes(i) || i === focus.opposite) cell.classList.add('related');
       else cell.classList.add('dim');
     }
+    if (v.highlight && !focus) cell.classList.add(v.highlight.includes(i) ? 'hl' : 'dim');
     if (v.decade?.palaceIndex === i) cell.classList.add('decade-ming');
 
     const stars = h('div', 'stars');
@@ -102,6 +109,7 @@ export function renderChart(root: HTMLElement, v: ChartView, onSelect: (i: numbe
     const name = h('div', 'foot-right');
     if (v.decade) name.append(zh(h('span', 'decade-name', `大${v.decade.palaceNames[i].replace(/宮|宫/, '')}`), settings.script));
     const pname = zh(h('span', 'palace-name', p.name), settings.script);
+    pname.title = tip(p.name) ?? '';
     if (p.isBodyPalace) pname.append(zh(h('span', 'body-tag', '身'), settings.script));
     name.append(pname, zh(h('span', 'ganzhi', `${p.heavenlyStem}${p.earthlyBranch}`), settings.script));
     foot.append(left, name);

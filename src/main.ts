@@ -3,6 +3,10 @@ import { buildChart, decadeOverlay } from './engine/chart';
 import { fmtDate, fmtTime, resolveExact, SHICHEN, timeIndexFor, type LocalDateTime, type ResolvedBirth } from './input/solarTime';
 import { drawLines, renderChart, renderDecades, type ChartView } from './ui/chartGrid';
 import { setupForm, type BirthInput } from './ui/form';
+import { analyse } from './analysis/evaluate';
+import { toModel } from './analysis/model';
+import { renderAnalysis } from './ui/analysis';
+import { toScript } from './ui/zhText';
 
 const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
 const form = $<HTMLFormElement>('birth-form');
@@ -11,6 +15,8 @@ const grid = $<HTMLElement>('chart');
 const lines = document.getElementById('chart-lines') as unknown as SVGSVGElement;
 const decadeList = $<HTMLElement>('decade-list');
 const warning = $<HTMLElement>('boundary-warning');
+const analysisRoot = $<HTMLElement>('analysis');
+const chartCard = document.querySelector<HTMLElement>('.chart-card')!;
 
 let view: ChartView | undefined;
 
@@ -39,14 +45,29 @@ function show(input: BirthInput, birth: ResolvedBirth): void {
   const chart = buildChart(birth.dateStr, birth.timeIndex, input.gender, input.settings);
   view = { chart, birth, gender: input.gender, place: input.place, settings: input.settings };
   document.documentElement.dataset.script = input.settings.script;
+  // The static legend is written in Traditional; convert it for Simplified display.
+  const legend = document.querySelector<HTMLElement>('.legend')!;
+  legend.dataset.orig ??= legend.innerHTML;
+  legend.innerHTML = toScript(legend.dataset.orig, input.settings.script);
   result.hidden = false;
   draw();
+  // Rules are written against Traditional names, so analyse a zh-TW build of the same chart.
+  const trad = input.settings.script === 'zh-TW' ? chart : buildChart(birth.dateStr, birth.timeIndex, input.gender, { ...input.settings, script: 'zh-TW' });
+  const analysis = analyse(toModel(trad, input.gender, birth.timeIndex));
+  renderAnalysis(analysisRoot, analysis, input.settings.script, (palaces) => {
+    if (!view) return;
+    view.selected = undefined;
+    view.highlight = palaces;
+    draw();
+    chartCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
 }
 
 function draw(): void {
   if (!view) return;
   renderChart(grid, view, (i) => {
     view!.selected = view!.selected === i ? undefined : i;
+    view!.highlight = undefined;
     draw();
   });
   renderDecades(decadeList, view, (i) => {
