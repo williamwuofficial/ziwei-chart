@@ -28,16 +28,22 @@ export interface Settings {
   tianma: 'year' | 'month';
 }
 
-export type SihuaTable = 'common' | 'zhongzhou' | 'beipai';
+export type SihuaTable = 'common' | 'quanshu' | 'zhongzhou' | 'beipai' | 'tianji';
 
 /**
- * Overrides for the disputed stems, as [祿, 權, 科, 忌]. Every other stem uses the common table,
- * which is iztro's default (戊 貪陰弼機, 庚 陽武陰同, 壬 梁紫輔武).
+ * Overrides for the disputed stems, as [祿, 權, 科, 忌]. Every other stem uses the common modern
+ * table, which is iztro's default (戊 貪陰弼機, 庚 陽武陰同, 壬 梁紫輔武).
+ * - 全書 卷二 「安祿權科忌四星變化訣」: 「壬梁紫府武宿是」, so 壬 化科 is 天府 (戊 and 庚 as common).
  * - 中州派 (王亭之): 左輔 and 右弼 never transform, so 戊 化科 is 太陽 and 壬 化科 is 天府; 庚 is 陽武府同.
  * - 北派 (河洛) and the old 鐵版神算 text: 庚 is 陽武同相 (天同化科, 天相化忌).
+ * - 倪海廈 天紀: 庚 is 陽武同陰 (天同化科, 太陰化忌); 壬 uses 左輔. Inferred from his worked cases
+ *   (docs/CROSS-CHECK.md), not from a published table.
  */
 export const SIHUA_TABLES: Record<SihuaTable, Partial<Record<string, [string, string, string, string]>>> = {
   common: {},
+  quanshu: {
+    壬: ['天梁', '紫微', '天府', '武曲'],
+  },
   zhongzhou: {
     戊: ['貪狼', '太陰', '太陽', '天機'],
     庚: ['太陽', '武曲', '天府', '天同'],
@@ -46,12 +52,17 @@ export const SIHUA_TABLES: Record<SihuaTable, Partial<Record<string, [string, st
   beipai: {
     庚: ['太陽', '武曲', '天同', '天相'],
   },
+  tianji: {
+    庚: ['太陽', '武曲', '天同', '太陰'],
+  },
 };
 
 export const SIHUA_LABEL: Record<SihuaTable, string> = {
-  common: 'Common table (全書)',
+  common: 'Common modern table',
+  quanshu: '全書 table (壬 天府化科)',
   zhongzhou: '中州派 (Wang Ting Zhi)',
   beipai: '北派 (He Luo)',
+  tianji: '天紀 (Ni Haixia)',
 };
 
 export const DEFAULT_SETTINGS: Settings = {

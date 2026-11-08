@@ -181,6 +181,34 @@ Not adopted, because they are specific to his school or predict death or injury,
 - a malefic alone in a 10-year period means a fatal period;
 - the feng shui directions he pairs with marriage timing.
 
+### 倪海廈 天紀 episodes 10, 12–15 (finalhopes.com blog/78–83)
+
+These notes cover 18 more cases. The checker took each case's stated year, gender, 局, 紫微 position and Life palace, listed every lunar chart that fits, and counted how many of those charts carry each claim in the notes.
+
+**Most claims reproduce.** In 15 of the 18 cases, every claim holds in at least one matching chart, and most hold in all of them. Claims that hold in only some charts depend on the birth day or hour, which the notes don't give. In the other three cases, one claim each never occurs:
+- **12-3:** 武曲 in 父母.
+- **13-2:** 太陽化忌 next to 紅鸞. A 甲 year has 太陽化忌, but never in the same palace as 紅鸞 for this chart shape.
+- **14-3:** 火星 陷 in 遷移. This is a brightness-table difference (see below).
+
+These look like slips in the student's notes, or a different brightness table, rather than a different placement method.
+
+**12-2 has a typo.** No 金四局 chart fits it, but 土五局 charts reproduce all of its claims: 巨門 and 太陽 in the Life palace, 化忌 in 兄弟, and only 化科 in the Life palace's 三方四正.
+
+**「武官星」 means 七殺.** The notes use this name in 13-1, where the Life palace holds 七殺.
+
+**倪's 庚 and 壬 tables differ from ours.**
+- **14-2 (庚 1960).** His 「太陰化忌」 occurs in none of the 39 matching charts under the common table (庚 陽武陰同). It occurs in all 39 under 庚 陽武同陰 (天同化科, 太陰化忌). So he uses that table.
+- **14-3 (壬 1942).** His 夫妻 化科 next to 太陽 and 太陰 only occurs when 左輔 takes 壬 化科, as in the common table (4 of the 52 matching charts; it needs 左輔 in 夫妻). He does not use the 全書's 天府.
+- **火星 brightness.** His 遷移 火星 陷 in 14-3 follows a different brightness table. The app keeps iztro's.
+
+**The 全書's own 四化 verse.** Checking this led back to 全書 卷二 (安祿權科忌四星變化訣): 「壬梁紫府武宿是」. So the 全書 gives 壬 天府化科, not 左輔. The app's default was mislabelled "Common table (全書)". It is now "Common modern table".
+
+Changes from this check:
+- Two new 四化 presets:
+  - **全書:** 壬 天府化科, otherwise as common.
+  - **天紀 (倪海廈):** 庚 陽武同陰.
+- Tests in `tests/sihua.test.ts` reproduce cases 14-2 and 14-3.
+
 ### 范振木 論命實務十一
 
 This case gives no birth data. Searching the 丁 years found charts matching every published palace: lunar 二月 at 亥時, with 1967 fitting his narrative. In that chart the Body palace sits in an empty 夫妻 with 截路, and the periods run 甲辰 → 癸卯 → 壬寅 → 癸丑. Together with 論命實務十, both of his no-birth-data cases reproduce exactly.

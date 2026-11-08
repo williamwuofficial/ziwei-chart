@@ -43,7 +43,7 @@ Full 飛星 chain reading is out of scope for v1, because it cannot meet require
 
 | Dispute | Options | Default |
 |---|---|---|
-| 庚 year-stem 四化 | 陽武陰同 (most common table) / 陽武同相 / 陽武府同 | 陽武陰同 (setting: 四化 table) |
+| 庚 year-stem 四化 | 陽武陰同 (most common table) / 陽武同相 / 陽武府同 / 陽武同陰 (倪海廈) | 陽武陰同 (setting: 四化 table) |
 | 壬 化科 | 左輔 / 天府 | 左輔 |
 | 戊 化科 | 右弼 / 太陽 | 右弼 |
 | Late 子 hour (23:00–00:00) | Counts as the next day (`dayDivide: forward`) / stays on the same day (`current`) | forward |
@@ -271,10 +271,12 @@ Each phase is shippable on its own.
   - PNG export at a fixed 900 px width;
   - print styles;
   - an offline service worker.
-- The 四化 table setting is live. Several sources agree on three presets, applied to the birth-year, decade and year 四化 alike:
-  - **Common (全書)**: iztro's default. 戊 貪陰弼機, 庚 陽武陰同, 壬 梁紫輔武.
+- The 四化 table setting is live, with five presets applied to the birth-year, decade and year 四化 alike:
+  - **Common modern table**: iztro's default. 戊 貪陰弼機, 庚 陽武陰同, 壬 梁紫輔武. (This was first labelled 全書, but the 全書's own verse disagrees for 壬; see below.)
+  - **全書**: as common, but 壬 天府化科, from 卷二 安祿權科忌四星變化訣 「壬梁紫府武宿是」.
   - **中州派 (王亭之)**: 左輔 and 右弼 never transform. 戊 太陽化科, 庚 陽武府同, 壬 天府化科.
   - **北派 (河洛)**: 庚 陽武同相 (天同化科, 天相化忌).
+  - **天紀 (倪海廈)**: 庚 陽武同陰 (天同化科, 太陰化忌), with 壬 左輔化科. Inferred from his worked cases 14-2 and 14-3 (docs/CROSS-CHECK.md).
   
   Sources: [王亭之：庚干四化的争论](https://haozh.com/post/64.html), [飛星漫談：十干四化的不同版本](https://home9000.wordpress.com/2007/07/02/%E3%80%90%E9%A3%9B%E6%98%9F%E6%BC%AB%E8%AB%87-%E5%9B%9B%E5%8D%81%E4%BA%8C%E3%80%91%E5%8D%81%E5%B9%B2%E5%9B%9B%E5%8C%96%E7%9A%84%E4%B8%8D%E5%90%8C%E7%89%88%E6%9C%AC/), [紫微四化表：庚干爭議](https://tradiculture.com/ziweisihuabiaowanzhengjiexi/). Some sources report that 中州派 students have since returned to 右弼 and 左輔 for 戊 and 壬; this is unconfirmed, so the preset follows 王亭之's published table.
 - **Original-text quotes:** every star nature, minor star, transformation, 身宮 rule, decade and year 四化 rule quotes 《紫微斗數全書》, as do 68 of the 76 patterns (several from the 全書's own 定富局, 定貴局 and 定貧賤局 definitions). Each quote names its section, e.g. 斗數骨髓賦 or 太微賦. `npm run verify-sources` checks every attributed quote against the public-domain Wikisource transcription and records the verified list in `tests/fixtures/sources.json`. Six patterns have verses that are not in the 全書 transcription; these are labelled as quoted in the pattern catalogue. Two patterns (日月照壁, 文星遇夾) have no classical line.

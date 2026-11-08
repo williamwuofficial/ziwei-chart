@@ -281,7 +281,7 @@ export function analyse(c: ChartM): Analysis {
         '. Where 化祿 lands is where life tends to give; where 化忌 lands is where it asks for the most care.',
       evidence: [
         ...where.map(([k, i]) => `${x.muts(i).find(([, m]) => m === k)?.[0] ? `⟨${x.muts(i).find(([, m]) => m === k)![0]}⟩` : ''}化${k} in ${x.label(i)}`),
-        `四化 table: ${c.sihuaLabel ?? 'Common table (全書)'}`,
+        `四化 table: ${c.sihuaLabel ?? 'Common modern table'}`,
       ],
       sources: [MUT_BASIS, ...where.map(([k]) => MUT_QUOTE[k])],
     });
