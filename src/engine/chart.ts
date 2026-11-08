@@ -24,6 +24,8 @@ export interface Settings {
   fixLeap: boolean;
   /** 中州派 only: 天盤 (heaven, standard), 地盤 (earth) or 人盤 (human). Ignored for other placement schools. */
   astroType: 'heaven' | 'earth' | 'human';
+  /** 天馬 placement: by birth-year branch (全書 「安天馬星訣 論本生年支」) or by birth month (占驗派, e.g. 范振木). */
+  tianma: 'year' | 'month';
 }
 
 export type SihuaTable = 'common' | 'zhongzhou' | 'beipai';
@@ -62,12 +64,13 @@ export const DEFAULT_SETTINGS: Settings = {
   yearDivide: 'normal',
   fixLeap: true,
   astroType: 'heaven',
+  tianma: 'year',
 };
 
 export type Gender = 'male' | 'female';
 
 export function buildChart(dateStr: string, timeIndex: number, gender: Gender, s: Settings): Astrolabe {
-  return astro.withOptions({
+  const chart = astro.withOptions({
     type: 'solar',
     dateStr,
     timeIndex,
@@ -83,7 +86,37 @@ export function buildChart(dateStr: string, timeIndex: number, gender: Gender, s
       horoscopeDivide: s.yearDivide,
       mutagens: SIHUA_TABLES[s.sihua] as never,
     },
-  });
+  }) as Astrolabe;
+  if (s.tianma === 'month') moveTianmaByMonth(chart, s.fixLeap);
+  return chart;
+}
+
+const BRANCH_ORDER = ['寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥', '子', '丑'];
+
+/**
+ * 月馬: place 天馬 by the lunar birth month instead of the year. Month branches 寅午戌 → 申,
+ * 申子辰 → 寅, 巳酉丑 → 亥, 亥卯未 → 巳 (month 1 is 寅). A leap month past the 15th counts as
+ * the next month when fixLeap is on, matching how iztro places the other month stars.
+ */
+export function tianmaMonthBranch(lunarMonth: number, isLeap: boolean, lunarDay: number, fixLeap: boolean): string {
+  let m = lunarMonth + (isLeap && fixLeap && lunarDay > 15 ? 1 : 0);
+  if (m > 12) m -= 12;
+  const monthBranch = BRANCH_ORDER[(m - 1) % 12];
+  if ('寅午戌'.includes(monthBranch)) return '申';
+  if ('申子辰'.includes(monthBranch)) return '寅';
+  if ('巳酉丑'.includes(monthBranch)) return '亥';
+  return '巳';
+}
+
+function moveTianmaByMonth(chart: Astrolabe, fixLeap: boolean): void {
+  const ld = chart.rawDates.lunarDate;
+  const target = tianmaMonthBranch(ld.lunarMonth, ld.isLeap, ld.lunarDay, fixLeap);
+  const from = chart.palaces.find((p) => p.minorStars.some((st) => st.type === 'tianma'));
+  const to = chart.palaces.find((p) => p.earthlyBranch === target);
+  if (!from || !to || from === to) return;
+  const i = from.minorStars.findIndex((st) => st.type === 'tianma');
+  const [star] = from.minorStars.splice(i, 1);
+  to.minorStars.push(star);
 }
 
 export type MutagenKind = 'lu' | 'quan' | 'ke' | 'ji';

@@ -961,11 +961,14 @@ export const ADVERSE: PatternRule[] = [
       if (!sun && !moon) return undefined;
       const s = sfsz(x.ming);
       const bad = x.malefic(s);
-      return bad.length && !x.support(s).length
-        ? m(x, [`${sun ? '⟨太陽⟩' : '⟨太陰⟩'} in ${x.label(x.ming)}, ${x.dayBirth ? 'day' : 'night'} birth`, `malefics: ${bad.map((b) => `⟨${b}⟩`).join(', ')}`], s, x.inSet(s, '巨門') ? '巨門 meets it too: the 全書’s own definition.' : 'The 全書’s definition also requires 巨門; this is the catalogue’s broader reading.')
-        : undefined;
+      return m(
+        x,
+        [`${sun ? '⟨太陽⟩' : '⟨太陰⟩'} in ${x.label(x.ming)}, ${x.dayBirth ? 'day' : 'night'} birth`, bad.length ? `malefics: ${bad.map((b) => `⟨${b}⟩`).join(', ')}` : 'no malefics in the 三方四正'],
+        s,
+        x.inSet(s, '巨門') ? '巨門 meets it too: the 全書’s own definition.' : 'The 全書’s definition also requires 巨門; this is the broader 日月反背 reading.',
+      );
     },
-    text: 'A luminary out of its hours. Classically a life of extra effort for the same result. The catalogue notes that, with any lucky stars and no malefics, such people often achieve more than average precisely because they work harder.',
+    text: 'A luminary out of its hours (日月反背). Classically it "looks better than it is": effort and appearances outrun the reward, and a life of extra work for the same result. The catalogue notes that with lucky stars and no malefics such people often achieve more than average precisely because they work harder.',
   },
   {
     id: 'ge.yangtuo-jiaji',
@@ -1100,6 +1103,18 @@ export const ADVERSE: PatternRule[] = [
 
 /** Star-system structures: neither lucky nor unlucky, but they set the shape of a life. */
 export const STRUCTURES: PatternRule[] = [
+  {
+    id: 'st.yi-gen-huan-ye',
+    zh: '移根換葉格',
+    en: 'Roots moved, leaves changed',
+    kind: 'structure',
+    sources: [{ basis: '占驗派 teaching (范振木, 論命實務十一, fjm.tw): 太陽 or 太陰 in a 辰 or 戌 Life palace, with the other luminary opposite, marks a strong pull abroad; when a 10-year period’s Travel palace gains 化祿, many settle overseas' }],
+    match: (x) =>
+      x.at(x.ming, '辰', '戌') && x.hasAny(x.ming, ['太陽', '太陰']).length
+        ? m(x, [`${x.hasAny(x.ming, ['太陽', '太陰']).map((n) => `⟨${n}⟩`).join(', ')} in ${x.label(x.ming)}`, `the other luminary opposite in ${x.label(opp(x.ming))}`], [x.ming, opp(x.ming)])
+        : undefined,
+    text: 'Sun and Moon face each other across the 辰–戌 axis. A life that moves: study, work or family abroad, frequent travel, or settling far from where you were born. Moods can swing between the two luminaries.',
+  },
   {
     id: 'st.sha-po-lang',
     zh: '殺破狼格',

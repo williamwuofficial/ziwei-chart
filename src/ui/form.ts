@@ -174,6 +174,7 @@ export function setupForm(form: HTMLFormElement, onSubmit: (input: BirthInput, a
   el<HTMLSelectElement>('select[name="yearDivide"]').value = settings.yearDivide;
   el<HTMLSelectElement>('select[name="fixLeap"]').value = String(settings.fixLeap);
   el<HTMLSelectElement>('select[name="astroType"]').value = settings.astroType;
+  el<HTMLSelectElement>('select[name="tianma"]').value = settings.tianma;
   // The 天盤/地盤/人盤 choice only exists in 中州派 placement.
   const astroField = el<HTMLElement>('#astro-type-field');
   const algo = el<HTMLSelectElement>('select[name="algorithm"]');
@@ -201,6 +202,7 @@ export function setupForm(form: HTMLFormElement, onSubmit: (input: BirthInput, a
       yearDivide: data.get('yearDivide') as Settings['yearDivide'],
       fixLeap: data.get('fixLeap') !== 'false',
       astroType: data.get('astroType') as Settings['astroType'],
+      tianma: data.get('tianma') as Settings['tianma'],
     };
     if (timeMode === 'exact') {
       const time = String(data.get('time') ?? '');

@@ -165,14 +165,74 @@ function yangTuoJiaJi(x: Ctx, i: number, idPrefix: string): Finding[] {
   ];
 }
 
+const FLANK_BASIS = '占驗派 practice (范振木, fjm.tw): a pair of stars on both sides of any palace strengthens it (紫府, 日月, 左右, 昌曲, 魁鉞) or weakens it (火鈴, 空劫), not only around the Life palace';
+const KONGJIE_BASIS = '占驗派 practice (范振木, 地空地劫暨命例分析, fjm.tw): 地空 and 地劫 in the same palace, flanking it, shining from both trines, or facing each other across it, make that palace weak (弱宮)';
+const GOOD_FLANKS: [string, string, string][] = [
+  ['紫微', '天府', 'the emperor and treasury stars'],
+  ['太陽', '太陰', 'the sun and moon'],
+  ['左輔', '右弼', 'the two helper stars'],
+  ['文昌', '文曲', 'the two literary stars'],
+  ['天魁', '天鉞', 'the two noble-helper stars'],
+];
+
+/** Which way 地空 and 地劫 bear on a palace, if they do. */
+export function kongJieRelation(x: Ctx, i: number): '同宮' | '夾' | '拱' | '對照' | undefined {
+  const k = x.find('地空');
+  const j = x.find('地劫');
+  if (k < 0 || j < 0) return undefined;
+  if (k === i && j === i) return '同宮';
+  const [l, r] = [(i + 11) % 12, (i + 1) % 12];
+  if ((k === l && j === r) || (k === r && j === l)) return '夾';
+  const tr = [(i + 4) % 12, (i + 8) % 12];
+  if (tr.includes(k) && tr.includes(j) && k !== j) return '拱';
+  if ((k === i && j === opp(i)) || (j === i && k === opp(i))) return '對照';
+  return undefined;
+}
+
+/** Flanking pairs and the 空劫 relation for a palace (the Life palace's own flanks are named patterns). */
+function palaceFlanks(x: Ctx, i: number, idPrefix: string): Finding[] {
+  const out: Finding[] = [];
+  const domain = PALACE_DOMAIN[x.p(i).name].domain;
+  const [l, r] = [(i + 11) % 12, (i + 1) % 12];
+  const flank = (a: string, b: string) => (x.has(l, a) && x.has(r, b)) || (x.has(l, b) && x.has(r, a));
+  if (i !== x.ming) {
+    const good = GOOD_FLANKS.filter(([a, b]) => flank(a, b));
+    if (good.length)
+      out.push({
+        id: `${idPrefix}.flank.good`,
+        text: `Flanked by ${good.map(([a, b, en]) => `${en} (⟨${a}⟩, ⟨${b}⟩)`).join(' and ')}: this palace is held up from both sides, a strength for ${domain}.`,
+        evidence: good.map(([a, b]) => `⟨${a}⟩ and ⟨${b}⟩ on either side of ${x.label(i)}`),
+        sources: [{ verse: '夾貴夾祿少人知，夾權夾科世所宜', work: '紫微斗數全書', section: '斗數骨髓賦', basis: FLANK_BASIS }],
+      });
+    if (flank('火星', '鈴星'))
+      out.push({
+        id: `${idPrefix}.flank.huoling`,
+        text: `Flanked by 火星 and 鈴星 (火鈴夾): pressure from both sides, so ${domain} sees sudden flare-ups and restless effort.`,
+        evidence: [`⟨火星⟩ and ⟨鈴星⟩ on either side of ${x.label(i)}`],
+        sources: [{ verse: '火鈴夾命為敗局', work: '紫微斗數全書', section: '論諸星同垣各司所宜', basis: FLANK_BASIS }],
+      });
+  }
+  const kj = kongJieRelation(x, i);
+  if (kj && !(i === x.ming && kj === '夾')) {
+    const how = { 同宮: 'sit together in it', 夾: 'flank it', 拱: 'shine on it from both trines', 對照: 'face each other across it' }[kj];
+    out.push({
+      id: `${idPrefix}.kongjie`,
+      text: `地空 and 地劫 ${how} (空劫${kj}), which makes this a weak palace (弱宮): plans in ${domain} tend to fall through or take more effort than they return. Good stars here show their faults more than their strengths.`,
+      evidence: [`⟨地空⟩ in ${x.label(x.find('地空'))}`, `⟨地劫⟩ in ${x.label(x.find('地劫'))}`],
+      sources: [{ verse: '劫空夾命為敗局', work: '紫微斗數全書', section: '論諸星同垣各司所宜', basis: KONGJIE_BASIS }],
+    });
+  }
+  return out;
+}
+
 function tone(x: Ctx, i: number): PalaceCard['tone'] {
   const s = sfsz(i);
   const sup = x.support(s).length;
   const bad = x.malefic(s).length;
-  if (sup === 0 && bad === 0) return 'neutral';
-  if (sup >= bad + 2) return 'supported';
-  if (bad >= sup + 2) return 'pressured';
-  return 'mixed';
+  let t: PalaceCard['tone'] = sup === 0 && bad === 0 ? 'neutral' : sup >= bad + 2 ? 'supported' : bad >= sup + 2 ? 'pressured' : 'mixed';
+  // A palace that 空劫 bear on is weak (弱宮): step its tone down one level.
+  if (kongJieRelation(x, i)) t = t === 'supported' ? 'mixed' : 'pressured';
+  return t;
 }
 
 export function analyse(c: ChartM): Analysis {
@@ -215,6 +275,7 @@ export function analyse(c: ChartM): Analysis {
         ...minorFinding(x, p.index, id),
         ...mutFindings(x, p.index, id),
         ...yangTuoJiaJi(x, p.index, id),
+        ...palaceFlanks(x, p.index, id),
       ],
     };
   });

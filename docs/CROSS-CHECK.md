@@ -85,3 +85,55 @@ Eight agreed cases are kept as a regression test (`tests/crosscheck.test.ts`).
 - No birth-time-verified case studies were available. Threads posts almost never include birth data, and the case site gives no times.
 - Copyrighted modern books (王亭之, 陸斌兆, 紫雲) were not consulted directly. The free articles found disagree with each other on the disputed patterns.
 - Where sources conflict, the app follows the 全書 and says so in each rule's basis.
+
+## 范振木's published cases (fjm.tw, 2026-11-09)
+
+[逸雲閣星相研究所](https://www.fjm.tw/xoops/modules/tadnews/index.php?ncsn=4) publishes worked cases by 范振木. He teaches the 占驗派 and is the teacher 簡少年 credits for his 天相忌 and 小限 methods. The cases give lunar birth data, every palace's stars, named 夾/拱 features, and events for each 10-year period.
+
+Cases used:
+- **論命實務一:** an anonymous woman, lunar 1966-7-2 戌時.
+- **李小龍:** lunar 民國29年11月26日亥時.
+- **吳火獅:** lunar 民國7年12月8日申時.
+- **The 地空/地劫 teaching page:** its placement table by 時辰.
+
+Cases skipped:
+- **劉邦友 and the 學歷線 case:** video only.
+- **Crime, assault and suicide cases:** sensitive, so not used.
+- **論命實務十 and 十一:** they give no birth data. Their charts were searched for by matching every published palace; results are below.
+
+### Chart placement
+
+- Every palace in 論命實務一 matches the published description: stars, 四化, the Body palace in 財帛, and the 戊戌 → 丁酉 → 丙申 → 乙未 period order.
+- 李小龍's and 吳火獅's dates only reproduce the published charts when read as **lunar** dates. This explains why mingli.study's 李小龍 chart (Life palace 申) differs from 范振木's (Life palace 丑, 火星 and 天魁).
+- 地空/地劫 positions match his table for all 12 時辰.
+
+### Readings
+
+The 10-year period 四化 already matched his readings of 論命實務一 point for point:
+- **戊 period:** 疊祿 in 疾厄 and 化忌 in 福德.
+- **丁 period:** 巨門忌 on the Wealth palace.
+- **丙 period:** 疊忌 on 廉貞 in 疾厄, and 疊祿 on 天同.
+- **乙 period:** 太陰忌 on the Travel palace.
+
+His natal readings used four techniques the app lacked. These were added:
+
+| Technique | Example in his cases | Added as |
+|---|---|---|
+| 夾 on any palace | 紫府夾官祿, 昌曲夾田宅, 火鈴夾福德 | Palace-card notes for helpful pairs (紫府, 日月, 左右, 昌曲, 魁鉞) and harmful pairs (火鈴) |
+| 空劫 make a palace weak (同宮, 夾, 拱, 對照) | 空劫拱疾厄; 李小龍's Body palace 被空劫夾 | A palace-card note; it also lowers that palace's tone by one step |
+| 日月反背 named whenever a luminary is out of its hours | 太陽 in 戌 for a 戌時 birth: 「主虛，好看而已」 | 日月藏輝 now always fires, as Softened when lucky stars are present |
+| 移根換葉 | 「日月辰戌位坐命，出國運都很強」 | New structure |
+
+With these, every feature he names in 論命實務一, 李小龍 and 吳火獅 now appears in the app's output. The three cases and the 空劫 table are regression tests in `tests/fjm.test.ts`. 論命實務一 is anonymous in the source.
+
+### 天馬 is placed by month in 范振木's charts
+
+論命實務十 gives no birth data, so its chart was found by searching 1965 (the subject is 42 in 2006) for every published palace. Three days in lunar 1965 冬月, 巳時, match every claim except one: he puts 天馬 in 疾厄 (寅), while our chart had it in 亥.
+
+The difference is the placement rule:
+- **The 全書** places 天馬 by the birth-year branch: 「安天馬星訣 論本生年支」. 巳年 gives 亥, which is what iztro does.
+- **范振木** places it by the lunar birth month (月馬): 冬月 (a 子 month) gives 寅.
+
+論命實務一 confirms this independently. He writes that in the 丙申 period 天同化雙祿 has 「對宮有天馬」. That needs 天馬 in 寅, which is the month rule (七月 → 寅). The year rule would put it in 申 itself.
+
+Advanced settings now offer **天馬 placement: by birth year (全書, default) / by birth month (占驗派)**. With the month setting, 論命實務十 matches his description in every palace.
