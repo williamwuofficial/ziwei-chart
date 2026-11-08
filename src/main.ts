@@ -2,7 +2,7 @@ import './style.css';
 import { buildChart, decadeOverlay, SIHUA_LABEL, SIHUA_TABLES } from './engine/chart';
 import { fmtDate, fmtTime, resolveExact, SHICHEN, timeIndexFor, type LocalDateTime, type ResolvedBirth } from './input/solarTime';
 import { drawLines, renderChart, renderDecades, type ChartView } from './ui/chartGrid';
-import { setupForm, type BirthInput } from './ui/form';
+import { setupForm, storeSetting, type BirthInput } from './ui/form';
 import { analyse } from './analysis/evaluate';
 import { readDecades } from './analysis/decades';
 import { readYears } from './analysis/years';
@@ -93,8 +93,19 @@ function show(input: BirthInput, birth: ResolvedBirth): void {
   );
 }
 
+const detailsToggle = $<HTMLInputElement>('details-toggle');
+detailsToggle.addEventListener('change', () => {
+  if (!view) return;
+  view.settings = { ...view.settings, showDetails: detailsToggle.checked };
+  form.querySelector<HTMLInputElement>('input[name="showDetails"]')!.checked = detailsToggle.checked;
+  storeSetting('showDetails', detailsToggle.checked);
+  draw();
+});
+
 function draw(): void {
   if (!view) return;
+  detailsToggle.checked = view.settings.showDetails;
+  document.querySelectorAll<HTMLElement>('.legend-detail').forEach((e) => (e.hidden = !view!.settings.showDetails));
   renderChart(grid, view, (i) => {
     view!.selected = view!.selected === i ? undefined : i;
     view!.highlight = undefined;

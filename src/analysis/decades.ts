@@ -15,6 +15,8 @@ import type { Source } from './rules/types';
 const DECADE_BASIS: Source = { basis: '大限 method: the decade’s 命宮 falls on a natal palace, and that palace’s affairs become the decade’s focus' };
 const DECADE_STAR_BASIS: Source = { basis: '大限 method: the stars of the decade palace (borrowed from opposite when empty) colour the decade' };
 const DECADE_MUT_BASIS: Source = { basis: '大限四化: the decade palace’s heavenly stem transforms four stars for ten years; where 化祿 and 化忌 land matters most' };
+const DECADE_LU_SRC: Source = { verse: '大限十年吉慶無疑', work: '紫微斗數全書', section: '問化祿星所主若何', basis: DECADE_MUT_BASIS.basis };
+const DECADE_JI_SRC: Source = { verse: '大限十年悔吝', work: '紫微斗數全書', section: '問化忌星所主若何', basis: DECADE_MUT_BASIS.basis };
 const DIEJI_BASIS: Source = { basis: '四化 rule: a decade 化忌 on the palace that already holds the natal 化忌 doubles the obstruction (疊忌)' };
 const DIELU_BASIS: Source = { basis: '四化 rule: a decade 化祿 on a palace that already holds the natal 化祿 or 祿存 doubles the gain (疊祿 / 雙祿)' };
 const JICHONG_BASIS: Source = { basis: '四化 rule: a decade 化忌 in the decade 命宮, or in its opposite palace (忌沖), presses on the whole decade' };
@@ -137,7 +139,7 @@ export function readDecade(c: ChartM, i: number): DecadeReading {
           id: `${id}.mut.${m}`,
           text: `This decade’s 化${m} falls on ⟨${star}⟩ in your natal ${domain.en} palace: it ${MUT_TEXT[m](domain.domain)}.`,
           evidence: [`decade stem ${p.stem} turns ⟨${star}⟩ into 化${m}`, `⟨${star}⟩ is in ${natal.label(at)}`],
-          sources: [DECADE_MUT_BASIS],
+          sources: [m === '祿' ? DECADE_LU_SRC : DECADE_JI_SRC],
         });
         if (keyPalaces.includes(at)) add(m === '祿' ? 1 : -1, `decade 化${m} lands in the decade’s 三方四正 (${natal.label(at)})`);
       }

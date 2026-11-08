@@ -1,7 +1,7 @@
 import type { DecadeReading, DecadeTone } from '../analysis/decades';
 import type { YearReading } from '../analysis/years';
 import type { Analysis, Finding, PalaceCard, PatternFinding } from '../analysis/evaluate';
-import type { PatternStatus } from '../analysis/rules/types';
+import type { PatternStatus, Source } from '../analysis/rules/types';
 import type { Script } from '../engine/chart';
 import { rich, tip, toScript } from './zhText';
 
@@ -28,7 +28,7 @@ const TONE_LABEL: Record<PalaceCard['tone'], { label: string; cls: string }> = {
   neutral: { label: 'Quiet', cls: 'neutral' },
 };
 
-function why(f: Finding, script: Script): HTMLElement {
+function why(f: Finding, script: Script, showVerse = true): HTMLElement {
   const d = h('details', 'why');
   d.append(h('summary', undefined, 'Why?'));
   const ul = h('ul');
@@ -39,12 +39,8 @@ function why(f: Finding, script: Script): HTMLElement {
   }
   d.append(ul);
   for (const s of f.sources) {
+    if (s.verse && showVerse) d.append(verseLine(s, script));
     const p = h('p', 'source');
-    if (s.verse) {
-      const q = h('q');
-      q.append(rich(s.verse, script));
-      p.append('Classical verse: ', q, '. ');
-    }
     p.append(rich(`Basis: ${s.basis}.`, script));
     d.append(p);
   }
@@ -52,11 +48,23 @@ function why(f: Finding, script: Script): HTMLElement {
   return d;
 }
 
-function finding(f: Finding, script: Script): HTMLElement {
+/** The original text with its citation: 「…」 — 《紫微斗數全書》 · 斗數骨髓賦. */
+function verseLine(s: Source, script: Script): HTMLElement {
+  const fig = h('figure', 'verse');
+  const q = h('blockquote');
+  q.append(rich(`「${s.verse}」`, script));
+  const cite = h('figcaption');
+  if (s.work) cite.append(rich(`《${s.work}》 · ${s.section}`, script));
+  else cite.append(rich('Classical verse as quoted in the traditional 格局 catalogue (not located in the Wikisource text of 《紫微斗數全書》)', script));
+  fig.append(q, cite);
+  return fig;
+}
+
+function finding(f: Finding, script: Script, showVerse = true): HTMLElement {
   const box = h('div', 'finding');
   const p = h('p');
   p.append(rich(f.text, script));
-  box.append(p, why(f, script));
+  box.append(p, why(f, script, showVerse));
   return box;
 }
 
@@ -75,7 +83,10 @@ function patternCard(f: PatternFinding, script: Script, onShow: (palaces: number
   const show = h('button', 'link show-on-chart', 'Show on chart');
   show.type = 'button';
   show.addEventListener('click', () => onShow(f.palaces));
-  card.append(head, finding(f, script), show);
+  card.append(head);
+  // Lead with the original text where the pattern has one.
+  for (const s of f.rule.sources) if (s.verse) card.append(verseLine(s, script));
+  card.append(finding(f, script, false), show);
   return card;
 }
 

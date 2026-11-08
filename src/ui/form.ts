@@ -23,6 +23,17 @@ function load(): Partial<BirthInput> | undefined {
   }
 }
 
+/** Update one stored setting without recalculating (used by the chart's quick toggle). */
+export function storeSetting<K extends keyof Settings>(key: K, value: Settings[K]): void {
+  const prev = load();
+  if (!prev?.settings) return;
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ ...prev, settings: { ...prev.settings, [key]: value } }));
+  } catch {
+    /* storage unavailable */
+  }
+}
+
 function save(input: BirthInput): void {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(input));
@@ -155,7 +166,7 @@ export function setupForm(form: HTMLFormElement, onSubmit: (input: BirthInput, a
     showPlace(prev.place);
   }
   el<HTMLInputElement>('input[name="useSolar"]').checked = settings.useSolar;
-  el<HTMLInputElement>('input[name="showAdjective"]').checked = settings.showAdjective;
+  el<HTMLInputElement>('input[name="showDetails"]').checked = settings.showDetails;
   el<HTMLSelectElement>('select[name="dayDivide"]').value = settings.dayDivide;
   el<HTMLSelectElement>('select[name="algorithm"]').value = settings.algorithm;
   el<HTMLSelectElement>('select[name="script"]').value = settings.script;
@@ -173,7 +184,7 @@ export function setupForm(form: HTMLFormElement, onSubmit: (input: BirthInput, a
     if (year < 1900 || year > 2099) return 'Dates from 1900 to 2099 are supported.';
     const s: Settings = {
       useSolar: data.get('useSolar') === 'on',
-      showAdjective: data.get('showAdjective') === 'on',
+      showDetails: data.get('showDetails') === 'on',
       dayDivide: data.get('dayDivide') as Settings['dayDivide'],
       algorithm: data.get('algorithm') as Settings['algorithm'],
       script: data.get('script') as Settings['script'],

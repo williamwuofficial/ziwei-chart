@@ -2,8 +2,8 @@ import type { ChartM, Mut, PalaceName } from './model';
 import { Ctx, opp, sfsz } from './predicates';
 import { ALL_PATTERNS } from './rules/patterns';
 import {
-  BODY_BASIS, BODY_TEXT, JICHONG_BASIS, MAJOR_NATURE, MINOR_BASIS, MINOR_NATURE, MUT_BASIS, MUT_TEXT,
-  PAIR_BASIS, PAIR_NOTES, pairKey, PALACE_DOMAIN, STAR_BASIS,
+  BODY_QUOTE, BODY_TEXT, JICHONG_BASIS, MAJOR_NATURE, MAJOR_QUOTE, MINOR_BASIS, MINOR_NATURE, MINOR_QUOTE, MUT_BASIS,
+  MUT_QUOTE, MUT_TEXT, PAIR_BASIS, PAIR_NOTES, PAIR_QUOTE, pairKey, PALACE_DOMAIN, STAR_BASIS,
 } from './rules/stars';
 import type { PatternRule, PatternStatus, Source } from './rules/types';
 
@@ -94,7 +94,7 @@ function starFindings(x: Ctx, i: number, idPrefix: string): Finding[] {
       id: `${idPrefix}.star.${s.name}`,
       text: `⟨${s.name}⟩, ${n.en} (化氣 ⟨${n.hua}⟩)${borrowed ? `, borrowed from ${x.label(src)}` : ''}: ${n.text} ${tone}`.trim(),
       evidence: [`⟨${s.name}⟩${b ? ` at brightness ⟨${b}⟩` : ''} in ${x.label(src)}${borrowed ? ` (${x.label(i)} has no main star)` : ''}`],
-      sources: [STAR_BASIS],
+      sources: [MAJOR_QUOTE[s.name] ?? STAR_BASIS],
     });
   }
   if (majors.length === 2) {
@@ -105,7 +105,7 @@ function starFindings(x: Ctx, i: number, idPrefix: string): Finding[] {
         id: `${idPrefix}.pair.${key}`,
         text: `Together, ${key.split('+').map((s) => `⟨${s}⟩`).join(' and ')}: ${note}`,
         evidence: [`${key.split('+').map((s) => `⟨${s}⟩`).join(' + ')} share ${x.label(src)}`],
-        sources: [PAIR_BASIS],
+        sources: [PAIR_QUOTE[key] ?? PAIR_BASIS],
       });
   }
   return out;
@@ -117,7 +117,7 @@ function mutFindings(x: Ctx, i: number, idPrefix: string): Finding[] {
     id: `${idPrefix}.mut.${k}`,
     text: `Birth-year 化${k} on ⟨${star}⟩ ${MUT_TEXT[k](domain)}.`,
     evidence: [`⟨${star}⟩化${k} (from the ${x.c.yearStem} year stem) in ${x.label(i)}`],
-    sources: [MUT_BASIS],
+    sources: [MUT_QUOTE[k]],
   }));
   const o = opp(i);
   const ji = x.muts(o).find(([, k]) => k === '忌');
@@ -143,7 +143,9 @@ function minorFinding(x: Ctx, i: number, idPrefix: string): Finding[] {
     bad.length ? `Challenged by ${part(bad)}.` : '',
     other.length ? `Also ${part(other)}.` : '',
   ].filter(Boolean);
-  return [{ id: `${idPrefix}.minor`, text: sentences.join(' '), evidence: [`${list(here)} in ${x.label(i)}`], sources: [MINOR_BASIS] }];
+  // One quote per distinct verse (天魁/天鉞, 火星/鈴星 and 地空/地劫 share theirs).
+  const quotes = [...new Map(here.map((n) => MINOR_QUOTE[n]).filter(Boolean).map((q) => [q.verse, q])).values()];
+  return [{ id: `${idPrefix}.minor`, text: sentences.join(' '), evidence: [`${list(here)} in ${x.label(i)}`], sources: quotes.length ? quotes : [MINOR_BASIS] }];
 }
 
 function tone(x: Ctx, i: number): PalaceCard['tone'] {
@@ -163,7 +165,7 @@ export function analyse(c: ChartM): Analysis {
   const bodyName = x.p(x.body).name;
   const bodyText = BODY_TEXT[bodyName];
   if (bodyText)
-    overview.push({ id: 'body', text: bodyText, evidence: [`身宮 is ${x.label(x.body)}`], sources: [BODY_BASIS] });
+    overview.push({ id: 'body', text: bodyText, evidence: [`身宮 is ${x.label(x.body)}`], sources: [BODY_QUOTE] });
 
   const where = (['祿', '權', '科', '忌'] as const).map((k) => [k, x.findMut(k)] as const).filter(([, i]) => i >= 0);
   if (where.length)
@@ -177,7 +179,7 @@ export function analyse(c: ChartM): Analysis {
         ...where.map(([k, i]) => `${x.muts(i).find(([, m]) => m === k)?.[0] ? `⟨${x.muts(i).find(([, m]) => m === k)![0]}⟩` : ''}化${k} in ${x.label(i)}`),
         `四化 table: ${c.sihuaLabel ?? 'Common table (全書)'}`,
       ],
-      sources: [MUT_BASIS],
+      sources: [MUT_BASIS, ...where.map(([k]) => MUT_QUOTE[k])],
     });
 
   const palaces: PalaceCard[] = c.palaces.map((p) => {

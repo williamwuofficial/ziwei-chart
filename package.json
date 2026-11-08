@@ -11,7 +11,8 @@
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "t2s": "node scripts/build-t2s.mjs"
+    "t2s": "node scripts/build-t2s.mjs",
+    "verify-sources": "node scripts/verify-sources.mjs"
   },
   "engines": {
     "node": ">=22"

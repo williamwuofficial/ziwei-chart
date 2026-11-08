@@ -58,7 +58,7 @@ function starLine(
   const t = tip(star.name);
   if (t) nameEl.title = t;
   line.append(nameEl);
-  if (star.brightness) line.append(h('sup', 'bright', star.brightness));
+  if (star.brightness && v.settings.showDetails) line.append(h('sup', 'bright', star.brightness));
   const kind = mutagenKind(star.mutagen);
   if (star.mutagen && kind) line.append(mutBadge(star.mutagen, `Birth-year ${MUTAGEN_EN[kind]} (化${star.mutagen})`));
   const dec = v.decade?.mutagens.get(star.name);
@@ -96,7 +96,7 @@ export function renderChart(root: HTMLElement, v: ChartView, onSelect: (i: numbe
     const minor = h('div', 'minor');
     for (const s of p.minorStars) minor.append(starLine(s, `minor-star ${s.type}`, v));
     stars.append(major, minor);
-    if (settings.showAdjective && p.adjectiveStars.length) {
+    if (settings.showDetails && p.adjectiveStars.length) {
       const adj = zh(h('div', 'adjective'), settings.script);
       adj.textContent = p.adjectiveStars.map((s) => s.name).join(' ');
       stars.append(adj);
@@ -105,7 +105,7 @@ export function renderChart(root: HTMLElement, v: ChartView, onSelect: (i: numbe
     const foot = h('div', 'palace-foot');
     const left = h('div', 'foot-left');
     left.append(h('span', 'ages', `${p.decadal.range[0]}–${p.decadal.range[1]}`));
-    left.append(zh(h('span', 'cs12', `${p.changsheng12}`), settings.script));
+    if (settings.showDetails) left.append(zh(h('span', 'cs12', `${p.changsheng12}`), settings.script));
     const name = h('div', 'foot-right');
     if (v.decade) name.append(zh(h('span', 'decade-name', `大${v.decade.palaceNames[i].replace(/宮|宫/, '')}`), settings.script));
     const pname = zh(h('span', 'palace-name', p.name), settings.script);

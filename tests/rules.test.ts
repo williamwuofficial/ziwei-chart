@@ -1,4 +1,5 @@
 import VERSES_RAW from './fixtures/verses.txt?raw';
+import SOURCES_JSON from './fixtures/sources.json';
 import * as OpenCC from 'opencc-js';
 import T2S from '../src/i18n/t2s.json';
 import { GLOSSARY } from '../src/i18n/glossary';
@@ -11,6 +12,7 @@ import { anhe, Ctx, sfsz } from '../src/analysis/predicates';
 import { ALL_PATTERNS } from '../src/analysis/rules/patterns';
 
 const VERSES = new Set(VERSES_RAW.split('\n').filter(Boolean));
+const SOURCES = new Set((SOURCES_JSON as { verse: string; work: string; section: string }[]).map((s) => `${s.verse}|${s.work}|${s.section}`));
 
 describe('rule metadata (requirement: every statement is sourced)', () => {
   it('every pattern has a source with a basis', () => {
@@ -22,8 +24,25 @@ describe('rule metadata (requirement: every statement is sourced)', () => {
   it('ids are unique', () => {
     expect(new Set(ALL_PATTERNS.map((r) => r.id)).size).toBe(ALL_PATTERNS.length);
   });
-  it('every quoted verse was checked against the source text (tests/fixtures/verses.txt)', () => {
-    for (const r of ALL_PATTERNS) for (const s of r.sources) if (s.verse) expect(VERSES.has(s.verse), `${r.id}: ${s.verse}`).toBe(true);
+  it('every quoted verse is verified: against its work (sources.json) or, if unattributed, the catalogue (verses.txt)', () => {
+    const all = [
+      ...ALL_PATTERNS.flatMap((r) => r.sources.map((s) => [r.id, s] as const)),
+      ...Object.values(STARS.MAJOR_QUOTE).map((s) => ['major', s] as const),
+      ...Object.values(STARS.PAIR_QUOTE).map((s) => ['pair', s] as const),
+      ...Object.values(STARS.MINOR_QUOTE).map((s) => ['minor', s] as const),
+      ...Object.values(STARS.MUT_QUOTE).map((s) => ['mut', s] as const),
+      ['body', STARS.BODY_QUOTE] as const,
+    ];
+    for (const [id, s] of all) {
+      if (!s.verse) continue;
+      if (s.work) expect(SOURCES.has(`${s.verse}|${s.work}|${s.section}`), `${id}: ${s.verse} (run npm run verify-sources)`).toBe(true);
+      else expect(VERSES.has(s.verse), `${id}: ${s.verse}`).toBe(true);
+    }
+  });
+  it('every main star nature, transformation and minor star quotes the original text', () => {
+    for (const star of Object.keys(STARS.MAJOR_NATURE)) expect(STARS.MAJOR_QUOTE[star]?.work, star).toBe('紫微斗數全書');
+    for (const star of Object.keys(STARS.MINOR_NATURE)) expect(STARS.MINOR_QUOTE[star]?.work, star).toBe('紫微斗數全書');
+    for (const m of ['祿', '權', '科', '忌'] as const) expect(STARS.MUT_QUOTE[m].work).toBe('紫微斗數全書');
   });
 });
 

@@ -11,8 +11,11 @@ export interface Settings {
   /** Star placement: 'default' follows 紫微斗數全書, 'zhongzhou' follows 中州派 (王亭之). */
   algorithm: 'default' | 'zhongzhou';
   script: Script;
-  /** Show the miscellaneous stars (雜曜) in each palace. */
-  showAdjective: boolean;
+  /**
+   * Show the third level of detail: star brightness, the miscellaneous stars (雜曜) and the 長生
+   * stages. Off by default, so the chart shows only the 14 main stars and the 14 minor stars.
+   */
+  showDetails: boolean;
   /** Which four-transformation table to use for the disputed stems (戊, 庚, 壬). */
   sihua: SihuaTable;
 }
@@ -48,7 +51,7 @@ export const DEFAULT_SETTINGS: Settings = {
   dayDivide: 'forward',
   algorithm: 'default',
   script: 'zh-TW',
-  showAdjective: true,
+  showDetails: false,
   sihua: 'common',
 };
 

@@ -5,7 +5,12 @@ import type { Ctx } from '../predicates';
  * `basis` says in English what the rule's conditions are based on.
  */
 export interface Source {
+  /** Original classical text, quoted in Chinese (public domain). */
   verse?: string;
+  /** Work the verse comes from, when verified against its text (scripts/verify-sources.mjs). */
+  work?: '紫微斗數全書' | '紫微斗數';
+  /** Section of that work, e.g. 斗數骨髓賦. */
+  section?: string;
   basis: string;
 }
 

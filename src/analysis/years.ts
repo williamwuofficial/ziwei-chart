@@ -10,7 +10,7 @@
 import type { Finding } from './evaluate';
 import { stemMutagens, type ChartM, type Mut } from './model';
 import { Ctx, opp, sfsz } from './predicates';
-import { MUT_TEXT, PALACE_DOMAIN } from './rules/stars';
+import { MUT_QUOTE, MUT_TEXT, PALACE_DOMAIN } from './rules/stars';
 import type { Source } from './rules/types';
 import type { DecadeTone } from './decades';
 
@@ -19,7 +19,7 @@ const BRANCHES = '子丑寅卯辰巳午未申酉戌亥';
 
 const YEAR_BASIS: Source = { basis: '流年 method: the year’s 命宮 is the palace whose branch matches the year branch (太歲入卦)' };
 const YEAR_MUT_BASIS: Source = { basis: '流年四化: the year stem transforms four stars for that year; where 化祿 and 化忌 land matters most' };
-const STACK_JI_BASIS: Source = { basis: '四化 rule: a year 化忌 on a palace that already holds the natal or decade 化忌 compounds it (疊忌; 三忌 when all three meet)' };
+const STACK_JI_BASIS: Source = { verse: '二限太歲交臨，斷然蹭蹬', work: '紫微斗數全書', section: '問化忌星所主若何', basis: '四化 rule: a year 化忌 on a palace that already holds the natal or decade 化忌 compounds it (疊忌; 三忌 when all three meet)' };
 const STACK_LU_BASIS: Source = { basis: '四化 rule: a year 化祿 joining the natal 化祿, 祿存 or the decade 化祿 compounds the gain (疊祿)' };
 const YEAR_JI_BASIS: Source = { basis: '四化 rule: a year 化忌 in the year’s 命宮, or clashing into it from opposite, presses on the whole year' };
 
@@ -84,7 +84,7 @@ export function readYear(c: ChartM, decadePalace: number, year: number): YearRea
       id: `${id}.mut.${m}`,
       text: `The year’s 化${m} falls on ⟨${star}⟩ in your natal ${d.en} palace: it ${MUT_TEXT[m](d.domain)}.`,
       evidence: [`year stem ${stem} turns ⟨${star}⟩ into 化${m}`, `⟨${star}⟩ is in ${x.label(at)}`],
-      sources: [YEAR_MUT_BASIS],
+      sources: [YEAR_MUT_BASIS, MUT_QUOTE[m]],
     });
     if (m === '忌') {
       const natalJi = x.hasMut(at, '忌');

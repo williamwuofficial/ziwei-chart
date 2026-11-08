@@ -122,7 +122,7 @@ export const PAIR_NOTES: Record<string, string> = {
   '太陽+天梁': 'Public spirit and principle: service, medicine, teaching and leadership by example.',
   '太陽+太陰': 'Sun and moon together: changeable and dual-natured, with talent on both public and private sides.',
   '武曲+天府': 'Wealth and treasury: a strong, conservative financial pairing.',
-  '武曲+貪狼': 'Money and desire: a late-blooming earner, practical, ambitious and good at business.',
+  '武曲+貪狼': 'Money and desire: a late-blooming earner, practical, ambitious and good at business; the classics add that it can be tight-fisted.',
   '武曲+天相': 'Wealth with the seal: finance, management and trusted executive roles.',
   '武曲+七殺': 'Two generals: courageous, hard-driving and prone to risky ventures and accidents.',
   '武曲+破軍': 'Wealth that is spent to rebuild: bold enterprise with big swings in money.',
@@ -192,3 +192,60 @@ export const BODY_TEXT: Partial<Record<PalaceName, string>> = {
   官祿: 'The Body palace sits in the Career palace: work and achievement define you; a career-centred life.',
   福德: 'The Body palace sits in the Fortune palace: inner contentment, interests and quality of life matter more than outward status.',
 };
+
+// --- Original-text quotes (《紫微斗數全書》, verified by scripts/verify-sources.mjs) -------------
+
+
+export const MAJOR_QUOTE: Record<string, Source> = {
+  紫微: { verse: '紫微屬土，乃中天之尊星為帝座，主掌造化樞機，人生主宰', work: '紫微斗數全書', section: '問紫微所主若何', basis: STAR_BASIS.basis },
+  天機: { verse: '無惡虐不仁之心，有靈機應變之志', work: '紫微斗數全書', section: '問天機所主如何', basis: STAR_BASIS.basis },
+  太陽: { verse: '乃造化之表儀，在數主人有貴氣，能為文為武', work: '紫微斗數全書', section: '問太陽所主若何', basis: STAR_BASIS.basis },
+  武曲: { verse: '主於人，性剛果決，有喜有怒，可福可災', work: '紫微斗數全書', section: '問武曲星所主為何', basis: STAR_BASIS.basis },
+  天同: { verse: '為人廉潔，貌稟清奇。有機樞無亢激', work: '紫微斗數全書', section: '問天同星所主若何', basis: STAR_BASIS.basis },
+  廉貞: { verse: '在斗司品秩，在數司權令', work: '紫微斗數全書', section: '問廉貞所主若何', basis: STAR_BASIS.basis },
+  天府: { verse: '為財帛之主宰，在斗司福權之宿，會吉皆為富貴之基', work: '紫微斗數全書', section: '問天府所主若何', basis: STAR_BASIS.basis },
+  太陰: { verse: '其為人也聰明俊秀，其稟性也端雅純祥', work: '紫微斗數全書', section: '問太陰星所主若何', basis: STAR_BASIS.basis },
+  貪狼: { verse: '屬水，化氣為桃花，為標準，乃主禍福之神', work: '紫微斗數全書', section: '問貪狼所主若何', basis: STAR_BASIS.basis },
+  巨門: { verse: '為陰精之星，化氣為暗。在身命一生招口舌之非', work: '紫微斗數全書', section: '問巨門所主若何', basis: STAR_BASIS.basis },
+  天相: { verse: '若人命逢之，言語誠實，事不虛偽', work: '紫微斗數全書', section: '問天相星所主若何', basis: STAR_BASIS.basis },
+  天梁: { verse: '於人命則性情磊落，於相貌則厚重溫謙，循直無私', work: '紫微斗數全書', section: '問天梁星所主若何', basis: STAR_BASIS.basis },
+  七殺: { verse: '乃斗中之上將，實成敗之孤辰', work: '紫微斗數全書', section: '問七殺星所主若何', basis: STAR_BASIS.basis },
+  破軍: { verse: '在天為殺氣，在數為耗星，故化氣曰耗', work: '紫微斗數全書', section: '問破軍所主若何', basis: STAR_BASIS.basis },
+};
+
+export const PAIR_QUOTE: Record<string, Source> = {
+  '紫微+七殺': { verse: '帝降七殺為權', work: '紫微斗數全書', section: '問紫微所主若何', basis: PAIR_BASIS.basis },
+  '天機+天梁': { verse: '更逢天梁，必有高藝隨身', work: '紫微斗數全書', section: '問天機所主如何', basis: PAIR_BASIS.basis },
+  '太陽+太陰': { verse: '更得太陰同照，富貴全美', work: '紫微斗數全書', section: '問太陽所主若何', basis: PAIR_BASIS.basis },
+  '武曲+天府': { verse: '與天府同宮有壽', work: '紫微斗數全書', section: '問武曲星所主為何', basis: PAIR_BASIS.basis },
+  '武曲+貪狼': { verse: '若貪狼同度，慳吝之人', work: '紫微斗數全書', section: '問武曲星所主為何', basis: PAIR_BASIS.basis },
+  '武曲+破軍': { verse: '破軍同財鄉，財到手而成空', work: '紫微斗數全書', section: '問武曲星所主為何', basis: PAIR_BASIS.basis },
+  '廉貞+貪狼': { verse: '遇廉貞也不潔', work: '紫微斗數全書', section: '問貪狼所主若何', basis: PAIR_BASIS.basis },
+};
+
+export const MINOR_QUOTE: Record<string, Source> = {
+  左輔: { verse: '左輔帝極主宰之星，守身命諸宮降福', work: '紫微斗數全書', section: '問左輔所主若何', basis: MINOR_BASIS.basis },
+  右弼: { verse: '右弼帝極主宰之星，守身命文墨精通', work: '紫微斗數全書', section: '問右弼所主若何', basis: MINOR_BASIS.basis },
+  文昌: { verse: '文昌主科甲，守身命主人幽閑儒雅，清秀魁梧，博文廣記', work: '紫微斗數全書', section: '問文昌星所主若何', basis: MINOR_BASIS.basis },
+  文曲: { verse: '主科甲文車之宿', work: '紫微斗數全書', section: '問文曲星所主若何', basis: MINOR_BASIS.basis },
+  天魁: { verse: '魁鉞斗中司科之星，入命坐貴向貴', work: '紫微斗數全書', section: '問天魁天鉞星所主若何', basis: MINOR_BASIS.basis },
+  天鉞: { verse: '魁鉞斗中司科之星，入命坐貴向貴', work: '紫微斗數全書', section: '問天魁天鉞星所主若何', basis: MINOR_BASIS.basis },
+  祿存: { verse: '祿存北斗第三星，真人之宿，主人貴爵，掌人壽基', work: '紫微斗數全書', section: '問祿存星所主若何', basis: MINOR_BASIS.basis },
+  天馬: { verse: '如與祿存同宮，謂之祿馬交馳', work: '紫微斗數全書', section: '問天馬星所主若何', basis: MINOR_BASIS.basis },
+  擎羊: { verse: '入廟性剛果決，機謀好勇，主權貴', work: '紫微斗數全書', section: '問擎羊星所主若何', basis: MINOR_BASIS.basis },
+  陀羅: { verse: '性剛威猛，作事進退。橫成橫破，飄蕩不定', work: '紫微斗數全書', section: '問陀羅星所主若何', basis: MINOR_BASIS.basis },
+  火星: { verse: '火鈴似豫讓吞炭裝啞', work: '紫微斗數全書', section: '形性賦', basis: MINOR_BASIS.basis },
+  鈴星: { verse: '火鈴似豫讓吞炭裝啞', work: '紫微斗數全書', section: '形性賦', basis: MINOR_BASIS.basis },
+  地空: { verse: '二星守身命，遇吉則吉，遇凶則凶', work: '紫微斗數全書', section: '問天空地劫所主若何', basis: MINOR_BASIS.basis },
+  地劫: { verse: '二星守身命，遇吉則吉，遇凶則凶', work: '紫微斗數全書', section: '問天空地劫所主若何', basis: MINOR_BASIS.basis },
+};
+
+export const MUT_QUOTE: Record<Mut, Source> = {
+  祿: { verse: '祿為福德之神', work: '紫微斗數全書', section: '問化祿星所主若何', basis: MUT_BASIS.basis },
+  權: { verse: '權星掌判生殺之神', work: '紫微斗數全書', section: '問化權星所主若何', basis: MUT_BASIS.basis },
+  科: { verse: '科星上界應試，主掌文墨之星', work: '紫微斗數全書', section: '問化科星所主若何', basis: MUT_BASIS.basis },
+  忌: { verse: '忌為多管之神', work: '紫微斗數全書', section: '問化忌星所主若何', basis: MUT_BASIS.basis },
+};
+
+export const BODY_QUOTE: Source = { verse: '立命可知貴賤，安身便曉根基', work: '紫微斗數全書', section: '斗數骨髓賦', basis: BODY_BASIS.basis };
+

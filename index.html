@@ -84,7 +84,7 @@
               <option value="zh-CN">Simplified 简体</option>
             </select>
           </label>
-          <label class="check"><input type="checkbox" name="showAdjective" /> Show miscellaneous stars (雜曜)</label>
+          <label class="check"><input type="checkbox" name="showDetails" /> Show brightness, miscellaneous stars (雜曜) and 長生 stages on the chart</label>
         </details>
 
         <p class="form-error" id="form-error" role="alert" hidden></p>
@@ -98,11 +98,12 @@
             <div class="chart-title">
               <h2>Natal chart</h2>
               <div class="chart-tools">
+                <label class="check details-toggle" title="Brightness (廟旺…陷), miscellaneous stars (雜曜) and 長生 stages"><input type="checkbox" id="details-toggle" /> Details</label>
                 <button type="button" class="link" id="save-png">Save as PNG</button>
                 <button type="button" class="link" id="print-page">Print</button>
               </div>
             </div>
-            <p class="hint">Tap a palace to show its 三方四正 (the palace, its two trines and the opposite palace).</p>
+            <p class="hint">Tap a palace to show its 三方四正 (the palace, its two trines and the opposite palace). The chart shows the 14 main stars and the 14 minor stars; tick Details for brightness, miscellaneous stars and 長生 stages.</p>
           </div>
           <div class="chart-wrap">
             <div id="chart" class="chart"></div>
@@ -119,7 +120,7 @@
             <span><i class="mut ji">忌</i> Obstacle</span>
             <span><i class="mut lu dec">祿</i> outlined = from the selected 10-year period</span>
             <span><b class="decade-name">大命</b> = palace role in the selected 10-year period</span>
-            <span>Brightness: 廟 strongest → 旺 得 利 平 不 → 陷 weakest</span>
+            <span class="legend-detail">Brightness: 廟 strongest → 旺 得 利 平 不 → 陷 weakest</span>
           </div>
         </div>
         <section class="card analysis" id="analysis" aria-live="polite"></section>

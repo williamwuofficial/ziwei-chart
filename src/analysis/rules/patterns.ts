@@ -26,7 +26,7 @@ export const AUSPICIOUS: PatternRule[] = [
     zh: '紫府同宮格',
     en: 'Emperor and Treasury together',
     kind: 'auspicious',
-    sources: [{ verse: '紫府同宮，終身福厚', basis: `${CATALOGUE}: 命宮 in 寅 or 申 holding 紫微 and 天府` }],
+    sources: [{ verse: '紫府同宮，終身福厚', work: '紫微斗數全書', section: '斗數骨髓賦', basis: `${CATALOGUE}: 命宮 in 寅 or 申 holding 紫微 and 天府` }],
     match: (x) => (x.at(x.ming, '寅', '申') && x.has(x.ming, '紫微', '天府') ? m(x, [sitsIn(x, x.ming, ['紫微', '天府'])]) : undefined),
     text: 'The leadership star and the treasury star share the Life palace. Classically a sign of lasting good fortune: steady authority, the ability to hold on to resources, and a life that tends to stabilise rather than swing. It depends heavily on helper stars (輔弼) to reach its full level.',
   },
@@ -35,7 +35,7 @@ export const AUSPICIOUS: PatternRule[] = [
     zh: '紫府朝垣格',
     en: 'Emperor and Treasury salute the Life palace',
     kind: 'auspicious',
-    sources: [{ verse: '紫府朝垣，食祿萬鍾', basis: `${CATALOGUE}: 紫微 and 天府 both shine on 命宮 from its trines or opposite palace` }],
+    sources: [{ verse: '紫府朝垣，食祿萬鍾', work: '紫微斗數全書', section: '斗數骨髓賦', basis: `${CATALOGUE}: 紫微 and 天府 both shine on 命宮 from its trines or opposite palace` }],
     match: (x) => {
       if (x.has(x.ming, '紫微') || x.has(x.ming, '天府')) return undefined;
       const others = [...trines(x.ming), opp(x.ming)];
@@ -50,7 +50,7 @@ export const AUSPICIOUS: PatternRule[] = [
     zh: '天府朝垣格',
     en: 'Treasury in the Heaven gate (戌)',
     kind: 'auspicious',
-    sources: [{ verse: '天府臨戌有星扶，腰金衣紫', basis: `${CATALOGUE}: 天府 and 廉貞 in 命宮 at 戌, with no malefics` }],
+    sources: [{ verse: '天府臨戌有星扶，腰金衣紫', work: '紫微斗數全書', section: '斗數骨髓賦', basis: `${CATALOGUE}: 天府 and 廉貞 in 命宮 at 戌, with no malefics` }],
     match: (x) => (x.at(x.ming, '戌') && x.has(x.ming, '天府', '廉貞') ? m(x, [sitsIn(x, x.ming, ['天府', '廉貞'])]) : undefined),
     text: 'The treasury star sits in 戌, the "heaven gate" position. Classically a pattern of substantial wealth and standing, especially with 左輔 or 右弼 in the Life palace. It favours careful stewardship over risk.',
   },
@@ -59,7 +59,7 @@ export const AUSPICIOUS: PatternRule[] = [
     zh: '君臣慶會格',
     en: 'Ruler and ministers in council',
     kind: 'auspicious',
-    sources: [{ verse: '君臣慶會，才學經邦', basis: `${CATALOGUE}: 紫微 in 命宮 met by its "ministers" (府相, 輔弼, 昌曲, 魁鉞) in the 三方四正` }],
+    sources: [{ verse: '君臣慶會，材善經邦', work: '紫微斗數全書', section: '太微賦', basis: `${CATALOGUE}: 紫微 in 命宮 met by its "ministers" (府相, 輔弼, 昌曲, 魁鉞) in the 三方四正` }],
     match: (x) => {
       if (!x.has(x.ming, '紫微')) return undefined;
       const ministers = sfsz(x.ming).flatMap((i) => x.hasAny(i, LUCKY6));
@@ -73,7 +73,7 @@ export const AUSPICIOUS: PatternRule[] = [
     zh: '府相朝垣格',
     en: 'Treasury and Seal salute the Life palace',
     kind: 'auspicious',
-    sources: [{ verse: '府相朝垣格最良，出仕為官大吉昌', basis: `${CATALOGUE}: 天府 and 天相 occupy the two trines (財帛 and 官祿) of 命宮` }],
+    sources: [{ verse: '府相朝垣千鍾食祿', work: '紫微斗數全書', section: '論諸星同垣各司所宜', basis: `${CATALOGUE}: 天府 and 天相 occupy the two trines (財帛 and 官祿) of 命宮` }],
     match: (x) => {
       const [a, b] = trines(x.ming);
       const ok = (x.has(a, '天府') && x.has(b, '天相')) || (x.has(a, '天相') && x.has(b, '天府'));
@@ -86,7 +86,7 @@ export const AUSPICIOUS: PatternRule[] = [
     zh: '機月同梁格',
     en: 'Secretary pattern (機月同梁)',
     kind: 'auspicious',
-    sources: [{ verse: '機月同梁作吏人', basis: `${CATALOGUE}: 天機, 太陰, 天同 and 天梁 all meet in the 三方四正 of 命宮; 文昌 or 文曲 among them is required` }],
+    sources: [{ verse: '機月同梁作吏人', work: '紫微斗數全書', section: '斗數骨髓賦', basis: `${CATALOGUE}: 天機, 太陰, 天同 and 天梁 all meet in the 三方四正 of 命宮; 文昌 or 文曲 among them is required` }],
     match: (x) => {
       const s = sfsz(x.ming);
       if (!x.inSet(s, '天機', '太陰', '天同', '天梁')) return undefined;
@@ -100,7 +100,7 @@ export const AUSPICIOUS: PatternRule[] = [
     zh: '機梁加會格',
     en: 'Strategist and Elder together',
     kind: 'auspicious',
-    sources: [{ verse: '（天機、天梁）會左右、昌曲，文為清顯，武為忠良', basis: `${CATALOGUE}: 天機 and 天梁 in 命宮 at 辰 or 戌` }],
+    sources: [{ verse: '與天梁、左右、昌曲交會，文為清顯，武為忠良', work: '紫微斗數全書', section: '問天機所主如何', basis: `${CATALOGUE}: 天機 and 天梁 in 命宮 at 辰 or 戌` }],
     match: (x) => (x.at(x.ming, '辰', '戌') && x.has(x.ming, '天機', '天梁') ? m(x, [sitsIn(x, x.ming, ['天機', '天梁'])]) : undefined),
     text: 'Planning intelligence and the protective elder star share the Life palace. Classically a mind for strategy, debate and specialist knowledge; with many helpers it reaches high positions, with few it suits law, security, teaching or philosophy.',
   },
@@ -109,7 +109,7 @@ export const AUSPICIOUS: PatternRule[] = [
     zh: '文梁振紀格',
     en: 'Scholar and Elder uphold order',
     kind: 'auspicious',
-    sources: [{ verse: '天梁文昌居廟旺，位至台綱', basis: `${CATALOGUE}: 天梁 bright (廟/旺) in 命宮 with 文昌 or 文曲` }],
+    sources: [{ verse: '天梁文昌居廟旺，位至台綱', work: '紫微斗數全書', section: '論諸星同垣各司所宜', basis: `${CATALOGUE}: 天梁 bright (廟/旺) in 命宮 with 文昌 or 文曲` }],
     match: (x) => {
       if (!x.bright(x.ming, '天梁')) return undefined;
       const wen = x.hasAny(x.ming, ['文昌', '文曲']);
@@ -122,7 +122,7 @@ export const AUSPICIOUS: PatternRule[] = [
     zh: '巨日同宮格',
     en: 'Great Gate and Sun together',
     kind: 'auspicious',
-    sources: [{ verse: '巨日同宮，官封三代', basis: `${CATALOGUE}: 巨門 and 太陽 in 命宮 at 寅 (申 is the weaker form)` }],
+    sources: [{ verse: '巨日同宮，官封三代', work: '紫微斗數全書', section: '斗數骨髓賦', basis: `${CATALOGUE}: 巨門 and 太陽 in 命宮 at 寅 (申 is the weaker form)` }],
     match: (x) =>
       x.at(x.ming, '寅', '申') && x.has(x.ming, '巨門', '太陽')
         ? m(x, [sitsIn(x, x.ming, ['巨門', '太陽'])], sfsz(x.ming), x.at(x.ming, '申') ? 'In 申 the Sun is setting, so the catalogue rates this a weaker form than in 寅.' : undefined)
@@ -134,7 +134,7 @@ export const AUSPICIOUS: PatternRule[] = [
     zh: '金燦光輝格',
     en: 'Golden radiance (Sun at noon)',
     kind: 'auspicious',
-    sources: [{ verse: '太陽居午，謂之日麗中天，有專權之貴，敵國之富', basis: `${CATALOGUE}: 太陽 in 命宮 at 午` }],
+    sources: [{ verse: '太陽居午，謂之日麗中天，有專權之貴，敵國之富', work: '紫微斗數全書', section: '太微賦', basis: `${CATALOGUE}: 太陽 in 命宮 at 午` }],
     match: (x) => (x.at(x.ming, '午') && x.has(x.ming, '太陽') ? m(x, [`⟨太陽⟩ in ${x.label(x.ming)}`]) : undefined),
     text: 'The Sun at its noon peak in the Life palace. Classically the brightest Sun: generous, visible, a natural public figure with authority and the means that follow. Without 昌曲 or 輔弼 the classics say the brilliance is reduced.',
   },
@@ -143,7 +143,7 @@ export const AUSPICIOUS: PatternRule[] = [
     zh: '日照雷門格',
     en: 'Sun shines on the Thunder Gate',
     kind: 'auspicious',
-    sources: [{ verse: '日照雷門，富貴榮華', basis: `${CATALOGUE}: 太陽 and 天梁 in 命宮 at 卯` }],
+    sources: [{ verse: '日照雷門，富貴榮華', work: '紫微斗數全書', section: '斗數骨髓賦', basis: `${CATALOGUE}: 太陽 and 天梁 in 命宮 at 卯` }],
     match: (x) => (x.at(x.ming, '卯') && x.has(x.ming, '太陽', '天梁') ? m(x, [sitsIn(x, x.ming, ['太陽', '天梁'])]) : undefined),
     text: 'The rising Sun with the elder star in 卯. Classically early promise and a rise to recognition, especially for daytime births; integrity and public spirit are the engines.',
   },
@@ -152,7 +152,7 @@ export const AUSPICIOUS: PatternRule[] = [
     zh: '陽梁昌祿格',
     en: 'Sun, Elder, Scholar and Prosperity',
     kind: 'auspicious',
-    sources: [{ verse: '天梁太陽昌祿會，臚傳第一名', basis: `${CATALOGUE} (common broader form): 太陽, 天梁, 文昌 and 祿 (祿存 or 化祿) all in the 三方四正 of 命宮` }],
+    sources: [{ verse: '天梁太陽昌祿會，臚傳第一名', work: '紫微斗數全書', section: '論諸星同垣各司所宜', basis: `${CATALOGUE} (common broader form): 太陽, 天梁, 文昌 and 祿 (祿存 or 化祿) all in the 三方四正 of 命宮` }],
     match: (x) => {
       const s = sfsz(x.ming);
       if (!x.inSet(s, '太陽', '天梁', '文昌')) return undefined;
@@ -166,7 +166,7 @@ export const AUSPICIOUS: PatternRule[] = [
     zh: '明珠出海格',
     en: 'Bright pearl rises from the sea',
     kind: 'auspicious',
-    sources: [{ verse: '日卯月亥，安命未，蟾宮折桂之榮', basis: `${CATALOGUE}: 命宮 at 未 with no main star, 太陽 at 卯 and 太陰 at 亥` }],
+    sources: [{ verse: '日卯月亥安命未宮多折桂', work: '紫微斗數全書', section: '論諸星同垣各司所宜', basis: `${CATALOGUE}: 命宮 at 未 with no main star, 太陽 at 卯 and 太陰 at 亥` }],
     match: (x) =>
       x.at(x.ming, '未') && x.noMain(x.ming) && x.at(x.find('太陽'), '卯') && x.at(x.find('太陰'), '亥')
         ? m(x, [`${x.label(x.ming)} has no main star`, '⟨太陽⟩ at 卯 and ⟨太陰⟩ at 亥 shine on it'])
@@ -178,7 +178,7 @@ export const AUSPICIOUS: PatternRule[] = [
     zh: '月朗天門格',
     en: 'Bright Moon at the Heaven gate',
     kind: 'auspicious',
-    sources: [{ verse: '月朗天門，晉爵封侯', basis: `${CATALOGUE}: 太陰 in 命宮 at 亥 (best for night births)` }],
+    sources: [{ verse: '月朗天門進爵封侯', work: '紫微斗數全書', section: '斗數骨髓賦', basis: `${CATALOGUE}: 太陰 in 命宮 at 亥 (best for night births)` }],
     match: (x) =>
       x.at(x.ming, '亥') && x.has(x.ming, '太陰')
         ? m(x, [`⟨太陰⟩ in ${x.label(x.ming)}`], sfsz(x.ming), x.dayBirth ? undefined : 'A night birth, which the catalogue names as the ideal for this pattern.')
@@ -190,7 +190,7 @@ export const AUSPICIOUS: PatternRule[] = [
     zh: '日月並明格',
     en: 'Sun and Moon both bright',
     kind: 'auspicious',
-    sources: [{ verse: '日月並明，佐九重於堯殿', basis: `${CATALOGUE}: 天梁 at 丑 with 太陽 at 巳 and 太陰 at 酉; or empty 命宮 at 午 with 巨日 at 寅 and 同陰 at 子` }],
+    sources: [{ verse: '日月並明，佐九重於堯殿', work: '紫微斗數全書', section: '斗數骨髓賦', basis: `${CATALOGUE}: 天梁 at 丑 with 太陽 at 巳 and 太陰 at 酉; or empty 命宮 at 午 with 巨日 at 寅 and 同陰 at 子` }],
     match: (x) => {
       const sun = x.find('太陽');
       const moon = x.find('太陰');
@@ -207,7 +207,7 @@ export const AUSPICIOUS: PatternRule[] = [
     zh: '月生滄海格',
     en: 'Moon rising over the sea',
     kind: 'auspicious',
-    sources: [{ verse: '太陰居子，號曰水澄桂萼，得忠諫之職，清要之才', basis: `${CATALOGUE}: 天同 and 太陰 in 命宮 at 子` }],
+    sources: [{ verse: '太陰居子，號曰水澄桂萼，得清要之職，忠諫之材', work: '紫微斗數全書', section: '太微賦', basis: `${CATALOGUE}: 天同 and 太陰 in 命宮 at 子` }],
     match: (x) => (x.at(x.ming, '子') && x.has(x.ming, '天同', '太陰') ? m(x, [sitsIn(x, x.ming, ['天同', '太陰'])]) : undefined),
     text: 'The Moon in clear water with the star of contentment. Classically refined, gentle and well educated, earning both money and a good name; trusted advisers and specialists.',
   },
@@ -216,7 +216,7 @@ export const AUSPICIOUS: PatternRule[] = [
     zh: '壽星入廟格',
     en: 'Longevity star in its temple',
     kind: 'auspicious',
-    sources: [{ verse: '梁居午位，官資清顯', basis: `${CATALOGUE}: 天梁 in 命宮 at 午` }],
+    sources: [{ verse: '梁居午位，官資清顯', work: '紫微斗數全書', section: '斗數骨髓賦', basis: `${CATALOGUE}: 天梁 in 命宮 at 午` }],
     match: (x) => (x.at(x.ming, '午') && x.has(x.ming, '天梁') ? m(x, [`⟨天梁⟩ in ${x.label(x.ming)}`]) : undefined),
     text: 'The elder (longevity) star at its strongest. Classically upright, steady and able to handle hard problems and lead people; good health and long life, with name mattering more than money.',
   },
@@ -225,7 +225,7 @@ export const AUSPICIOUS: PatternRule[] = [
     zh: '英星入廟格',
     en: 'Hero star in its temple',
     kind: 'auspicious',
-    sources: [{ verse: '子午破軍，加官進爵', basis: `${CATALOGUE}: 破軍 in 命宮 at 子 or 午; 甲 and 癸 years best, 丙 and 戊 years excluded` }],
+    sources: [{ verse: '子午破軍加官進祿', work: '紫微斗數全書', section: '斗數骨髓賦', basis: `${CATALOGUE}: 破軍 in 命宮 at 子 or 午; 甲 and 癸 years best, 丙 and 戊 years excluded` }],
     match: (x) => {
       if (!(x.at(x.ming, '子', '午') && x.has(x.ming, '破軍'))) return undefined;
       if (x.yearStemIs('丙', '戊')) return undefined;
@@ -238,7 +238,7 @@ export const AUSPICIOUS: PatternRule[] = [
     zh: '石中隱玉格',
     en: 'Jade hidden in stone',
     kind: 'auspicious',
-    sources: [{ verse: '子午巨門，石中隱玉', basis: `${CATALOGUE}: 巨門 in 命宮 at 子 or 午; 辛 and 癸 years qualify fully` }],
+    sources: [{ verse: '子午巨門，石中隱玉', work: '紫微斗數全書', section: '斗數骨髓賦', basis: `${CATALOGUE}: 巨門 in 命宮 at 子 or 午; 辛 and 癸 years qualify fully` }],
     match: (x) => {
       if (!(x.at(x.ming, '子', '午') && x.has(x.ming, '巨門'))) return undefined;
       const full = x.yearStemIs('辛', '癸');
@@ -251,7 +251,7 @@ export const AUSPICIOUS: PatternRule[] = [
     zh: '七殺朝斗格',
     en: 'General faces the Dipper',
     kind: 'auspicious',
-    sources: [{ verse: '七殺寅申子午，一生爵祿榮昌', basis: `${CATALOGUE}: 七殺 in 命宮 at 寅, 申, 子 or 午` }],
+    sources: [{ verse: '七殺寅申子午，一生爵祿榮昌', work: '紫微斗數全書', section: '論諸星同垣各司所宜', basis: `${CATALOGUE}: 七殺 in 命宮 at 寅, 申, 子 or 午` }],
     match: (x) => (x.at(x.ming, '寅', '申', '子', '午') && x.has(x.ming, '七殺') ? m(x, [`⟨七殺⟩ in ${x.label(x.ming)}`]) : undefined),
     text: 'The general star in its strongest positions. Classically a commander or founder: decisive, strategic and able to build something from nothing. With malefics as well as helpers, the classics warn of big rises and falls.',
   },
@@ -260,7 +260,7 @@ export const AUSPICIOUS: PatternRule[] = [
     zh: '馬頭帶箭格',
     en: 'Arrow at the horse’s head',
     kind: 'auspicious',
-    sources: [{ verse: '馬頭帶箭，鎮禦邊疆', basis: `${CATALOGUE}: 命宮 at 午 with 擎羊, holding 貪狼 or 天同+太陰 (丙 and 戊 years)` }],
+    sources: [{ verse: '馬頭帶劍，鎮衛邊疆', work: '紫微斗數全書', section: '太微賦', basis: `${CATALOGUE}: 命宮 at 午 with 擎羊, holding 貪狼 or 天同+太陰 (丙 and 戊 years)` }],
     match: (x) =>
       x.at(x.ming, '午') && x.has(x.ming, '擎羊') && (x.has(x.ming, '貪狼') || x.has(x.ming, '天同', '太陰'))
         ? m(x, [`⟨擎羊⟩ with ${x.majors(x.ming).map((s) => `⟨${s}⟩`).join(' + ')} in ${x.label(x.ming)}`])
@@ -273,7 +273,7 @@ export const AUSPICIOUS: PatternRule[] = [
     zh: '巨機同臨格',
     en: 'Great Gate and Strategist in 卯',
     kind: 'auspicious',
-    sources: [{ verse: '巨機同宮，公卿之位', basis: `${CATALOGUE}: 巨門 and 天機 in 命宮 at 卯 (not 酉)` }],
+    sources: [{ verse: '巨機同宮，公卿之位', work: '紫微斗數全書', section: '斗數骨髓賦', basis: `${CATALOGUE}: 巨門 and 天機 in 命宮 at 卯 (not 酉)` }],
     match: (x) => (x.at(x.ming, '卯') && x.has(x.ming, '巨門', '天機') ? m(x, [sitsIn(x, x.ming, ['巨門', '天機'])]) : undefined),
     text: 'Analysis and eloquence together in their good position. Classically first-rate learning and influence through ideas and speech; with fewer helpers it still points to success in business.',
   },
@@ -282,7 +282,7 @@ export const AUSPICIOUS: PatternRule[] = [
     zh: '天乙拱命格',
     en: 'Noble helpers face each other (坐貴向貴)',
     kind: 'auspicious',
-    sources: [{ verse: '天魁天鉞，蓋世文章', basis: `${CATALOGUE}: 天魁 and 天鉞, one in 命宮 and the other in 遷移 or 身宮` }],
+    sources: [{ verse: '天魁天鉞，蓋世文章', work: '紫微斗數全書', section: '斗數骨髓賦', basis: `${CATALOGUE}: 天魁 and 天鉞, one in 命宮 and the other in 遷移 or 身宮` }],
     match: (x) => {
       const k = x.find('天魁');
       const y = x.find('天鉞');
@@ -296,7 +296,7 @@ export const AUSPICIOUS: PatternRule[] = [
     zh: '三奇加會格',
     en: 'Three wonders meet',
     kind: 'auspicious',
-    sources: [{ verse: '科權祿拱，名譽昭彰', basis: `${CATALOGUE}: birth-year 化祿, 化權 and 化科 all in the 三方四正 of 命宮` }],
+    sources: [{ verse: '科權祿拱，名譽昭彰', work: '紫微斗數全書', section: '斗數骨髓賦', basis: `${CATALOGUE}: birth-year 化祿, 化權 and 化科 all in the 三方四正 of 命宮` }],
     match: (x) => {
       const s = sfsz(x.ming);
       const where = (['祿', '權', '科'] as const).map((k) => x.findMut(k));
@@ -309,7 +309,7 @@ export const AUSPICIOUS: PatternRule[] = [
     zh: '權祿巡逢格',
     en: 'Power and Prosperity meet',
     kind: 'auspicious',
-    sources: [{ verse: '權祿重逢，財官雙美', basis: `${CATALOGUE}: birth-year 化祿 and 化權 both in the 三方四正, at least one in 命宮` }],
+    sources: [{ verse: '權祿重逢，財官雙美', work: '紫微斗數全書', section: '論諸星同垣各司所宜', basis: `${CATALOGUE}: birth-year 化祿 and 化權 both in the 三方四正, at least one in 命宮` }],
     match: (x) => {
       const s = sfsz(x.ming);
       const lu = x.findMut('祿');
@@ -324,7 +324,7 @@ export const AUSPICIOUS: PatternRule[] = [
     zh: '科權祿夾格',
     en: 'Flanked by the transformations',
     kind: 'auspicious',
-    sources: [{ verse: '科權祿夾為貴格', basis: `${CATALOGUE}: two of 化祿, 化權, 化科 in the palaces on either side of 命宮` }],
+    sources: [{ verse: '夾權夾科世所宜', work: '紫微斗數全書', section: '斗數骨髓賦', basis: `${CATALOGUE}: two of 化祿, 化權, 化科 in the palaces on either side of 命宮` }],
     match: (x) => {
       const [l, r] = neighbours(x.ming);
       const good = (i: number) => x.muts(i).filter(([, k]) => k !== '忌');
@@ -353,7 +353,7 @@ export const AUSPICIOUS: PatternRule[] = [
     zh: '左右同宮格',
     en: 'Both helper stars together',
     kind: 'auspicious',
-    sources: [{ verse: '左右同宮，披羅衣紫', basis: `${CATALOGUE}: 左輔 and 右弼 together in 命宮 or 身宮 at 丑 or 未` }],
+    sources: [{ verse: '左右同宮，披羅衣紫', work: '紫微斗數全書', section: '論諸星同垣各司所宜', basis: `${CATALOGUE}: 左輔 and 右弼 together in 命宮 or 身宮 at 丑 or 未` }],
     match: (x) => {
       const i = [x.ming, x.body].find((j) => x.at(j, '丑', '未') && x.has(j, '左輔', '右弼'));
       return i !== undefined ? m(x, [sitsIn(x, i, ['左輔', '右弼'])], sfsz(x.ming)) : undefined;
@@ -365,7 +365,7 @@ export const AUSPICIOUS: PatternRule[] = [
     zh: '文桂文華格',
     en: 'Literary laurels',
     kind: 'auspicious',
-    sources: [{ verse: '文桂文華，佐九重於堯殿', basis: `${CATALOGUE}: 文昌 and 文曲 together in 命宮 at 丑 or 未, or in the opposite palace` }],
+    sources: [{ verse: '文桂文華九重貴顯', work: '紫微斗數全書', section: '斗數骨髓賦', basis: `${CATALOGUE}: 文昌 and 文曲 together in 命宮 at 丑 or 未, or in the opposite palace` }],
     match: (x) => {
       if (!x.at(x.ming, '丑', '未')) return undefined;
       const i = [x.ming, opp(x.ming)].find((j) => x.has(j, '文昌', '文曲'));
@@ -378,7 +378,7 @@ export const AUSPICIOUS: PatternRule[] = [
     zh: '貪武同行格',
     en: 'Wolf and Warrior travel together',
     kind: 'auspicious',
-    sources: [{ verse: '貪武不發少年人，運過三十才發福', basis: `${CATALOGUE}: 武曲 and 貪狼 in 命宮 at 丑 or 未` }],
+    sources: [{ verse: '貪武墓中居三十才發福', work: '紫微斗數全書', section: '斗數骨髓賦', basis: `${CATALOGUE}: 武曲 and 貪狼 in 命宮 at 丑 or 未` }],
     match: (x) => (x.at(x.ming, '丑', '未') && x.has(x.ming, '武曲', '貪狼') ? m(x, [sitsIn(x, x.ming, ['武曲', '貪狼'])]) : undefined),
     tolerates: ['火星', '鈴星'],
     text: 'The wealth star and the desire star together. Classically a late bloomer: early years are hard, success arrives after about thirty, and it can be large. 火星 or 鈴星 here strengthens it.',
@@ -388,7 +388,7 @@ export const AUSPICIOUS: PatternRule[] = [
     zh: '火貪格 / 鈴貪格',
     en: 'Fire (or Bell) and Wolf',
     kind: 'auspicious',
-    sources: [{ verse: '貪狼火星居廟旺，名振諸邦', basis: `${CATALOGUE}: 貪狼 in 命宮 with 火星 or 鈴星 in 命宮 or its 三方四正 (best in 辰戌丑未)` }],
+    sources: [{ verse: '貪狼火星居廟旺名鎮諸邦', work: '紫微斗數全書', section: '斗數骨髓賦', basis: `${CATALOGUE}: 貪狼 in 命宮 with 火星 or 鈴星 in 命宮 or its 三方四正 (best in 辰戌丑未)` }],
     match: (x) => {
       if (!x.has(x.ming, '貪狼')) return undefined;
       const fl = sfsz(x.ming).flatMap((i) => x.hasAny(i, ['火星', '鈴星']).map((s) => `⟨${s}⟩ in ${x.label(i)}`));
@@ -404,7 +404,7 @@ export const AUSPICIOUS: PatternRule[] = [
     zh: '貴星夾命格',
     en: 'Flanked by noble stars',
     kind: 'auspicious',
-    sources: [{ verse: '昌曲夾命最為奇', basis: `${CATALOGUE}: 命宮 flanked by 紫微+天府, 太陽+太陰, 左輔+右弼, 文昌+文曲 or 天魁+天鉞` }],
+    sources: [{ verse: '昌曲夾命最為奇', work: '紫微斗數全書', section: '論諸星同垣各司所宜', basis: `${CATALOGUE}: 命宮 flanked by 紫微+天府, 太陽+太陰, 左輔+右弼, 文昌+文曲 or 天魁+天鉞` }],
     match: (x) => {
       const pairs: [string, string][] = [['紫微', '天府'], ['太陽', '太陰'], ['左輔', '右弼'], ['文昌', '文曲'], ['天魁', '天鉞']];
       const hits = pairs.filter(([a, b]) => flanked(x, x.ming, (i) => x.has(i, a), (i) => x.has(i, b)));
@@ -417,7 +417,7 @@ export const AUSPICIOUS: PatternRule[] = [
     zh: '廉貞文武格',
     en: 'Chastity star, civil and martial',
     kind: 'auspicious',
-    sources: [{ verse: '廉貞遇文昌，好禮樂', basis: `${CATALOGUE}: 廉貞 in 命宮 at 寅 or 申 with 文昌 and 文曲 in the 三方四正` }],
+    sources: [{ verse: '遇文昌好禮樂', work: '紫微斗數全書', section: '問廉貞所主若何', basis: `${CATALOGUE}: 廉貞 in 命宮 at 寅 or 申 with 文昌 and 文曲 in the 三方四正` }],
     match: (x) =>
       x.at(x.ming, '寅', '申') && x.has(x.ming, '廉貞') && x.inSet(sfsz(x.ming), '文昌', '文曲')
         ? m(x, [`⟨廉貞⟩ in ${x.label(x.ming)}`, '⟨文昌⟩ and ⟨文曲⟩ in the 三方四正'])
@@ -429,7 +429,7 @@ export const AUSPICIOUS: PatternRule[] = [
     zh: '雄宿朝垣格',
     en: 'Heroic star holds its seat',
     kind: 'auspicious',
-    sources: [{ verse: '廉貞在未申宮守命，無四煞，富貴聲揚遠播名', basis: `${CATALOGUE}: 廉貞 in 命宮 at 未 or 申 without malefics` }],
+    sources: [{ verse: '廉貞申未宮無殺富貴聲揚播遠名', work: '紫微斗數全書', section: '論諸星同垣各司所宜', basis: `${CATALOGUE}: 廉貞 in 命宮 at 未 or 申 without malefics` }],
     match: (x) => (x.at(x.ming, '未', '申') && x.has(x.ming, '廉貞') ? m(x, [`⟨廉貞⟩ in ${x.label(x.ming)}`]) : undefined),
     text: '廉貞 in its strong seat. Classically an early breakthrough: making a name, or money, while young. With malefics the catalogue reduces it to ordinary.',
   },
@@ -438,7 +438,7 @@ export const AUSPICIOUS: PatternRule[] = [
     zh: '祿文拱命格',
     en: 'Prosperity and letters guard the Life palace',
     kind: 'auspicious',
-    sources: [{ verse: '祿文拱命，富而且貴', basis: `${CATALOGUE}: 祿存 in 命宮 with 文昌 or 文曲 in its 三方四正` }],
+    sources: [{ verse: '祿文拱命，貴而且賢', work: '紫微斗數全書', section: '太微賦', basis: `${CATALOGUE}: 祿存 in 命宮 with 文昌 or 文曲 in its 三方四正` }],
     match: (x) => {
       if (!x.has(x.ming, '祿存')) return undefined;
       const wen = sfsz(x.ming).flatMap((i) => x.hasAny(i, ['文昌', '文曲']));
@@ -475,7 +475,7 @@ export const AUSPICIOUS: PatternRule[] = [
     zh: '祿馬交馳格',
     en: 'Prosperity and Horse gallop together',
     kind: 'auspicious',
-    sources: [{ verse: '祿馬最喜交馳', basis: `${CATALOGUE}: 祿存 or 化祿 together with 天馬 in the 三方四正 of 命宮` }],
+    sources: [{ verse: '祿馬最喜交馳', work: '紫微斗數全書', section: '太微賦', basis: `${CATALOGUE}: 祿存 or 化祿 together with 天馬 in the 三方四正 of 命宮` }],
     match: (x) => {
       const s = sfsz(x.ming);
       const horse = s.find((i) => x.has(i, '天馬'));
@@ -489,7 +489,7 @@ export const AUSPICIOUS: PatternRule[] = [
     zh: '日月照命格 (二曜同臨)',
     en: 'Sun and Moon shine from opposite',
     kind: 'auspicious',
-    sources: [{ verse: '日月守命，不如照合併明', basis: `${CATALOGUE}: 命宮 at 丑 or 未 with no main star, 太陽 and 太陰 together in the opposite palace` }],
+    sources: [{ verse: '日月守命，不如照合併明', work: '紫微斗數全書', section: '論諸星同垣各司所宜', basis: `${CATALOGUE}: 命宮 at 丑 or 未 with no main star, 太陽 and 太陰 together in the opposite palace` }],
     match: (x) =>
       x.at(x.ming, '丑', '未') && x.noMain(x.ming) && x.has(opp(x.ming), '太陽', '太陰')
         ? m(x, [`${x.label(x.ming)} has no main star`, `⟨太陽⟩ and ⟨太陰⟩ in ${x.label(opp(x.ming))}`])
@@ -501,7 +501,7 @@ export const AUSPICIOUS: PatternRule[] = [
     zh: '丹墀桂墀格',
     en: 'Red and laurel steps',
     kind: 'auspicious',
-    sources: [{ verse: '丹墀桂墀，早遂青雲之志', basis: `${CATALOGUE}: 太陽 in 命宮 at 辰 or 巳, or 太陰 in 命宮 at 酉 or 戌` }],
+    sources: [{ verse: '丹墀桂墀，早遂青雲之志', work: '紫微斗數全書', section: '斗數骨髓賦', basis: `${CATALOGUE}: 太陽 in 命宮 at 辰 or 巳, or 太陰 in 命宮 at 酉 or 戌` }],
     match: (x) => {
       if (x.at(x.ming, '辰', '巳') && x.has(x.ming, '太陽')) return m(x, [`⟨太陽⟩ in ${x.label(x.ming)}`]);
       if (x.at(x.ming, '酉', '戌') && x.has(x.ming, '太陰')) return m(x, [`⟨太陰⟩ in ${x.label(x.ming)}`]);
@@ -514,7 +514,7 @@ export const AUSPICIOUS: PatternRule[] = [
     zh: '甲第登庸格',
     en: 'Top of the examination list',
     kind: 'auspicious',
-    sources: [{ verse: '科命權朝，登庸甲第', basis: `${CATALOGUE}: birth-year 化科 in 命宮 with 化權 in its trines or opposite palace` }],
+    sources: [{ verse: '科命權朝，登庸甲第', work: '紫微斗數全書', section: '論諸星同垣各司所宜', basis: `${CATALOGUE}: birth-year 化科 in 命宮 with 化權 in its trines or opposite palace` }],
     match: (x) => {
       if (!x.hasMut(x.ming, '科')) return undefined;
       const q = x.findMut('權');
@@ -540,7 +540,7 @@ export const AUSPICIOUS: PatternRule[] = [
     zh: '極向離明格',
     en: 'Pole star faces the light (紫微 at 午)',
     kind: 'auspicious',
-    sources: [{ verse: '紫微居午無煞湊，位至公卿', basis: `${CATALOGUE}: 紫微 in 命宮 at 午 with no malefics in the 三方四正` }],
+    sources: [{ verse: '紫微居午無殺湊位至三公', work: '紫微斗數全書', section: '斗數骨髓賦', basis: `${CATALOGUE}: 紫微 in 命宮 at 午 with no malefics in the 三方四正` }],
     match: (x) => (x.at(x.ming, '午') && x.has(x.ming, '紫微') ? m(x, [`⟨紫微⟩ in ${x.label(x.ming)}`]) : undefined),
     text: 'The emperor star at its most commanding. Classically considerable success even without helpers, as long as malefics stay away: senior office or major business.',
   },
@@ -549,7 +549,7 @@ export const AUSPICIOUS: PatternRule[] = [
     zh: '將星得地格',
     en: 'The general holds the ground',
     kind: 'auspicious',
-    sources: [{ verse: '武曲廟垣，威名赫奕', basis: `${CATALOGUE}: 武曲 bright (廟/旺) in 命宮` }],
+    sources: [{ verse: '武曲廟垣，威名赫奕', work: '紫微斗數全書', section: '斗數骨髓賦', basis: `${CATALOGUE}: 武曲 bright (廟/旺) in 命宮` }],
     match: (x) => (x.bright(x.ming, '武曲') ? m(x, [`⟨武曲⟩ ${x.brightness(x.ming, '武曲')} in ${x.label(x.ming)}`]) : undefined),
     text: 'The wealth-and-command star at strength. Classically decisive, practical and good with money: finance, management, engineering or command roles.',
   },
@@ -558,7 +558,7 @@ export const AUSPICIOUS: PatternRule[] = [
     zh: '明祿暗祿格',
     en: 'Open and hidden prosperity',
     kind: 'auspicious',
-    sources: [{ verse: '明祿暗祿，錦上添花', basis: `${CATALOGUE}: birth-year 化祿 in 命宮 with 祿存 in its 暗合 (六合) partner palace` }],
+    sources: [{ verse: '明祿暗祿，錦上添花', work: '紫微斗數全書', section: '斗數骨髓賦', basis: `${CATALOGUE}: birth-year 化祿 in 命宮 with 祿存 in its 暗合 (六合) partner palace` }],
     match: (x) => (x.hasMut(x.ming, '祿') && x.has(anhe(x.ming), '祿存') ? m(x, [`化祿 in ${x.label(x.ming)}`, `⟨祿存⟩ in its 暗合 partner ${x.label(anhe(x.ming))}`], [x.ming, anhe(x.ming)]) : undefined),
     text: 'A visible and a hidden source of prosperity. Classically "adding flowers to brocade": it does not create fortune by itself, but enlarges good fortune that is already there.',
   },
@@ -567,7 +567,7 @@ export const AUSPICIOUS: PatternRule[] = [
     zh: '科明祿暗格',
     en: 'Open fame, hidden prosperity',
     kind: 'auspicious',
-    sources: [{ verse: '科明祿暗，位列三台', basis: `${CATALOGUE}: birth-year 化科 in 命宮 with 祿存 in its 暗合 partner palace` }],
+    sources: [{ verse: '科明祿暗，位列三台', work: '紫微斗數全書', section: '斗數骨髓賦', basis: `${CATALOGUE}: birth-year 化科 in 命宮 with 祿存 in its 暗合 partner palace` }],
     match: (x) => (x.hasMut(x.ming, '科') && x.has(anhe(x.ming), '祿存') ? m(x, [`化科 in ${x.label(x.ming)}`, `⟨祿存⟩ in its 暗合 partner ${x.label(anhe(x.ming))}`], [x.ming, anhe(x.ming)]) : undefined),
     text: 'A public reputation with quiet material backing. Classically a respected position with resources behind it.',
   },
@@ -576,7 +576,7 @@ export const AUSPICIOUS: PatternRule[] = [
     zh: '輔拱文星格',
     en: 'Helper supports the literary star',
     kind: 'auspicious',
-    sources: [{ basis: `${CATALOGUE}: 文昌 in 命宮 with 左輔 in its trines or opposite palace` }],
+    sources: [{ verse: '左輔文昌位至三臺', work: '紫微斗數全書', section: '論諸星同垣各司所宜', basis: `${CATALOGUE}: 文昌 in 命宮 with 左輔 in its trines or opposite palace` }],
     match: (x) => {
       if (!x.has(x.ming, '文昌')) return undefined;
       const fu = [...trines(x.ming), opp(x.ming)].find((i) => x.has(i, '左輔'));
@@ -589,7 +589,7 @@ export const AUSPICIOUS: PatternRule[] = [
     zh: '祿馬佩印格',
     en: 'Prosperity and Horse wear the seal',
     kind: 'auspicious',
-    sources: [{ basis: `${CATALOGUE}: 祿存 or 化祿 together with 天馬 and a bright 天相 in 命宮` }],
+    sources: [{ verse: '祿馬佩印，馬前有祿印星同宮是也', work: '紫微斗數全書', section: '定貴局', basis: `${CATALOGUE}: 祿存 or 化祿 together with 天馬 and a bright 天相 in 命宮` }],
     match: (x) =>
       x.bright(x.ming, '天相') && x.has(x.ming, '天馬') && (x.has(x.ming, '祿存') || x.hasMut(x.ming, '祿'))
         ? m(x, [`⟨天相⟩ ${x.brightness(x.ming, '天相')}, ⟨天馬⟩ and a 祿 star in ${x.label(x.ming)}`])
@@ -613,7 +613,7 @@ export const AUSPICIOUS: PatternRule[] = [
     zh: '財祿夾馬格',
     en: 'Wealth and Prosperity flank the Horse',
     kind: 'auspicious',
-    sources: [{ basis: `${CATALOGUE}: 天馬 in 命宮 flanked by 武曲 on one side and birth-year 化祿 on the other` }],
+    sources: [{ verse: '財祿夾馬，馬守命武祿來夾是也', work: '紫微斗數全書', section: '定富局', basis: `${CATALOGUE}: 天馬 in 命宮 flanked by 武曲 on one side and birth-year 化祿 on the other` }],
     match: (x) =>
       x.has(x.ming, '天馬') && flanked(x, x.ming, (i) => x.has(i, '武曲'), (i) => x.hasMut(i, '祿'))
         ? m(x, [`⟨天馬⟩ in ${x.label(x.ming)}`, '⟨武曲⟩ and 化祿 on either side'], [...neighbours(x.ming), x.ming])
@@ -625,7 +625,7 @@ export const AUSPICIOUS: PatternRule[] = [
     zh: '權煞化祿格',
     en: 'Malefic turned into power',
     kind: 'auspicious',
-    sources: [{ verse: '擎羊入廟加吉，富貴聲揚', basis: `${CATALOGUE}: 擎羊, 陀羅, 火星 or 鈴星 at 廟 brightness in 命宮, with lucky stars in the 三方四正` }],
+    sources: [{ verse: '擎羊入廟富貴聲揚', work: '紫微斗數全書', section: '論諸星同垣各司所宜', basis: `${CATALOGUE}: 擎羊, 陀羅, 火星 or 鈴星 at 廟 brightness in 命宮, with lucky stars in the 三方四正` }],
     match: (x) => {
       const sha = SHA4.filter((s) => x.brightness(x.ming, s) === '廟');
       return sha.length ? m(x, [`${sha.map((s) => `⟨${s}⟩ 廟`).join(', ')} in ${x.label(x.ming)}`]) : undefined;
@@ -639,8 +639,8 @@ export const AUSPICIOUS: PatternRule[] = [
     en: 'Transformations turn weakness into honour',
     kind: 'auspicious',
     sources: [
-      { verse: '天同戌宮為反背，丁人化吉主大貴', basis: `${CATALOGUE}: 天同 in 命宮 at 戌 for a 丁 year` },
-      { verse: '辰戌應嫌陷巨門，辛人命遇反為奇格', basis: `${CATALOGUE}: 巨門 in 命宮 at 辰 for a 辛 year` },
+      { verse: '天同戌宮為反背，丁人化吉主大貴', work: '紫微斗數全書', section: '斗數骨髓賦', basis: `${CATALOGUE}: 天同 in 命宮 at 戌 for a 丁 year` },
+      { verse: '巨門辰宮化忌辛人命遇反為奇', work: '紫微斗數全書', section: '論諸星同垣各司所宜', basis: `${CATALOGUE}: 巨門 in 命宮 at 辰 for a 辛 year` },
     ],
     match: (x) => {
       if (x.at(x.ming, '戌') && x.has(x.ming, '天同') && x.yearStemIs('丁')) return m(x, [`⟨天同⟩ in ${x.label(x.ming)}`, '丁 year']);
@@ -658,7 +658,7 @@ export const ADVERSE: PatternRule[] = [
     zh: '命無正曜格',
     en: 'No main star in the Life palace',
     kind: 'adverse',
-    sources: [{ verse: '命無正曜，二姓方可延生，離祖方可成家', basis: `${CATALOGUE}: 命宮 holds none of the 14 main stars; read it through the opposite palace (借星)` }],
+    sources: [{ verse: '命無正曜二姓延生', work: '紫微斗數全書', section: '論諸星同垣各司所宜', basis: `${CATALOGUE}: 命宮 holds none of the 14 main stars; read it through the opposite palace (借星)` }],
     match: (x) => (x.noMain(x.ming) ? m(x, [`${x.label(x.ming)} has no main star`, `borrowing ${x.majors(opp(x.ming)).map((s) => `⟨${s}⟩`).join(' + ') || 'nothing'} from ${x.label(opp(x.ming))}`]) : undefined),
     text: 'The Life palace is "empty" and takes its character from the opposite palace, so identity is shaped strongly by environment. Classical texts link this to independence from one’s family roots: finding your footing away from home, or a change of name or setting in youth. It is not unlucky by itself; supporting stars in the trines decide the outcome.',
   },
@@ -667,7 +667,7 @@ export const ADVERSE: PatternRule[] = [
     zh: '極居卯酉格',
     en: 'Pole star in 卯 or 酉 meets malefics',
     kind: 'adverse',
-    sources: [{ verse: '極居卯酉，多為脫俗僧人', basis: `${CATALOGUE}: 紫微 and 貪狼 in 命宮 at 卯 or 酉 meeting 擎羊, 空劫 or 化忌, with none of the rescuing stars` }],
+    sources: [{ verse: '極居卯酉，多為脫俗僧人', work: '紫微斗數全書', section: '斗數骨髓賦', basis: `${CATALOGUE}: 紫微 and 貪狼 in 命宮 at 卯 or 酉 meeting 擎羊, 空劫 or 化忌, with none of the rescuing stars` }],
     match: (x) => {
       if (!(x.at(x.ming, '卯', '酉') && x.has(x.ming, '紫微', '貪狼'))) return undefined;
       const s = sfsz(x.ming);
@@ -699,7 +699,7 @@ export const ADVERSE: PatternRule[] = [
     zh: '巨逢四煞格',
     en: 'Great Gate meets the four malefics',
     kind: 'adverse',
-    sources: [{ verse: '巨門四煞陷而凶', basis: `${CATALOGUE}: 巨門 fallen (陷/不) in 命宮 together with 擎羊, 陀羅, 火星 or 鈴星` }],
+    sources: [{ verse: '巨門四殺陷而凶', work: '紫微斗數全書', section: '論諸星同垣各司所宜', basis: `${CATALOGUE}: 巨門 fallen (陷/不) in 命宮 together with 擎羊, 陀羅, 火星 or 鈴星` }],
     match: (x) => {
       if (!x.fallen(x.ming, '巨門')) return undefined;
       const sha = x.hasAny(x.ming, SHA4);
@@ -712,7 +712,7 @@ export const ADVERSE: PatternRule[] = [
     zh: '馬頭帶劍格 (擎羊獨守)',
     en: 'Blade alone in a cardinal palace',
     kind: 'adverse',
-    sources: [{ verse: '擎羊在子午卯酉守命，非夭折則主刑傷', basis: `${CATALOGUE}: 擎羊 alone (no main star) in 命宮 at 子, 午, 卯 or 酉` }],
+    sources: [{ verse: '擎羊子午卯酉非夭折而刑傷', work: '紫微斗數全書', section: '論諸星同垣各司所宜', basis: `${CATALOGUE}: 擎羊 alone (no main star) in 命宮 at 子, 午, 卯 or 酉` }],
     match: (x) => (x.at(x.ming, '子', '午', '卯', '酉') && x.noMain(x.ming) && x.has(x.ming, '擎羊') ? m(x, [`⟨擎羊⟩ alone in ${x.label(x.ming)}`]) : undefined),
     text: 'The blade star without a main star to steer it. Classically bold and decisive, but prone to conflict, injuries and harsh dealings. Channelled into disciplined, physical or technical work it becomes an asset.',
   },
@@ -721,7 +721,7 @@ export const ADVERSE: PatternRule[] = [
     zh: '命裏逢空格',
     en: 'Emptiness in the Life palace',
     kind: 'adverse',
-    sources: [{ verse: '命裏逢空，不飄流即主疾苦', basis: `${CATALOGUE}: 地空 and/or 地劫 in a 命宮 with no main star, with no lucky stars to rescue it` }],
+    sources: [{ verse: '命裏逢空，不飄流即主疾苦', work: '紫微斗數全書', section: '斗數骨髓賦', basis: `${CATALOGUE}: 地空 and/or 地劫 in a 命宮 with no main star, with no lucky stars to rescue it` }],
     match: (x) => {
       if (!x.noMain(x.ming)) return undefined;
       const kj = x.hasAny(x.ming, ['地空', '地劫']);
@@ -734,7 +734,7 @@ export const ADVERSE: PatternRule[] = [
     zh: '天梁拱月格',
     en: 'Elder and Moon both fallen',
     kind: 'adverse',
-    sources: [{ verse: '天梁、太陰，卻作飄蓬之客', basis: `${CATALOGUE}: a fallen 天梁 in 命宮 meeting 太陰, or a fallen 太陰 meeting 天梁, with malefics and no lucky stars` }],
+    sources: [{ verse: '天梁、太陰，卻作飄蓬之客', work: '紫微斗數全書', section: '斗數骨髓賦', basis: `${CATALOGUE}: a fallen 天梁 in 命宮 meeting 太陰, or a fallen 太陰 meeting 天梁, with malefics and no lucky stars` }],
     match: (x) => {
       const s = sfsz(x.ming);
       const core = (x.fallen(x.ming, '天梁') && x.inSet(s, '太陰')) || (x.fallen(x.ming, '太陰') && x.inSet(s, '天梁'));
@@ -749,7 +749,7 @@ export const ADVERSE: PatternRule[] = [
     zh: '文星失位格',
     en: 'Literary star out of place',
     kind: 'adverse',
-    sources: [{ verse: '昌曲陷宮凶煞破，虛譽之隆', basis: `${CATALOGUE}: 文昌 or 文曲 fallen in 命宮, meeting 四煞, 空劫 or 化忌` }],
+    sources: [{ verse: '昌曲陷宮凶殺破虛譽之隆', work: '紫微斗數全書', section: '論諸星同垣各司所宜', basis: `${CATALOGUE}: 文昌 or 文曲 fallen in 命宮, meeting 四煞, 空劫 or 化忌` }],
     match: (x) => {
       const wen = ['文昌', '文曲'].filter((s) => x.fallen(x.ming, s));
       if (!wen.length) return undefined;
@@ -763,7 +763,7 @@ export const ADVERSE: PatternRule[] = [
     zh: '科星逢破格',
     en: 'Fame star broken',
     kind: 'adverse',
-    sources: [{ verse: '苗而不秀，科名陷於凶神', basis: `${CATALOGUE}: birth-year 化科 in 命宮 with 四煞 or 空劫 in the same palace` }],
+    sources: [{ verse: '苗而不秀，科名陷於凶神', work: '紫微斗數全書', section: '斗數骨髓賦', basis: `${CATALOGUE}: birth-year 化科 in 命宮 with 四煞 or 空劫 in the same palace` }],
     match: (x) => {
       if (!x.hasMut(x.ming, '科')) return undefined;
       const bad = x.hasAny(x.ming, [...SHA4, '地空', '地劫']);
@@ -776,7 +776,7 @@ export const ADVERSE: PatternRule[] = [
     zh: '刑囚夾印格',
     en: 'Punishment and prison around the seal',
     kind: 'adverse',
-    sources: [{ verse: '刑囚夾印，刑仗唯司', basis: `${CATALOGUE}: 廉貞 and 天相 in 命宮 with 擎羊 in the same palace` }],
+    sources: [{ verse: '刑囚夾印，刑杖惟司', work: '紫微斗數全書', section: '太微賦', basis: `${CATALOGUE}: 廉貞 and 天相 in 命宮 with 擎羊 in the same palace` }],
     match: (x) => (x.has(x.ming, '廉貞', '天相', '擎羊') ? m(x, [sitsIn(x, x.ming, ['廉貞', '天相', '擎羊'])]) : undefined),
     text: 'Classically a warning about legal trouble, disputes with authority and surgery or injury. With lucky stars it turns into a career in law, police, the military or compliance: enforcing the rules instead of breaking them.',
   },
@@ -798,7 +798,7 @@ export const ADVERSE: PatternRule[] = [
     zh: '馬落空亡格',
     en: 'Horse falls into the void',
     kind: 'adverse',
-    sources: [{ verse: '馬遇空亡，終身奔走', basis: `${CATALOGUE}: 天馬 in 命宮 with 地空 or 地劫` }],
+    sources: [{ verse: '馬遇空亡，終身奔走', work: '紫微斗數全書', section: '太微賦', basis: `${CATALOGUE}: 天馬 in 命宮 with 地空 or 地劫` }],
     match: (x) => {
       if (!x.has(x.ming, '天馬')) return undefined;
       const kj = x.hasAny(x.ming, ['地空', '地劫']);
@@ -811,7 +811,7 @@ export const ADVERSE: PatternRule[] = [
     zh: '梁馬飄蕩格',
     en: 'Elder and Horse drifting',
     kind: 'adverse',
-    sources: [{ verse: '天梁天馬陷，飄蕩無疑', basis: `${CATALOGUE}: 天梁 in 命宮 at 巳 or 亥, 天馬 in 命宮 or 遷移, malefics and no lucky stars` }],
+    sources: [{ verse: '天梁天馬陷，飄蕩無疑', work: '紫微斗數全書', section: '斗數骨髓賦', basis: `${CATALOGUE}: 天梁 in 命宮 at 巳 or 亥, 天馬 in 命宮 or 遷移, malefics and no lucky stars` }],
     match: (x) => {
       if (!(x.at(x.ming, '巳', '亥') && x.has(x.ming, '天梁'))) return undefined;
       if (!(x.has(x.ming, '天馬') || x.has(opp(x.ming), '天馬'))) return undefined;
@@ -826,7 +826,7 @@ export const ADVERSE: PatternRule[] = [
     zh: '祿逢兩煞格',
     en: 'Prosperity meets the void',
     kind: 'adverse',
-    sources: [{ verse: '祿逢衝破，吉也成凶', basis: `${CATALOGUE}: 祿存 or 化祿 in 命宮 together with 地空 or 地劫, and 四煞 in the 三方四正` }],
+    sources: [{ verse: '祿逢衝破吉也成凶', work: '紫微斗數全書', section: '論諸星同垣各司所宜', basis: `${CATALOGUE}: 祿存 or 化祿 in 命宮 together with 地空 or 地劫, and 四煞 in the 三方四正` }],
     match: (x) => {
       if (!(x.has(x.ming, '祿存') || x.hasMut(x.ming, '祿'))) return undefined;
       const kj = x.hasAny(x.ming, ['地空', '地劫']);
@@ -840,7 +840,7 @@ export const ADVERSE: PatternRule[] = [
     zh: '日月藏輝格 (日月反背)',
     en: 'Sun and Moon hide their light',
     kind: 'adverse',
-    sources: [{ verse: '日月最嫌反背，乃為失輝', basis: `${CATALOGUE}: 太陽 in 命宮 at 酉戌亥子 for a night birth, or 太陰 at 卯辰巳午 for a day birth, with malefics and no lucky stars` }],
+    sources: [{ verse: '日月最嫌反背，乃為失輝', work: '紫微斗數全書', section: '斗數骨髓賦', basis: `${CATALOGUE}: 太陽 in 命宮 at 酉戌亥子 for a night birth, or 太陰 at 卯辰巳午 for a day birth, with malefics and no lucky stars` }],
     match: (x) => {
       const sun = x.has(x.ming, '太陽') && x.at(x.ming, '酉', '戌', '亥', '子') && !x.dayBirth;
       const moon = x.has(x.ming, '太陰') && x.at(x.ming, '卯', '辰', '巳', '午') && x.dayBirth;
@@ -858,7 +858,7 @@ export const ADVERSE: PatternRule[] = [
     zh: '羊陀夾忌格',
     en: 'Obstacle trapped between blades',
     kind: 'adverse',
-    sources: [{ verse: '羊陀夾忌為敗局', basis: `${CATALOGUE}: 祿存 in 命宮 (always flanked by 擎羊 and 陀羅) with 化忌 in 命宮 or the opposite palace` }],
+    sources: [{ verse: '羊陀夾忌為敗局', work: '紫微斗數全書', section: '論諸星同垣各司所宜', basis: `${CATALOGUE}: 祿存 in 命宮 (always flanked by 擎羊 and 陀羅) with 化忌 in 命宮 or the opposite palace` }],
     match: (x) => {
       if (!x.has(x.ming, '祿存')) return undefined;
       const ji = [x.ming, opp(x.ming)].find((i) => x.hasMut(i, '忌'));
@@ -871,7 +871,7 @@ export const ADVERSE: PatternRule[] = [
     zh: '火鈴夾命格',
     en: 'Fire and Bell flank the Life palace',
     kind: 'adverse',
-    sources: [{ verse: '火鈴夾命為敗局', basis: `${CATALOGUE}: 火星 and 鈴星 in the palaces on either side of 命宮 (with 貪狼 in 命宮 it turns auspicious)` }],
+    sources: [{ verse: '火鈴夾命為敗局', work: '紫微斗數全書', section: '論諸星同垣各司所宜', basis: `${CATALOGUE}: 火星 and 鈴星 in the palaces on either side of 命宮 (with 貪狼 in 命宮 it turns auspicious)` }],
     match: (x) =>
       flanked(x, x.ming, (i) => x.has(i, '火星'), (i) => x.has(i, '鈴星')) && !x.has(x.ming, '貪狼')
         ? m(x, [`⟨火星⟩ and ⟨鈴星⟩ on either side of ${x.label(x.ming)}`], [...neighbours(x.ming), x.ming])
@@ -883,7 +883,7 @@ export const ADVERSE: PatternRule[] = [
     zh: '劫空夾命格',
     en: 'The voids flank the Life palace',
     kind: 'adverse',
-    sources: [{ verse: '劫空夾命為敗局', basis: `${CATALOGUE}: 地空 and 地劫 in the palaces on either side of 命宮` }],
+    sources: [{ verse: '劫空夾命為敗局', work: '紫微斗數全書', section: '論諸星同垣各司所宜', basis: `${CATALOGUE}: 地空 and 地劫 in the palaces on either side of 命宮` }],
     match: (x) =>
       flanked(x, x.ming, (i) => x.has(i, '地空'), (i) => x.has(i, '地劫'))
         ? m(x, [`⟨地空⟩ and ⟨地劫⟩ on either side of ${x.label(x.ming)}`], [...neighbours(x.ming), x.ming])
@@ -895,7 +895,7 @@ export const ADVERSE: PatternRule[] = [
     zh: '一生孤貧格',
     en: 'Self-made without support',
     kind: 'adverse',
-    sources: [{ basis: `${CATALOGUE}: 破軍 fallen in 命宮 (卯酉巳亥) with no lucky stars anywhere in the 三方四正` }],
+    sources: [{ verse: '一生孤貧，謂破守命星陷地是也', work: '紫微斗數全書', section: '定貧賤局', basis: `${CATALOGUE}: 破軍 fallen in 命宮 (卯酉巳亥) with no lucky stars anywhere in the 三方四正` }],
     match: (x) =>
       x.has(x.ming, '破軍') && x.at(x.ming, '卯', '酉', '巳', '亥') && !x.support(sfsz(x.ming)).length
         ? m(x, [`⟨破軍⟩ in ${x.label(x.ming)}`, 'no lucky stars in the 三方四正'])
@@ -907,7 +907,7 @@ export const ADVERSE: PatternRule[] = [
     zh: '武貪守身格',
     en: 'Wealth and Desire guard the Body palace',
     kind: 'adverse',
-    sources: [{ verse: '貪狼武曲同宮，先貧而後富', basis: `${CATALOGUE}: 命宮 has no main star while 武曲 and 貪狼 occupy the 身宮` }],
+    sources: [{ verse: '貪武先貧而後富', work: '紫微斗數全書', section: '論諸星同垣各司所宜', basis: `${CATALOGUE}: 命宮 has no main star while 武曲 and 貪狼 occupy the 身宮` }],
     match: (x) =>
       x.noMain(x.ming) && x.body !== x.ming && x.has(x.body, '武曲', '貪狼')
         ? m(x, [`${x.label(x.ming)} has no main star`, `⟨武曲⟩ and ⟨貪狼⟩ in the 身宮 ${x.label(x.body)}`], [x.ming, x.body])
@@ -919,7 +919,7 @@ export const ADVERSE: PatternRule[] = [
     zh: '巨機化酉格',
     en: 'Great Gate and Strategist in 酉 with Obstacle',
     kind: 'adverse',
-    sources: [{ verse: '巨機酉上化吉者，縱遇財官也不榮', basis: `${CATALOGUE}: 巨門 and 天機 in 命宮 at 酉 with 化忌 in the same palace` }],
+    sources: [{ verse: '巨機酉上化吉者縱有財官也不終', work: '紫微斗數全書', section: '論諸星同垣各司所宜', basis: `${CATALOGUE}: 巨門 and 天機 in 命宮 at 酉 with 化忌 in the same palace` }],
     match: (x) =>
       x.at(x.ming, '酉') && x.has(x.ming, '巨門', '天機') && x.hasMut(x.ming, '忌')
         ? m(x, [sitsIn(x, x.ming, ['巨門', '天機']), `化忌 in ${x.label(x.ming)}`])
@@ -945,7 +945,7 @@ export const ADVERSE: PatternRule[] = [
     zh: '魁鉞凶沖格',
     en: 'Noble helpers overwhelmed by malefics',
     kind: 'adverse',
-    sources: [{ verse: '魁鉞重逢羊陀空劫湊，痼疾尤多', basis: `${CATALOGUE}: 天魁 or 天鉞 in 命宮 meeting three or more of 四煞 and 空劫 in the 三方四正` }],
+    sources: [{ verse: '魁鉞重逢殺湊痼疾尤多', work: '紫微斗數全書', section: '論諸星同垣各司所宜', basis: `${CATALOGUE}: 天魁 or 天鉞 in 命宮 meeting three or more of 四煞 and 空劫 in the 三方四正` }],
     match: (x) => {
       const kui = x.hasAny(x.ming, ['天魁', '天鉞']);
       if (!kui.length) return undefined;
@@ -959,7 +959,7 @@ export const ADVERSE: PatternRule[] = [
     zh: '財與囚仇格',
     en: 'Wealth and the Prisoner at odds',
     kind: 'adverse',
-    sources: [{ basis: `${CATALOGUE}: 武曲 and 廉貞 split between 命宮 and 身宮, with 四煞, 空劫 or 化忌 on either` }],
+    sources: [{ verse: '財與囚仇，武貞同守身命是也', work: '紫微斗數全書', section: '定貧賤局', basis: `${CATALOGUE}: 武曲 and 廉貞 split between 命宮 and 身宮, with 四煞, 空劫 or 化忌 on either` }],
     match: (x) => {
       if (x.body === x.ming) return undefined;
       const split = (x.has(x.ming, '武曲') && x.has(x.body, '廉貞')) || (x.has(x.ming, '廉貞') && x.has(x.body, '武曲'));
