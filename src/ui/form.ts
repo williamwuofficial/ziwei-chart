@@ -171,6 +171,15 @@ export function setupForm(form: HTMLFormElement, onSubmit: (input: BirthInput, a
   el<HTMLSelectElement>('select[name="algorithm"]').value = settings.algorithm;
   el<HTMLSelectElement>('select[name="script"]').value = settings.script;
   el<HTMLSelectElement>('select[name="sihua"]').value = settings.sihua;
+  el<HTMLSelectElement>('select[name="yearDivide"]').value = settings.yearDivide;
+  el<HTMLSelectElement>('select[name="fixLeap"]').value = String(settings.fixLeap);
+  el<HTMLSelectElement>('select[name="astroType"]').value = settings.astroType;
+  // The 天盤/地盤/人盤 choice only exists in 中州派 placement.
+  const astroField = el<HTMLElement>('#astro-type-field');
+  const algo = el<HTMLSelectElement>('select[name="algorithm"]');
+  const syncAstro = () => (astroField.hidden = algo.value !== 'zhongzhou');
+  algo.addEventListener('change', syncAstro);
+  syncAstro();
 
   // --- Read and validate --------------------------------------------------------------
   const read = (): BirthInput | string => {
@@ -189,6 +198,9 @@ export function setupForm(form: HTMLFormElement, onSubmit: (input: BirthInput, a
       algorithm: data.get('algorithm') as Settings['algorithm'],
       script: data.get('script') as Settings['script'],
       sihua: data.get('sihua') as Settings['sihua'],
+      yearDivide: data.get('yearDivide') as Settings['yearDivide'],
+      fixLeap: data.get('fixLeap') !== 'false',
+      astroType: data.get('astroType') as Settings['astroType'],
     };
     if (timeMode === 'exact') {
       const time = String(data.get('time') ?? '');

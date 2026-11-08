@@ -17,6 +17,7 @@ const grid = $<HTMLElement>('chart');
 const lines = document.getElementById('chart-lines') as unknown as SVGSVGElement;
 const decadeList = $<HTMLElement>('decade-list');
 const warning = $<HTMLElement>('boundary-warning');
+const notices = $<HTMLElement>('chart-notices');
 const analysisRoot = $<HTMLElement>('analysis');
 const chartCard = document.querySelector<HTMLElement>('.chart-card')!;
 
@@ -46,6 +47,7 @@ function neighbour(b: ResolvedBirth): { dateStr: string; timeIndex: number; at: 
 function show(input: BirthInput, birth: ResolvedBirth): void {
   const chart = buildChart(birth.dateStr, birth.timeIndex, input.gender, input.settings);
   view = { chart, birth, gender: input.gender, place: input.place, settings: input.settings };
+  showNotices(input, birth, chart);
   document.documentElement.dataset.script = input.settings.script;
   // The static legend is written in Traditional; convert it for Simplified display.
   const legend = document.querySelector<HTMLElement>('.legend')!;
@@ -101,6 +103,62 @@ detailsToggle.addEventListener('change', () => {
   storeSetting('showDetails', detailsToggle.checked);
   draw();
 });
+
+/** Change one Advanced setting in the form and recalculate. */
+function switchSetting(name: string, value: string): void {
+  const sel = form.querySelector<HTMLSelectElement>(`select[name="${name}"]`)!;
+  sel.value = value;
+  form.requestSubmit();
+}
+
+/**
+ * Notes for births where a disputed rule actually changes the chart: births between Lunar New Year
+ * and 立春, and leap-month births. Each compares the chart with the alternative setting.
+ */
+function showNotices(input: BirthInput, birth: ResolvedBirth, chart: ReturnType<typeof buildChart>): void {
+  const items: HTMLElement[] = [];
+  const s = input.settings;
+  const signature = (c: ReturnType<typeof buildChart>) =>
+    c.chineseDate + c.palaces.map((p) => p.name + p.majorStars.map((x) => x.name).join('')).join('|');
+  const note = (text: string, label: string, act: () => void) => {
+    const p = document.createElement('p');
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'link';
+    btn.textContent = label;
+    btn.addEventListener('click', act);
+    p.append(toScript(text, s.script), ' ', btn);
+    items.push(p);
+  };
+
+  const otherYear = s.yearDivide === 'normal' ? 'exact' : 'normal';
+  const altYear = buildChart(birth.dateStr, birth.timeIndex, input.gender, { ...s, yearDivide: otherYear });
+  const yp = chart.chineseDate.split(' ')[0];
+  const ayp = altYear.chineseDate.split(' ')[0];
+  if (yp !== ayp) {
+    const name = (d: string) => (d === 'normal' ? 'Lunar New Year' : '立春');
+    note(
+      `Born between Lunar New Year and 立春: counting the year from ${name(s.yearDivide)} gives a ${yp} year, but counting from ${name(otherYear)} gives ${ayp}. This changes the chart.`,
+      `Use ${name(otherYear)} instead`,
+      () => switchSetting('yearDivide', otherYear),
+    );
+  }
+
+  const ld = chart.rawDates.lunarDate;
+  if (ld.isLeap) {
+    const altLeap = buildChart(birth.dateStr, birth.timeIndex, input.gender, { ...s, fixLeap: !s.fixLeap });
+    if (signature(altLeap) !== signature(chart)) {
+      note(
+        `Born in a leap month (閏${ld.lunarMonth}月, day ${ld.lunarDay}). Schools differ here: this chart ${s.fixLeap ? 'splits the leap month at the 15th, so it counts as the next month' : 'counts the whole leap month as the previous month'}, and the other reading gives a different chart.`,
+        s.fixLeap ? 'Count it as the previous month instead' : 'Split at the 15th instead',
+        () => switchSetting('fixLeap', String(!s.fixLeap)),
+      );
+    }
+  }
+
+  notices.hidden = items.length === 0;
+  notices.replaceChildren(...items);
+}
 
 function draw(): void {
   if (!view) return;

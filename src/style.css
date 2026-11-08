@@ -283,3 +283,4 @@ figure.verse blockquote { margin: 0; font-size: 0.95rem; color: var(--text); let
 figure.verse figcaption { font-size: 0.75rem; color: var(--muted); margin-top: 2px; }
 details.why figure.verse { margin: 6px 0 2px; }
 details.why figure.verse blockquote { font-size: 0.85rem; }
+.warn p + p { margin-top: 8px; }

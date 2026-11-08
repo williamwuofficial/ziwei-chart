@@ -62,10 +62,33 @@
             </select>
           </label>
           <label class="field">
+            <span class="label">Year starts at</span>
+            <select name="yearDivide">
+              <option value="normal">Lunar New Year (usual for 紫微斗數, default)</option>
+              <option value="exact">立春, start of spring (usual for 八字)</option>
+            </select>
+            <span class="hint">Only matters for births between Lunar New Year and 立春 (late January to early February).</span>
+          </label>
+          <label class="field">
+            <span class="label">Leap-month (閏月) births</span>
+            <select name="fixLeap">
+              <option value="true">Split at the 15th: later days count as the next month (default)</option>
+              <option value="false">Count the whole leap month as the previous month</option>
+            </select>
+          </label>
+          <label class="field">
             <span class="label">Star placement school</span>
             <select name="algorithm">
               <option value="default">全書 (classical, default)</option>
               <option value="zhongzhou">中州派 (Wang Ting Zhi)</option>
+            </select>
+          </label>
+          <label class="field" id="astro-type-field" hidden>
+            <span class="label">中州派 chart type</span>
+            <select name="astroType">
+              <option value="heaven">天盤 heaven chart (standard)</option>
+              <option value="earth">地盤 earth chart (身宮 as Life palace)</option>
+              <option value="human">人盤 human chart (福德 as Life palace)</option>
             </select>
           </label>
           <label class="field">
@@ -93,6 +116,7 @@
 
       <section id="result" hidden>
         <div class="card warn" id="boundary-warning" hidden></div>
+        <div class="card warn" id="chart-notices" hidden></div>
         <div class="card chart-card">
           <div class="chart-head">
             <div class="chart-title">

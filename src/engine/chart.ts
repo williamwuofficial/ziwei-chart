@@ -18,6 +18,12 @@ export interface Settings {
   showDetails: boolean;
   /** Which four-transformation table to use for the disputed stems (戊, 庚, 壬). */
   sihua: SihuaTable;
+  /** Year boundary: 'normal' = Lunar New Year (usual for 紫微斗數), 'exact' = 立春 (usual for 八字). */
+  yearDivide: 'normal' | 'exact';
+  /** Leap-month births: true splits the month at the 15th (later days count as the next month); false counts the whole leap month as the previous month. */
+  fixLeap: boolean;
+  /** 中州派 only: 天盤 (heaven, standard), 地盤 (earth) or 人盤 (human). Ignored for other placement schools. */
+  astroType: 'heaven' | 'earth' | 'human';
 }
 
 export type SihuaTable = 'common' | 'zhongzhou' | 'beipai';
@@ -53,6 +59,9 @@ export const DEFAULT_SETTINGS: Settings = {
   script: 'zh-TW',
   showDetails: false,
   sihua: 'common',
+  yearDivide: 'normal',
+  fixLeap: true,
+  astroType: 'heaven',
 };
 
 export type Gender = 'male' | 'female';
@@ -63,9 +72,17 @@ export function buildChart(dateStr: string, timeIndex: number, gender: Gender, s
     dateStr,
     timeIndex,
     gender,
-    fixLeap: true,
+    fixLeap: s.fixLeap,
     language: s.script,
-    config: { algorithm: s.algorithm, dayDivide: s.dayDivide, mutagens: SIHUA_TABLES[s.sihua] as never },
+    astroType: s.algorithm === 'zhongzhou' ? s.astroType : 'heaven',
+    config: {
+      algorithm: s.algorithm,
+      dayDivide: s.dayDivide,
+      yearDivide: s.yearDivide,
+      // Keep yearly periods on the same boundary as the birth year.
+      horoscopeDivide: s.yearDivide,
+      mutagens: SIHUA_TABLES[s.sihua] as never,
+    },
   });
 }
 

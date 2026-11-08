@@ -47,8 +47,8 @@ Full 飛星 chain reading is out of scope for v1, because it cannot meet require
 | 壬 化科 | 左輔 / 天府 | 左輔 |
 | 戊 化科 | 右弼 / 太陽 | 右弼 |
 | Late 子 hour (23:00–00:00) | Counts as the next day (`dayDivide: forward`) / stays on the same day (`current`) | forward |
-| Year boundary | Lunar New Year (`yearDivide: normal`) / 立春 (`exact`) | normal (the ZWDS norm; 立春 is the 八字 norm) |
-| Leap month (閏月) | Whole month counts as the previous month / split at the 15th | Check iztro's behaviour and expose it if possible |
+| Year boundary | Lunar New Year (`yearDivide: normal`) / 立春 (`exact`) | normal (the ZWDS norm; 立春 is the 八字 norm). Setting: Year starts at |
+| Leap month (閏月) | Whole month counts as the previous month / split at the 15th | Split at the 15th (iztro `fixLeap`). Setting: Leap-month births |
 | True solar time | On (longitude + equation of time) / off (clock time) | **On**, with both times shown so the user sees when the hour changes |
 | Brightness table | iztro default / 中州 | Follows the school setting |
 
@@ -279,3 +279,4 @@ Each phase is shippable on its own.
   Sources: [王亭之：庚干四化的争论](https://haozh.com/post/64.html), [飛星漫談：十干四化的不同版本](https://home9000.wordpress.com/2007/07/02/%E3%80%90%E9%A3%9B%E6%98%9F%E6%BC%AB%E8%AB%87-%E5%9B%9B%E5%8D%81%E4%BA%8C%E3%80%91%E5%8D%81%E5%B9%B2%E5%9B%9B%E5%8C%96%E7%9A%84%E4%B8%8D%E5%90%8C%E7%89%88%E6%9C%AC/), [紫微四化表：庚干爭議](https://tradiculture.com/ziweisihuabiaowanzhengjiexi/). Some sources report that 中州派 students have since returned to 右弼 and 左輔 for 戊 and 壬; this is unconfirmed, so the preset follows 王亭之's published table.
 - **Original-text quotes:** every star nature, minor star, transformation, 身宮 rule, decade and year 四化 rule quotes 《紫微斗數全書》, as do 68 of the 76 patterns (several from the 全書's own 定富局, 定貴局 and 定貧賤局 definitions). Each quote names its section, e.g. 斗數骨髓賦 or 太微賦. `npm run verify-sources` checks every attributed quote against the public-domain Wikisource transcription and records the verified list in `tests/fixtures/sources.json`. Six patterns have verses that are not in the 全書 transcription; these are labelled as quoted in the pattern catalogue. Two patterns (日月照壁, 文星遇夾) have no classical line.
 - **Chart detail toggle:** by default the chart shows only the 14 main and 14 minor stars. A Details toggle adds brightness, 雜曜 and 長生.
+- **More iztro options exposed:** Year starts at (Lunar New Year or 立春), Leap-month births (split at the 15th, or the whole month as the previous month), and the 中州派 chart type (天盤, 地盤 or 人盤, shown only with 中州派 placement). The chart shows a notice, with a one-click switch, only when a birth is actually affected: born between Lunar New Year and 立春, or late in a leap month. The remaining iztro options (ageDivide, horoscopeDivide, brightness) are left at their defaults, because they barely affect the readings or no verified alternative tables exist.
