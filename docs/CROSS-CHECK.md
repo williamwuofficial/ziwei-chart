@@ -164,6 +164,11 @@ I chose this weighting against the 20 palace ratings from kunde and 范振木's 
 
 These are a student's notes from 倪海廈's 天紀 lectures. Three cases give the year, gender, 局, 紫微 position and Life palace, but no day or time.
 
+**Placement.** Each case was searched for in its year:
+- **民國37 (1948):** two lunar 冬月 未時 charts match every stated feature: Life palace 巳 with 太陽 and 祿存, 夫妻 with 天同 and 文昌, 子女 with 七殺 and 天馬.
+- **民國54 (1965):** 24 charts match. All of them also carry the other stated features: 化科 in 遷移, 化忌 in 子女, 化祿 in 僕役, and 陀羅 in a 寅 疾厄.
+- **民國83 (1994):** 48 charts match the structure. All of them have 廉破 in the Life palace and 化科 on 武曲 in 官祿, as stated. 昌曲 in the Life palace and 右弼 in 父母 never occur together, which suggests the 「曲昌入命」 line is a general aside rather than part of this case.
+
 Where his rules overlap ours, they agree:
 - **身宮 placement.** In 財帛 he reads private business or trade; in 官祿, office; in 遷移, a life away from home.
 - **廉貪 or 廉破 in 夫妻.** He reads separation; the 全書 卷二 夫妻 lines agree.
