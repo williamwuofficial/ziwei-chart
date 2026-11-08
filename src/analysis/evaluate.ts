@@ -6,6 +6,7 @@ import {
   MUT_QUOTE, MUT_TEXT, PAIR_BASIS, PAIR_NOTES, PAIR_QUOTE, pairKey, PALACE_DOMAIN, STAR_BASIS,
 } from './rules/stars';
 import type { PatternRule, PatternStatus, Source } from './rules/types';
+import { mingClassics, palaceClassics } from './juan2Read';
 
 /** One statement in the analysis, with everything needed for its "Why?" panel. */
 export interface Finding {
@@ -160,7 +161,7 @@ function tone(x: Ctx, i: number): PalaceCard['tone'] {
 
 export function analyse(c: ChartM): Analysis {
   const x = new Ctx(c);
-  const overview: Finding[] = [...starFindings(x, x.ming, 'ming')];
+  const overview: Finding[] = [...starFindings(x, x.ming, 'ming'), ...mingClassics(x)];
 
   const bodyName = x.p(x.body).name;
   const bodyText = BODY_TEXT[bodyName];
@@ -194,6 +195,7 @@ export function analyse(c: ChartM): Analysis {
       // The Life palace's main stars are already read in the overview.
       findings: [
         ...(p.index === x.ming ? [] : starFindings(x, p.index, id)),
+        ...(p.index === x.ming ? [] : [palaceClassics(x, p.index)].filter((f): f is Finding => !!f)),
         ...minorFinding(x, p.index, id),
         ...mutFindings(x, p.index, id),
       ],

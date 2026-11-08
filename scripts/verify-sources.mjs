@@ -73,13 +73,25 @@ for (const f of files) {
   }
 }
 
+// 卷二 tables (src/analysis/rules/juan2.ts): every star line and pair line, plus the 命宮 branch tables.
+const juan2 = await import(join(root, 'src/analysis/rules/juan2.ts'));
+for (const [, t] of Object.entries(juan2.JUAN2)) {
+  for (const [, [verse, , pairs]] of Object.entries(t.stars)) {
+    quotes.push({ verse, work: '紫微斗數全書', section: t.section, file: 'juan2.ts' });
+    for (const [, [pv]] of Object.entries(pairs ?? {})) quotes.push({ verse: pv, work: '紫微斗數全書', section: t.section, file: 'juan2.ts' });
+  }
+}
+for (const lines of Object.values(juan2.MING_TABLE)) for (const verse of lines) quotes.push({ verse, work: '紫微斗數全書', section: juan2.MING_SECTION, file: 'juan2.ts' });
+
 const secs = await sections();
 const verified = [];
 let bad = 0;
 for (const q of quotes) {
   const v = norm(q.verse);
   const s = norm(q.section);
-  const hit = secs.find((x) => x.work === q.work && x.path.some((p) => p.includes(s) || s.includes(p)) && x.text.includes(v));
+  // Prefer an exact heading match (e.g. 二兄弟 must not match 十二父母), then containment.
+  const inSec = (x) => x.path.some((p) => p === s) || (!secs.some((y) => y.path.some((p) => p === s)) && x.path.some((p) => p.includes(s) || s.includes(p)));
+  const hit = secs.find((x) => x.work === q.work && inSec(x) && x.text.includes(v));
   if (hit) verified.push({ verse: q.verse, work: q.work, section: q.section });
   else {
     bad++;
