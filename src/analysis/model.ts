@@ -2,6 +2,8 @@
 // iztro chart, so rules can name stars and palaces in Traditional regardless of display script.
 // Tests build these objects by hand.
 
+import { HEAVENLY_STEMS, heavenlyStems } from 'iztro/lib/data';
+import ZH_TW_STARS from 'iztro/lib/i18n/locales/zh-TW/star';
 import type { Astrolabe } from '../engine/chart';
 
 export type Mut = '祿' | '權' | '科' | '忌';
@@ -61,7 +63,7 @@ export function toModel(chart: Astrolabe, gender: 'male' | 'female', timeIndex: 
       adjective: p.adjectiveStars.map((s) => s.name),
       isBody: p.isBodyPalace,
       decade: [p.decadal.range[0], p.decadal.range[1]],
-      decadeMut: decadeMutagens(chart, p.decadal.range[0], timeIndex),
+      decadeMut: p.decadal.range[0] <= 95 ? decadeMutagens(p.heavenlyStem) : undefined,
     })),
   };
 }
@@ -74,18 +76,16 @@ function star(s: { name: string; brightness?: string; mutagen?: string }): StarM
   };
 }
 
+const STEMS = '甲乙丙丁戊己庚辛壬癸';
+
 /**
- * The decade's 四化 from iztro's horoscope (so chart-level config such as a different school's
- * table carries through). Nominal age n falls in lunar year birthYear + n − 1; mid-year avoids the
- * New Year boundary. Decades past the calendar's range return undefined.
+ * The decade's 四化 for a palace stem, from iztro's own stem table (instant; calling
+ * chart.horoscope per decade costs ~30 ms each). If a per-chart 四化 override setting is added
+ * later, apply it here too.
  */
-function decadeMutagens(chart: Astrolabe, fromAge: number, timeIndex: number): PalaceM['decadeMut'] {
-  if (fromAge > 95) return undefined;
-  try {
-    const year = chart.rawDates.lunarDate.lunarYear + fromAge - 1;
-    const m = chart.horoscope(`${year}-7-1`, timeIndex).decadal.mutagen;
-    return m.length === 4 ? (m as [string, string, string, string]) : undefined;
-  } catch {
-    return undefined;
-  }
+function decadeMutagens(stem: string): PalaceM['decadeMut'] {
+  const key = HEAVENLY_STEMS[STEMS.indexOf(stem)];
+  const keys = key ? (heavenlyStems as Record<string, { mutagen: readonly string[] }>)[key]?.mutagen : undefined;
+  const names = keys?.map((k) => (ZH_TW_STARS as Record<string, string>)[k]);
+  return names?.length === 4 && names.every(Boolean) ? (names as [string, string, string, string]) : undefined;
 }

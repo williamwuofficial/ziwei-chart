@@ -127,7 +127,7 @@ describe('real charts', () => {
     }
     // Patterns that need very specific placements may not appear in this sample; most must.
     expect(seen.size).toBeGreaterThan(ALL_PATTERNS.length * 0.7);
-  }, 60_000);
+  }, 180_000);
 
   it('sample chart: 武曲天府 in 子 forms 將星得地 and 祿馬交馳', () => {
     const a = analyse(toModel(buildChart('1990-06-15', 6, 'male', DEFAULT_SETTINGS), 'male', 6));

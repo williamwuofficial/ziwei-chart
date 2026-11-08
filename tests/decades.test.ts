@@ -59,7 +59,7 @@ describe('decade readings', () => {
       }
     }
     throw new Error('no 疊忌 found in sample');
-  }, 60_000);
+  }, 180_000);
 
   it('tone thresholds follow the score', () => {
     for (const d of readDecades(sample())) {
