@@ -8,6 +8,7 @@ import {
 import type { PatternRule, PatternStatus, Source } from './rules/types';
 import { mingClassics, palaceClassics } from './juan2Read';
 import { palaceAdvice } from './advice';
+import { BRANCH_ANIMAL, COLOUR_BASIS, ELEMENT_COLOUR, ELEMENT_EN, JU_ELEMENT, STAR_ELEMENT } from './rules/elements';
 
 /** One statement in the analysis, with everything needed for its "Why?" panel. */
 export interface Finding {
@@ -265,6 +266,34 @@ function tone(x: Ctx, i: number): PalaceCard['tone'] {
   return score >= 1.5 ? 'supported' : score <= -1.5 ? 'pressured' : 'mixed';
 }
 
+/** The chart's element and zodiac, with the element's traditional colour, as cultural background. */
+function elementFinding(x: Ctx): Finding[] {
+  const ju = x.c.ju;
+  const el = ju ? JU_ELEMENT[ju] : undefined;
+  if (!el) return [];
+  const src = x.noMain(x.ming) ? opp(x.ming) : x.ming;
+  const stars = x.p(src).major.map((s) => s.name).filter((s) => STAR_ELEMENT[s]);
+  const starText = stars.map((s) => `⟨${s}⟩ ${ELEMENT_EN[STAR_ELEMENT[s].el].toLowerCase()}`).join(' and ');
+  const animal = BRANCH_ANIMAL[x.c.yearBranch];
+  const colour = ELEMENT_COLOUR[el];
+  return [
+    {
+      id: 'elements',
+      text:
+        `${animal ? `Born in a ${x.c.yearBranch} (${animal.zh} ${animal.en}) year. ` : ''}` +
+        `The chart’s element class is ${ju} (${ELEMENT_EN[el].toLowerCase()})` +
+        (stars.length ? `, and the Life palace${src !== x.ming ? ' borrows' : ' holds'} ${starText}` : '') +
+        `. In the 五行 correspondences ${ELEMENT_EN[el].toLowerCase()} goes with ${colour.en} (${colour.zh}). This is cultural background: the 紫微 classics don’t prescribe lucky colours.`,
+      evidence: [
+        `年支 ${x.c.yearBranch}${animal ? ` (${animal.zh})` : ''}`,
+        `五行局 ${ju}`,
+        ...stars.map((s) => `⟨${s}⟩ is ${STAR_ELEMENT[s].el} (${ELEMENT_EN[STAR_ELEMENT[s].el].toLowerCase()})`),
+      ],
+      sources: [...stars.map((s) => STAR_ELEMENT[s].src), COLOUR_BASIS],
+    },
+  ];
+}
+
 export function analyse(c: ChartM): Analysis {
   const x = new Ctx(c);
   const overview: Finding[] = [...starFindings(x, x.ming, 'ming'), ...mingClassics(x)];
@@ -288,6 +317,8 @@ export function analyse(c: ChartM): Analysis {
       ],
       sources: [MUT_BASIS, ...where.map(([k]) => MUT_QUOTE[k])],
     });
+
+  overview.push(...elementFinding(x));
 
   const palaces: PalaceCard[] = c.palaces.map((p) => {
     const d = PALACE_DOMAIN[p.name];

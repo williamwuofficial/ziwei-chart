@@ -307,3 +307,9 @@ Each phase is shippable on its own.
   - **Methods & sources** is static HTML: the approach, the solar-time calculation, the school settings and 四化 tables, how patterns, palace ratings, periods and advice are made, sources, the cross-check results, and limits. Pattern counts are filled in live.
   - Both pages share the chart's 繁/简 setting (`src/ui/pageScript.ts`). `npm run t2s` now also scans the two HTML pages.
   - The service worker caches each page under its own URL (cache v2); before, every navigation was stored as `./`.
+- **Elements, colours and zodiac, 2026-11-09** (`src/analysis/rules/elements.ts`):
+  - **Star elements:** each main star's element, quoted from the 全書 (卷一 per-star sections; 太陰 from the 卷二 star table; 貪狼 noted as water body, wood qi).
+  - **Colours:** the 五色 correspondences, shown as cultural background only. No colour or feng shui remedies, since the 紫微 classics give none.
+  - **Zodiac:** the 生肖 from the birth-year branch, shown in the chart centre and the overview.
+  - **Year notes:** 本命年 and clash-year (沖太歲) notes, informational with no score change. They quote 卷三 論大小限星辰過十二宮遇十二支所忌訣 where it names the year for that branch.
+  - **Learn page:** new Elements and colours, and Chinese zodiac sections. The Western zodiac is deliberately not used.

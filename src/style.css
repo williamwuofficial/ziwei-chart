@@ -304,6 +304,7 @@ h4.learn-name { font-size: 1rem; }
 .learn-pattern > summary .en { font-weight: 400; color: var(--muted); }
 .learn-pattern > p { margin: 6px 0; font-size: 0.92rem; }
 .learn-pattern .source { color: var(--muted); font-size: 0.85rem; }
+.swatch { display: inline-block; width: 0.9em; height: 0.9em; border-radius: 3px; border: 1px solid var(--border); vertical-align: -0.1em; margin-right: 6px; }
 .learn-basic h3 { margin: 14px 0 4px; font-size: 1rem; }
 .learn-basic p { margin: 0; }
 .prose h3 { margin: 18px 0 6px; font-size: 1rem; }

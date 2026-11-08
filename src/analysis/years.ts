@@ -11,6 +11,7 @@ import type { Finding } from './evaluate';
 import { stemMutagens, type ChartM, type Mut } from './model';
 import { Ctx, opp, sfsz } from './predicates';
 import { yearAdvice } from './advice';
+import { BRANCH_ANIMAL, CLASH_BASIS, CLASH_QUOTE, clashBranch, OWN_YEAR_BASIS, OWN_YEAR_QUOTE } from './rules/elements';
 import { MUT_QUOTE, MUT_TEXT, PALACE_DOMAIN } from './rules/stars';
 import type { Source } from './rules/types';
 import type { DecadeTone } from './decades';
@@ -42,6 +43,36 @@ export interface YearReading {
 }
 
 const MUT_ORDER: Mut[] = ['祿', '權', '科', '忌'];
+
+/** 本命年 and clash-year (沖太歲) notes. Informational: they don't change the year's rating. */
+function zodiacNotes(birth: string, year: string, id: string) {
+  const a = BRANCH_ANIMAL[birth];
+  if (!a) return [];
+  if (year === birth) {
+    const q = OWN_YEAR_QUOTE[birth];
+    return [
+      {
+        id: `${id}.zodiac.own`,
+        text: `Your own zodiac year (本命年, ${a.zh} ${a.en}): the year repeats your birth-year branch. ${q ? 'The 全書 names it among the years to treat with care for your branch.' : 'Widely observed as a year for care; the 全書 doesn’t single it out for your branch.'} Read it with the year’s own stars.`,
+        evidence: [`birth-year branch ${birth}`, `year branch ${year}`],
+        sources: q ? [q, OWN_YEAR_BASIS] : [OWN_YEAR_BASIS],
+      },
+    ];
+  }
+  if (year === clashBranch(birth)) {
+    const q = CLASH_QUOTE[birth];
+    const y = BRANCH_ANIMAL[year];
+    return [
+      {
+        id: `${id}.zodiac.clash`,
+        text: `Clash year (沖太歲): the ${year} (${y.zh} ${y.en}) year is opposite your ${birth} (${a.zh} ${a.en}) birth year. ${q ? 'The 全書 names this clash for your branch.' : 'The 全書 doesn’t name this clash for your branch, but the rule is widely observed.'} It suggests change and friction; read it with the year’s own stars.`,
+        evidence: [`birth-year branch ${birth}`, `year branch ${year}, opposite (六沖)`],
+        sources: q ? [q, CLASH_BASIS] : [CLASH_BASIS],
+      },
+    ];
+  }
+  return [];
+}
 
 export function readYear(c: ChartM, decadePalace: number, year: number): YearReading {
   const x = new Ctx(c);
@@ -129,6 +160,7 @@ export function readYear(c: ChartM, decadePalace: number, year: number): YearRea
 
   if (!parts.length) parts.push('0: no strong signals either way');
   const tone: DecadeTone = score >= 2 ? 'favourable' : score <= -2 ? 'challenging' : 'mixed';
+  findings.push(...zodiacNotes(c.yearBranch, branch, id));
   findings.push(...yearAdvice(x, id, tone === 'challenging', muts ? x.find(muts[3]) : -1));
   return { year, age, stem, branch, palace: yi, tone, score, scoreParts: parts, findings };
 }

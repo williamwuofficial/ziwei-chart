@@ -48,6 +48,8 @@ export interface ChartM {
   mutOverrides?: MutOverrides;
   /** Display label of the 四化 table in use. */
   sihuaLabel?: string;
+  /** 五行局, e.g. 水二局. Optional so hand-built test charts can omit it. */
+  ju?: string;
 }
 
 export type MutOverrides = Partial<Record<string, [string, string, string, string]>>;
@@ -65,6 +67,7 @@ export function toModel(
     gender,
     timeIndex,
     lunarYear: chart.rawDates.lunarDate.lunarYear,
+    ju: chart.fiveElementsClass,
     mutOverrides: sihua.overrides,
     sihuaLabel: sihua.label,
     yearStem: yearPillar[0],

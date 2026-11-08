@@ -9,6 +9,7 @@ import { stemMutagens } from './analysis/model';
 import { ALL_PATTERNS } from './analysis/rules/patterns';
 import { MAJOR_NATURE, MAJOR_ORDER, MAJOR_QUOTE, MINOR_NATURE, MINOR_QUOTE, MUT_QUOTE, MUT_TEXT, PALACE_DOMAIN } from './analysis/rules/stars';
 import type { PatternRule, Source } from './analysis/rules/types';
+import { BRANCH_ANIMAL, BRANCH_ORDER, clashBranch, ELEMENT_COLOUR, ELEMENT_EN, JU_ELEMENT, STAR_ELEMENT, type Element } from './analysis/rules/elements';
 import { gloss, rich } from './ui/zhText';
 import { setupScriptToggle } from './ui/pageScript';
 
@@ -69,7 +70,8 @@ function majorStars(script: Script): HTMLElement[] {
     const n = MAJOR_NATURE[zh];
     const c = h('div', 'learn-item');
     c.append(nameLine('h3', zh, n.en, script));
-    c.append(para(`Core quality (化氣): ${n.hua}. ${n.text}`, script));
+    const el = STAR_ELEMENT[zh];
+    c.append(para(`Element: ${el.el} ${ELEMENT_EN[el.el]}${el.note ? `; ${el.note}` : ''}. Core quality (化氣): ${n.hua}. ${n.text}`, script));
     const dl = h('dl', 'learn-bright');
     for (const [label, text] of [['Bright (廟旺)', n.bright], ['Weak (陷)', n.fallen]]) {
       const dt = h('dt');
@@ -81,6 +83,7 @@ function majorStars(script: Script): HTMLElement[] {
     c.append(dl);
     const q = MAJOR_QUOTE[zh];
     if (q?.verse) c.append(verse(q, script));
+    if (el.src.verse && el.src.verse !== q?.verse && !q?.verse?.includes(el.src.verse)) c.append(verse(el.src, script));
     list.append(c);
   }
   return [
@@ -301,12 +304,88 @@ function basics(script: Script): HTMLElement[] {
   });
 }
 
+function elements(script: Script): HTMLElement[] {
+  const table = h('table', 'learn-table');
+  const head = h('tr');
+  for (const t of ['Element', 'Colour (五色)', 'Element class (五行局)', 'Main stars']) {
+    const th = h('th');
+    th.append(rich(t, script));
+    head.append(th);
+  }
+  table.append(head);
+  for (const el of ['木', '火', '土', '金', '水'] as Element[]) {
+    const tr = h('tr');
+    const c = ELEMENT_COLOUR[el];
+    const ju = Object.entries(JU_ELEMENT).find(([, e]) => e === el)![0];
+    const stars = MAJOR_ORDER.filter((s) => STAR_ELEMENT[s].el === el).join(' ');
+    const cells = [`${el} ${ELEMENT_EN[el]}`, `${c.zh} ${c.en}`, ju, stars];
+    cells.forEach((t, k) => {
+      const td = h('td');
+      if (k === 1) {
+        const sw = h('span', 'swatch');
+        sw.style.background = c.css;
+        td.append(sw);
+      }
+      td.append(rich(t, script));
+      tr.append(td);
+    });
+    table.append(tr);
+  }
+  const wrap = h('div', 'table-wrap');
+  wrap.append(table);
+  return [
+    para(
+      'Every main star belongs to one of the five elements (五行); the 全書 states each one, and the star cards above quote it. The chart as a whole also has an element: its 五行局, which sets the age the first 10-year period starts (水二局 at 2, 木三局 at 3, and so on).',
+      script,
+    ),
+    wrap,
+    para(
+      'The colours are the standard 五行 correspondences (五色), shared across Chinese cosmology. The 紫微 classics don’t prescribe colours: the 全書 mentions them only to describe a person’s complexion. Lucky-colour advice usually comes from 八字 (strengthening the element a chart lacks) or from individual teachers’ conventions, so the app shows colours as background, not as a remedy.',
+      script,
+      'hint',
+    ),
+  ];
+}
+
+function zodiac(script: Script): HTMLElement[] {
+  const table = h('table', 'learn-table');
+  const head = h('tr');
+  for (const t of ['Branch', 'Animal (生肖)', 'Clashes with']) head.append(h('th', undefined, t));
+  table.append(head);
+  for (const b of BRANCH_ORDER) {
+    const tr = h('tr');
+    const a = BRANCH_ANIMAL[b];
+    const x = clashBranch(b);
+    for (const t of [b, `${a.zh} ${a.en}`, `${x} ${BRANCH_ANIMAL[x].zh} ${BRANCH_ANIMAL[x].en}`]) {
+      const td = h('td');
+      td.append(rich(t, script));
+      tr.append(td);
+    }
+    table.append(tr);
+  }
+  const wrap = h('div', 'table-wrap');
+  wrap.append(table);
+  return [
+    para(
+      'Your Chinese zodiac animal is simply the earthly branch of your birth year, and 紫微斗數 uses it throughout: several stars (天馬, 紅鸞, 天喜, 孤辰, 寡宿, 華蓋) are placed from it, and each year’s 太歲 palace is the palace of that year’s branch. The branch relations behind zodiac compatibility, trines (三合), pairs (六合) and clashes (六沖), are the same ones the chart uses for 三方四正 and 暗合.',
+      script,
+    ),
+    para(
+      'The year readings note two zodiac years. A 本命年 repeats your birth branch; a clash year has the opposite branch (沖太歲). The 全書 卷三 lists, for each birth branch, which years to treat with care, and the app quotes it where it covers your branch. The Western zodiac has no traditional link to 紫微斗數 and isn’t used.',
+      script,
+    ),
+    wrap,
+  ];
+}
+
 const SECTIONS: [string, string, (s: Script) => HTMLElement[]][] = [
   ['basics', 'How a chart works', basics],
   ['palaces', 'The 12 palaces', palaces],
   ['major', 'The 14 main stars', majorStars],
   ['minor', 'Minor stars', minorStars],
   ['sihua', 'The four transformations (四化)', transformations],
+  ['elements', 'Elements and colours (五行)', elements],
+  ['zodiac', 'The Chinese zodiac (生肖)', zodiac],
   ['patterns', 'Patterns (格局)', patterns],
   ['glossary', 'Glossary', glossary],
 ];

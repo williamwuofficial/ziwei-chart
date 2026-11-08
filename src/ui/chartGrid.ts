@@ -10,6 +10,7 @@ import {
 import { fmtDate, fmtTime, SHICHEN, type ResolvedBirth } from '../input/solarTime';
 import { placeLabel, type Place } from '../input/geocode';
 import { tip } from './zhText';
+import { BRANCH_ANIMAL, ELEMENT_COLOUR, ELEMENT_EN, JU_ELEMENT } from '../analysis/rules/elements';
 
 // iztro palace index 0–11 = branches 寅卯辰巳午未申酉戌亥子丑. Grid (row, col) of each, 1-based,
 // laid out the traditional way: 巳午未申 across the top, 寅丑子亥 across the bottom.
@@ -158,8 +159,22 @@ function centrePanel(v: ChartView): HTMLElement {
   const lateZi = birth.timeIndex === 12 && settings.dayDivide === 'forward' ? ' (late 子 hour: stars are placed on the next day)' : '';
   row('Lunar date', `Year ${ld.lunarYear}, ${ld.isLeap ? 'leap ' : ''}month ${ld.lunarMonth}, day ${ld.lunarDay}${lateZi}`);
   row('Four pillars', zhText(chart.chineseDate));
+  const yb = chart.chineseDate.split(' ')[0]?.[1] ?? '';
+  const animal = BRANCH_ANIMAL[yb];
+  if (animal) {
+    const z = h('span');
+    z.append(zhText(`${yb} ${animal.zh}`), ` ${animal.en}`);
+    row('Zodiac', z);
+  }
   const fe = h('span');
   fe.append(zhText(chart.fiveElementsClass), ` ${FIVE_ELEMENT_EN[chart.fiveElementsClass] ?? ''}`);
+  const jel = JU_ELEMENT[chart.fiveElementsClass];
+  if (jel) {
+    const sw = h('span', 'swatch');
+    sw.style.background = ELEMENT_COLOUR[jel].css;
+    sw.title = `Traditional colour of ${ELEMENT_EN[jel].toLowerCase()}: ${ELEMENT_COLOUR[jel].en}`;
+    fe.append(' ', sw);
+  }
   row('Element class', fe);
   const rulers = h('span');
   rulers.append('Life ', zhText(chart.soul), ' · Body ', zhText(chart.body));
