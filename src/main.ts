@@ -4,6 +4,7 @@ import { fmtDate, fmtTime, resolveExact, SHICHEN, timeIndexFor, type LocalDateTi
 import { drawLines, renderChart, renderDecades, type ChartView } from './ui/chartGrid';
 import { setupForm, type BirthInput } from './ui/form';
 import { analyse } from './analysis/evaluate';
+import { readDecades } from './analysis/decades';
 import { toModel } from './analysis/model';
 import { renderAnalysis } from './ui/analysis';
 import { toScript } from './ui/zhText';
@@ -53,14 +54,38 @@ function show(input: BirthInput, birth: ResolvedBirth): void {
   draw();
   // Rules are written against Traditional names, so analyse a zh-TW build of the same chart.
   const trad = input.settings.script === 'zh-TW' ? chart : buildChart(birth.dateStr, birth.timeIndex, input.gender, { ...input.settings, script: 'zh-TW' });
-  const analysis = analyse(toModel(trad, input.gender, birth.timeIndex));
-  renderAnalysis(analysisRoot, analysis, input.settings.script, (palaces) => {
-    if (!view) return;
-    view.selected = undefined;
-    view.highlight = palaces;
-    draw();
-    chartCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  });
+  const model = toModel(trad, input.gender, birth.timeIndex);
+  const analysis = analyse(model);
+  let nowAge: number | undefined;
+  try {
+    nowAge = chart.horoscope(new Date(), birth.timeIndex).age.nominalAge;
+  } catch {
+    nowAge = undefined;
+  }
+  const focusChart = () => chartCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  renderAnalysis(
+    analysisRoot,
+    analysis,
+    input.settings.script,
+    (palaces) => {
+      if (!view) return;
+      view.selected = undefined;
+      view.highlight = palaces;
+      draw();
+      focusChart();
+    },
+    {
+      decades: readDecades(model),
+      nowAge: nowAge !== undefined && nowAge > 0 ? nowAge : undefined,
+      onPick: (i) => {
+        if (!view) return;
+        view.decade = decadeOverlay(view.chart, i, view.birth.timeIndex);
+        view.highlight = undefined;
+        draw();
+        focusChart();
+      },
+    },
+  );
 }
 
 function draw(): void {

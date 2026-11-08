@@ -29,6 +29,8 @@ export interface PalaceM {
   adjective: string[];
   isBody: boolean;
   decade: [number, number];
+  /** Stars transformed by this palace's stem when it is the 大限 palace, in 祿權科忌 order. */
+  decadeMut?: [string, string, string, string];
 }
 
 export interface ChartM {
@@ -59,6 +61,7 @@ export function toModel(chart: Astrolabe, gender: 'male' | 'female', timeIndex: 
       adjective: p.adjectiveStars.map((s) => s.name),
       isBody: p.isBodyPalace,
       decade: [p.decadal.range[0], p.decadal.range[1]],
+      decadeMut: decadeMutagens(chart, p.decadal.range[0], timeIndex),
     })),
   };
 }
@@ -69,4 +72,20 @@ function star(s: { name: string; brightness?: string; mutagen?: string }): StarM
     brightness: (s.brightness || undefined) as Brightness | undefined,
     mutagen: (s.mutagen || undefined) as Mut | undefined,
   };
+}
+
+/**
+ * The decade's 四化 from iztro's horoscope (so chart-level config such as a different school's
+ * table carries through). Nominal age n falls in lunar year birthYear + n − 1; mid-year avoids the
+ * New Year boundary. Decades past the calendar's range return undefined.
+ */
+function decadeMutagens(chart: Astrolabe, fromAge: number, timeIndex: number): PalaceM['decadeMut'] {
+  if (fromAge > 95) return undefined;
+  try {
+    const year = chart.rawDates.lunarDate.lunarYear + fromAge - 1;
+    const m = chart.horoscope(`${year}-7-1`, timeIndex).decadal.mutagen;
+    return m.length === 4 ? (m as [string, string, string, string]) : undefined;
+  } catch {
+    return undefined;
+  }
 }

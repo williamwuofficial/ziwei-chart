@@ -221,3 +221,34 @@ details.why .rule-id { font-family: ui-monospace, monospace; font-size: 0.72rem;
 .palace-card summary .chip { margin-left: auto; }
 .palace-card[open] summary { margin-bottom: 8px; }
 .palace-card .domain { font-size: 0.85rem; color: var(--muted); margin: 0 0 10px; }
+
+/* ---------- Life stages ---------- */
+.timeline { display: grid; grid-template-columns: repeat(auto-fit, minmax(76px, 1fr)); gap: 6px; margin: 8px 0 16px; }
+.tl-item {
+  font: inherit; color: var(--text); background: var(--surface-2); border: 1px solid var(--border); border-top: 4px solid var(--muted);
+  border-radius: 8px; padding: 6px 6px 8px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 2px; position: relative;
+}
+.tl-item.good { border-top-color: var(--lu); }
+.tl-item.mixed { border-top-color: var(--decade); }
+.tl-item.bad { border-top-color: var(--ji); }
+.tl-item.now { box-shadow: 0 0 0 2px var(--accent); }
+.tl-ages { font-weight: 700; font-size: 0.85rem; }
+.tl-tone { font-size: 0.7rem; color: var(--muted); }
+.tl-now { font-size: 0.65rem; font-weight: 700; color: var(--accent); }
+.decade-card { border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; margin: 0 0 12px; background: var(--surface-2); scroll-margin-top: 12px; }
+.decade-card.now { border-color: var(--accent); }
+.decade-card header { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; flex-wrap: wrap; margin-bottom: 8px; }
+.decade-card h4 { margin: 0; display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 10px; font-size: 1rem; }
+.decade-card h4 .zh { color: var(--accent); }
+.decade-card h4 .stage { font-weight: 500; font-size: 0.82rem; color: var(--muted); flex-basis: 100%; }
+.decade-card .chips { display: flex; gap: 6px; }
+.chip.now { color: var(--accent); }
+.decade-patterns { margin: 4px 0 8px; }
+.decade-patterns .label { font-size: 0.8rem; font-weight: 600; color: var(--muted); margin: 0 0 4px; }
+.pattern-row { border-top: 1px dashed var(--border); padding: 4px 0; }
+.pattern-row summary { cursor: pointer; display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 8px; font-size: 0.88rem; }
+.pattern-row summary .zh { color: var(--accent); font-weight: 600; }
+.pattern-row summary .en { color: var(--muted); font-size: 0.8rem; }
+.pattern-row .finding { margin-top: 6px; }
+.tone-why { margin-top: 4px; }
+.decade-actions { display: flex; flex-wrap: wrap; gap: 4px 16px; margin-top: 8px; font-size: 0.82rem; }

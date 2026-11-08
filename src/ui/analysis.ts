@@ -1,3 +1,4 @@
+import type { DecadeReading, DecadeTone } from '../analysis/decades';
 import type { Analysis, Finding, PalaceCard, PatternFinding } from '../analysis/evaluate';
 import type { PatternStatus } from '../analysis/rules/types';
 import type { Script } from '../engine/chart';
@@ -96,7 +97,113 @@ function palaceCard(c: PalaceCard, script: Script, onShow: (palaces: number[]) =
   return d;
 }
 
-export function renderAnalysis(root: HTMLElement, a: Analysis, script: Script, onShow: (palaces: number[]) => void): void {
+const DECADE_TONE: Record<DecadeTone, { label: string; cls: string }> = {
+  favourable: { label: 'Favourable', cls: 'good' },
+  mixed: { label: 'Mixed', cls: 'mixed' },
+  challenging: { label: 'Challenging', cls: 'bad' },
+};
+
+export interface DecadeOptions {
+  decades: DecadeReading[];
+  /** Current nominal age, to mark the decade you are in. */
+  nowAge?: number;
+  onPick: (palaceIndex: number) => void;
+}
+
+function decadesSection(o: DecadeOptions, script: Script, onShow: (palaces: number[]) => void): HTMLElement {
+  const sec = h('section', 'an-section decades-section');
+  sec.append(h('h3', undefined, 'Life stages by 10-year period'));
+  const hint = h('p', 'hint');
+  hint.append(
+    rich(
+      'Each 10-year period (大限) is read from the natal palace it runs through, that palace’s stars, the period’s own four transformations, and the patterns around it. Ages are nominal (虛歲): 1 at birth and +1 at each Lunar New Year, so about a year ahead of Western age. The tone adds up the signals listed under “How the tone was set”. It is a rule of thumb, not a verdict.',
+      script,
+    ),
+  );
+  sec.append(hint);
+
+  const inDecade = (d: DecadeReading) => o.nowAge !== undefined && o.nowAge >= d.range[0] && o.nowAge <= d.range[1];
+  const bar = h('div', 'timeline');
+  bar.setAttribute('role', 'list');
+  for (const d of o.decades) {
+    const b = h('button', `tl-item ${DECADE_TONE[d.tone].cls}${inDecade(d) ? ' now' : ''}`);
+    b.type = 'button';
+    b.setAttribute('role', 'listitem');
+    b.append(h('span', 'tl-ages', `${d.range[0]}–${d.range[1]}`), h('span', 'tl-tone', DECADE_TONE[d.tone].label));
+    if (inDecade(d)) b.append(h('span', 'tl-now', 'Now'));
+    b.title = `${d.stage} · ${DECADE_TONE[d.tone].label}`;
+    b.addEventListener('click', () => document.getElementById(`decade-${d.range[0]}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' }));
+    bar.append(b);
+  }
+  sec.append(bar);
+
+  for (const d of o.decades) {
+    const card = h('article', `decade-card${inDecade(d) ? ' now' : ''}`);
+    card.id = `decade-${d.range[0]}`;
+    const head = h('header');
+    const title = h('h4');
+    title.append(h('span', 'ages', `Ages ${d.range[0]}–${d.range[1]}`));
+    const pal = h('span', 'zh term', toScript(d.natalPalace, script));
+    pal.lang = script === 'zh-TW' ? 'zh-Hant' : 'zh-Hans';
+    pal.title = tip(d.natalPalace) ?? '';
+    title.append(pal, h('span', 'stage', d.stage));
+    const chips = h('div', 'chips');
+    if (inDecade(d)) chips.append(h('span', 'chip now', 'You are here'));
+    chips.append(h('span', `chip ${DECADE_TONE[d.tone].cls}`, DECADE_TONE[d.tone].label));
+    head.append(title, chips);
+    card.append(head);
+    for (const f of d.findings) card.append(finding(f, script));
+
+    if (d.patterns.length) {
+      const pl = h('div', 'decade-patterns');
+      pl.append(h('p', 'label', 'Patterns around this period’s palace'));
+      for (const f of d.patterns) {
+        const row = h('details', 'pattern-row');
+        const sum = h('summary');
+        const zh = h('span', 'zh', toScript(f.rule.zh, script));
+        zh.lang = script === 'zh-TW' ? 'zh-Hant' : 'zh-Hans';
+        const st = STATUS_LABEL[f.status];
+        const chip = h('span', `chip ${st.cls}`);
+        chip.append(rich(st.label, script));
+        sum.append(zh, h('span', 'en', f.rule.en), chip);
+        row.append(sum, finding(f, script));
+        pl.append(row);
+      }
+      card.append(pl);
+    }
+
+    const how = h('details', 'why tone-why');
+    how.append(h('summary', undefined, 'How the tone was set'));
+    const ul = h('ul');
+    for (const part of d.scoreParts) {
+      const li = h('li');
+      li.append(rich(part, script));
+      ul.append(li);
+    }
+    how.append(ul, h('p', 'source', `Total ${d.score}: 2 or more is Favourable, −2 or less is Challenging, anything between is Mixed.`));
+    card.append(how);
+
+    const actions = h('div', 'decade-actions');
+    const overlay = h('button', 'link', 'Show this period on the chart');
+    overlay.type = 'button';
+    overlay.addEventListener('click', () => o.onPick(d.index));
+    const pals = h('button', 'link', 'Highlight its palaces');
+    pals.type = 'button';
+    pals.addEventListener('click', () => onShow([d.index, (d.index + 4) % 12, (d.index + 8) % 12, (d.index + 6) % 12]));
+    actions.append(overlay, pals);
+    card.append(actions);
+    sec.append(card);
+  }
+  return sec;
+}
+
+export function renderAnalysis(
+  root: HTMLElement,
+  a: Analysis,
+  script: Script,
+  onShow: (palaces: number[]) => void,
+  decades?: DecadeOptions,
+): void {
   const intro = h('p', 'hint');
   intro.append(
     rich(
@@ -141,5 +248,8 @@ export function renderAnalysis(root: HTMLElement, a: Analysis, script: Script, o
   pal.append(palHint);
   for (const c of a.palaces) pal.append(palaceCard(c, script, onShow));
 
-  root.replaceChildren(h('h2', undefined, 'Analysis'), intro, overview, pats, pal);
+  const sections: HTMLElement[] = [h('h2', undefined, 'Analysis'), intro, overview];
+  if (decades) sections.push(decadesSection(decades, script, onShow));
+  sections.push(pats, pal);
+  root.replaceChildren(...sections);
 }

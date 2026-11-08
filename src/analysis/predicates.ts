@@ -25,8 +25,9 @@ export const anhe = (i: number) => (21 - i) % 12;
 export class Ctx {
   readonly ming: number;
   readonly body: number;
-  constructor(readonly c: ChartM) {
-    this.ming = c.palaces.findIndex((p) => p.name === '命宮');
+  /** `ming` overrides the Life palace, to read a 大限 palace as if it were the 命宮. */
+  constructor(readonly c: ChartM, opts: { ming?: number } = {}) {
+    this.ming = opts.ming ?? c.palaces.findIndex((p) => p.name === '命宮');
     this.body = c.palaces.findIndex((p) => p.isBody);
   }
 
