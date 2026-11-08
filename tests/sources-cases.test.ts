@@ -21,7 +21,7 @@ describe('kunde.org.tw printed chart (農曆68年5月26日辰時, 陰女)', () =
   };
   it.each(Object.entries(K))('palace %s matches the printout', (branch, list) => {
     const p = a.palaces.find((x) => x.earthlyBranch === branch)!;
-    const ours = new Map([...p.majorStars, ...p.minorStars, ...p.adjectiveStars].map((s) => [s.name, s.brightness || '']));
+    const ours = new Map<string, string>([...p.majorStars, ...p.minorStars, ...p.adjectiveStars].map((s) => [s.name, s.brightness || '']));
     for (const tok of list.split(' ')) {
       const [, name, b] = tok.match(/^(.+?)(廟|旺|得|利|平|不|陷)?$/)!;
       expect(ours.has(name), `${branch}: ${name}`).toBe(true);
