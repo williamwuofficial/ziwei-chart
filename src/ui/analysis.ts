@@ -300,7 +300,7 @@ export function renderAnalysis(
   const pal = h('section', 'an-section');
   pal.append(h('h3', undefined, 'The twelve palaces'));
   const palHint = h('p', 'hint');
-  palHint.append(rich('Tone counts supporting versus malefic stars across each palace’s own 三方四正. Empty palaces borrow the stars opposite.', script));
+  palHint.append(rich('Tone weighs the palace’s own stars first: lucky stars and 祿/權/科 help, malefics hurt, and the birth 化忌 counts heavily. Its 三方四正 count a quarter, and 空劫 weaken it. Empty palaces borrow the stars opposite.', script));
   pal.append(palHint);
   for (const c of a.palaces) pal.append(palaceCard(c, script, onShow));
 

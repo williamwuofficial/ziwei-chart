@@ -113,13 +113,22 @@ function starFindings(x: Ctx, i: number, idPrefix: string): Finding[] {
   return out;
 }
 
+// What a birth-year transformation in the Career palace suggests about the kind of work.
+const CAREER_MUT: Partial<Record<Mut, string>> = {
+  科: 'In the Career palace it points to work built on knowledge and reputation: teaching, research, writing or professional credentials.',
+  權: 'In the Career palace it points to work with authority: public office, management or roles that make decisions.',
+  祿: 'In the Career palace it points to work that handles money or brings steady pay, such as finance, trade or running a business.',
+};
+const CAREER_BASIS: Source = { basis: '倪海廈 天紀 lectures (as noted by students, finalhopes.com): 化科 in 官祿 suits teaching, 化權 public office, 化祿 roles that handle money; consistent with the 全書 natures of 科 (主掌文墨) and 權 (掌判生殺)' };
+
 function mutFindings(x: Ctx, i: number, idPrefix: string): Finding[] {
   const domain = PALACE_DOMAIN[x.p(i).name].domain;
+  const career = x.p(i).name === '官祿';
   const out: Finding[] = x.muts(i).map(([star, k]: [string, Mut]) => ({
     id: `${idPrefix}.mut.${k}`,
-    text: `Birth-year 化${k} on ⟨${star}⟩ ${MUT_TEXT[k](domain)}.`,
+    text: `Birth-year 化${k} on ⟨${star}⟩ ${MUT_TEXT[k](domain)}.${career && CAREER_MUT[k] ? ` ${CAREER_MUT[k]}` : ''}`,
     evidence: [`⟨${star}⟩化${k} (from the ${x.c.yearStem} year stem) in ${x.label(i)}`],
-    sources: [MUT_QUOTE[k]],
+    sources: career && CAREER_MUT[k] ? [MUT_QUOTE[k], CAREER_BASIS] : [MUT_QUOTE[k]],
   }));
   const o = opp(i);
   const ji = x.muts(o).find(([, k]) => k === '忌');
@@ -225,14 +234,32 @@ function palaceFlanks(x: Ctx, i: number, idPrefix: string): Finding[] {
   return out;
 }
 
+/**
+ * Palace tone, weighing the palace itself (本宮) before its 三方四正, as classical reading does:
+ * - its own lucky stars and 祿/權/科 count +1 each, its malefics −1 each;
+ * - the birth-year 化忌 sitting in it counts a further −2 (the strongest single signal);
+ * - the trines and opposite palace count a quarter;
+ * - 空劫 bearing on it (同宮, 夾, 拱, 對照) weakens it (−1.5).
+ * Chosen against palace ratings published by kunde.org.tw and 范振木 (tests/sources-cases.test.ts):
+ * it matches half of them exactly and never calls a palace the opposite of their rating.
+ */
+export function toneScore(x: Ctx, i: number): { score: number; factors: number } {
+  const own = [i];
+  const around = sfsz(i).filter((j) => j !== i);
+  const ownSup = x.support(own).length;
+  const ownBad = x.malefic(own).length;
+  const ji = x.muts(i).filter(([, k]) => k === '忌').length;
+  const sup = x.support(around).length;
+  const bad = x.malefic(around).length;
+  const kj = kongJieRelation(x, i) ? 1 : 0;
+  const score = ownSup - ownBad - 2 * ji + 0.25 * (sup - bad) - 1.5 * kj;
+  return { score, factors: ownSup + ownBad + sup + bad + kj };
+}
+
 function tone(x: Ctx, i: number): PalaceCard['tone'] {
-  const s = sfsz(i);
-  const sup = x.support(s).length;
-  const bad = x.malefic(s).length;
-  let t: PalaceCard['tone'] = sup === 0 && bad === 0 ? 'neutral' : sup >= bad + 2 ? 'supported' : bad >= sup + 2 ? 'pressured' : 'mixed';
-  // A palace that 空劫 bear on is weak (弱宮): step its tone down one level.
-  if (kongJieRelation(x, i)) t = t === 'supported' ? 'mixed' : 'pressured';
-  return t;
+  const { score, factors } = toneScore(x, i);
+  if (!factors) return 'neutral';
+  return score >= 1.5 ? 'supported' : score <= -1.5 ? 'pressured' : 'mixed';
 }
 
 export function analyse(c: ChartM): Analysis {

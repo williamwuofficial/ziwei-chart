@@ -137,3 +137,45 @@ The difference is the placement rule:
 論命實務一 confirms this independently. He writes that in the 丙申 period 天同化雙祿 has 「對宮有天馬」. That needs 天馬 in 寅, which is the month rule (七月 → 寅). The year rule would put it in 申 itself.
 
 Advanced settings now offer **天馬 placement: by birth year (全書, default) / by birth month (占驗派)**. With the month setting, 論命實務十 matches his description in every palace.
+
+## kunde.org.tw and 倪海廈 天紀 notes (2026-11-09)
+
+### kunde.org.tw 「淑真的廉貞故事」
+
+The case is 陰女, 農曆68年5月26日辰時, printed as a full chart with brightness.
+
+**Placement.** Our chart agrees with every star and every brightness on the printout. It also agrees on 火六局, 命主 祿存, 身主 天相, the Body palace in 財帛, the 己 四化 and the period order. There are three cosmetic differences:
+- iztro adds 年解, 天德 and 月德, which the printout omits.
+- The printout marks 祿存 as 廟; iztro gives 祿存 no brightness.
+- The printout marks 旬空 in both void palaces; iztro marks only the one matching the year's yin or yang.
+
+**Palace tone.** The article rates each palace good, mixed or bad, judging mainly by the palace's own stars. Our old tone counted only the 三方四正. Against the old tone, 6 of 12 matched, and the Health palace (bright 機巨, no malefics in it) came out the opposite.
+
+The tone now weighs the palace itself first:
+- its own lucky stars and 祿/權/科 help;
+- its malefics hurt;
+- a birth 化忌 in it counts heavily;
+- the 三方四正 counts a quarter;
+- 空劫 weakens it.
+
+I chose this weighting against the 20 palace ratings from kunde and 范振木's 論命實務一. It matches 10 exactly and never contradicts a rating. The old method also matched 10 but contradicted 3. A test keeps this calibration.
+
+### 倪海廈 天紀 episode 11 notes (finalhopes.com)
+
+These are a student's notes from 倪海廈's 天紀 lectures. Three cases give the year, gender, 局, 紫微 position and Life palace, but no day or time.
+
+Where his rules overlap ours, they agree:
+- **身宮 placement.** In 財帛 he reads private business or trade; in 官祿, office; in 遷移, a life away from home.
+- **廉貪 or 廉破 in 夫妻.** He reads separation; the 全書 卷二 夫妻 lines agree.
+
+Added from his notes: what a birth-year transformation in the Career palace suggests about the kind of work. 化科 points to teaching or research, 化權 to public office or management, and 化祿 to work that handles money. This is consistent with the 全書's natures of 科 (主掌文墨) and 權 (掌判生殺).
+
+Not adopted, because they are specific to his school or predict death or injury, which the app avoids:
+- 左輔 or 右弼 alone in a palace means isolation;
+- 化科 with 化忌 together means a butcher;
+- a malefic alone in a 10-year period means a fatal period;
+- the feng shui directions he pairs with marriage timing.
+
+### 范振木 論命實務十一
+
+This case gives no birth data. Searching the 丁 years found charts matching every published palace: lunar 二月 at 亥時, with 1967 fitting his narrative. In that chart the Body palace sits in an empty 夫妻 with 截路, and the periods run 甲辰 → 癸卯 → 壬寅 → 癸丑. Together with 論命實務十, both of his no-birth-data cases reproduce exactly.
