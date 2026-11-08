@@ -1,10 +1,11 @@
 // Offline support. Everything the app computes runs in the browser, so once the page and its
 // hashed assets are cached the chart and analysis work without a connection. Place search
 // (Open-Meteo, cross-origin) is never cached; a previously chosen place is remembered locally.
-const CACHE = 'ziwei-chart-v1';
+const CACHE = 'ziwei-chart-v2';
+const PAGES = ['./', './index.html', './learn.html', './about.html'];
 
 self.addEventListener('install', (event) => {
-  event.waitUntil(caches.open(CACHE).then((c) => c.addAll(['./', './index.html'])));
+  event.waitUntil(caches.open(CACHE).then((c) => c.addAll(PAGES)));
   self.skipWaiting();
 });
 
@@ -26,10 +27,11 @@ self.addEventListener('fetch', (event) => {
       fetch(req)
         .then((res) => {
           const copy = res.clone();
-          caches.open(CACHE).then((c) => c.put('./', copy));
+          // Each page is cached under its own URL, so offline visits get the right page.
+          caches.open(CACHE).then((c) => c.put(req, copy));
           return res;
         })
-        .catch(() => caches.match('./')),
+        .catch(() => caches.match(req, { ignoreSearch: true }).then((hit) => hit ?? caches.match('./'))),
     );
     return;
   }

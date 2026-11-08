@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light dark" />
+    <title>Methods &amp; sources · Zi Wei Chart</title>
+    <meta name="description" content="How Zi Wei Chart calculates a 紫微斗數 chart and makes its readings: the schools and settings, the analysis rules, the sources quoted, and how they were checked." />
+  </head>
+  <body>
+    <header class="site-header">
+      <nav class="site-nav" aria-label="Site">
+        <a href="./">Chart</a>
+        <a href="./learn.html">Learn</a>
+        <a href="./about.html" aria-current="page">Methods &amp; sources</a>
+        <label class="nav-script">Script
+          <select id="page-script">
+            <option value="zh-TW">繁體</option>
+            <option value="zh-CN">简体</option>
+          </select>
+        </label>
+      </nav>
+      <h1>Methods &amp; sources</h1>
+      <p class="tagline">How the chart is calculated, how the readings are made, where each rule comes from, and what was done to check them.</p>
+      <nav class="learn-toc" aria-label="On this page">
+        <a href="#approach">Approach</a>
+        <a href="#calculation">Calculating the chart</a>
+        <a href="#settings">Schools and settings</a>
+        <a href="#analysis">How the analysis works</a>
+        <a href="#sources">Sources</a>
+        <a href="#checks">How it was checked</a>
+        <a href="#limits">Limits</a>
+      </nav>
+    </header>
+
+    <main id="about" class="prose">
+      <section class="card" id="approach">
+        <h2>Approach</h2>
+        <p>Every reading on this site comes from a written rule, and every rule names its source. There is no AI text generation and no hidden scoring: open any <strong>Why?</strong> panel to see the stars that triggered a statement, the classical line behind it, and the rule's ID.</p>
+        <ul>
+          <li><strong>One school, stated openly.</strong> The analysis follows the 三合 (three-harmony) method of 《紫微斗數全書》, the classical text most schools descend from. Where schools disagree, the app says so and, where it matters, offers a setting.</li>
+          <li><strong>The classics first.</strong> Pattern definitions follow the 全書's own wording. Where modern sources use a looser definition, the app keeps the 全書's and notes the difference.</li>
+          <li><strong>Tendencies, not verdicts.</strong> Classical texts can be blunt. The app words its readings as tendencies, and its own text never predicts death, serious illness or disaster. The classical lines it quotes can be blunter; read them as the tradition's wording, not a forecast.</li>
+        </ul>
+      </section>
+
+      <section class="card" id="calculation">
+        <h2>Calculating the chart</h2>
+        <p>Star placement uses <a href="https://github.com/SylarLong/iztro">iztro</a> 2.6.3 (MIT licence), pinned to that exact version so charts don't change underneath you. Before iztro runs, the app works out which 時辰 (two-hour period) you were born in:</p>
+        <ol>
+          <li><strong>Clock time to true solar time.</strong> The birthplace's historical UTC offset (including daylight saving at the time) gives universal time. Adding 4 minutes per degree of longitude east gives local mean time, and the equation of time (NOAA formula) adjusts that for the season. You can turn this off in Advanced settings to use clock time.</li>
+          <li><strong>Solar time to 時辰.</strong> 子 is 23:00–01:00, 丑 01:00–03:00, and so on. Births within 10 minutes of a boundary show a warning with both possibilities.</li>
+          <li><strong>Lunar date.</strong> iztro converts the solar date to the lunar calendar. The year turns at Lunar New Year, and the late 子 hour (23:00–24:00) counts as the next day; both can be changed.</li>
+        </ol>
+        <p>If you only know the 時辰, choose it directly; no solar-time correction is applied.</p>
+      </section>
+
+      <section class="card" id="settings">
+        <h2>Schools and settings</h2>
+        <p>These are the points where established schools place stars or transformations differently. The defaults follow the 全書 or the most common modern practice; each alternative is a recognised school, not a variation the app invented.</p>
+        <div class="table-wrap">
+          <table class="learn-table">
+            <tr><th>Setting</th><th>Default</th><th>Alternatives</th></tr>
+            <tr><td>Star placement</td><td>全書 (classical)</td><td>中州派 (王亭之), with its 天盤, 地盤 and 人盤 charts</td></tr>
+            <tr><td>天馬 placement</td><td>By birth year: 「安天馬星訣 論本生年支」 (全書)</td><td>By birth month, as 占驗派 teachers such as 范振木 place it</td></tr>
+            <tr><td>Year boundary</td><td>Lunar New Year</td><td>立春 (start of spring), as in 八字</td></tr>
+            <tr><td>Leap-month births</td><td>Split at the 15th</td><td>Whole leap month as the previous month</td></tr>
+            <tr><td>Late 子 hour</td><td>Next day</td><td>Same day</td></tr>
+            <tr><td>四化 table</td><td>Common modern table</td><td>全書, 中州派, 北派, 天紀 (below)</td></tr>
+          </table>
+        </div>
+
+        <h3 id="sihua">The disputed 四化 stems</h3>
+        <p>In the tables offered here, seven of the ten heavenly stems transform the same stars. Three do not:</p>
+        <div class="table-wrap">
+          <table class="learn-table">
+            <tr><th>Table</th><th>戊</th><th>庚</th><th>壬</th><th>Basis</th></tr>
+            <tr><td>Common modern (default)</td><td>貪陰弼機</td><td>陽武陰同</td><td>梁紫輔武</td><td>iztro's default; the table most software and teachers use today</td></tr>
+            <tr><td>全書</td><td>貪陰弼機</td><td>陽武陰同</td><td>梁紫府武</td><td>全書 卷二 安祿權科忌四星變化訣: 「戊貪月弼機為主…庚日武陰同為首…壬梁紫府武宿是」</td></tr>
+            <tr><td>中州派</td><td>貪陰陽機</td><td>陽武府同</td><td>梁紫府武</td><td>王亭之's published table (左輔 and 右弼 never transform)</td></tr>
+            <tr><td>北派</td><td>貪陰弼機</td><td>陽武同相</td><td>梁紫輔武</td><td>河洛 school and the older 鐵版 text</td></tr>
+            <tr><td>天紀</td><td>貪陰弼機</td><td>陽武同陰</td><td>梁紫輔武</td><td>Inferred from 倪海廈's worked cases: his 「太陰化忌」 for a 庚 year only occurs under this table</td></tr>
+          </table>
+        </div>
+        <p class="hint">Letters are 祿, 權, 科, 忌 in order. The chosen table applies to the birth year, every 10-year period and every year.</p>
+      </section>
+
+      <section class="card" id="analysis">
+        <h2>How the analysis works</h2>
+        <h3>Stars and palaces</h3>
+        <p>Each palace is read from its main stars (borrowed from the opposite palace when it has none), their brightness, the minor stars with them, and any transformation. Readings come from the 全書's descriptions of each star and the standard double-star combinations, plus the 全書 卷二 lines for each star in each palace.</p>
+        <h3>Patterns (格局)</h3>
+        <p>The app checks <span id="pattern-count">every</span> named pattern against the chart. An auspicious pattern is graded by what meets it in the Life palace's 三方四正:</p>
+        <ul>
+          <li><strong>Formed:</strong> the structure, supporting stars (六吉, 祿存 or 祿/權/科), and no malefics.</li>
+          <li><strong>Flawed (破格):</strong> supporting stars, but 四煞, 空劫 or 化忌 as well. The promise shows but is only partly delivered.</li>
+          <li><strong>Weak:</strong> the structure without supporting stars.</li>
+          <li><strong>Broken:</strong> the structure meeting malefics with no support.</li>
+        </ul>
+        <p>A challenging pattern is either <strong>Present</strong> or <strong>Softened</strong>, when lucky stars mitigate it as the classics allow.</p>
+        <h3>Palace ratings</h3>
+        <p>Each palace is rated Well supported, Mixed, Under pressure or Quiet. The palace's own stars count most: its lucky stars and 祿/權/科 add, its malefics subtract, and a birth 化忌 in it subtracts heavily. Stars in its 三方四正 count a quarter as much, and 地空 or 地劫 bearing on it (same palace, flanking, trine or opposite) weakens it. The weights were chosen against palace ratings published by two teachers (see <a href="#checks">checks</a>).</p>
+        <h3>10-year periods and years</h3>
+        <p>Each 大限 is read from the natal palace it falls on, that palace's stars, and the period's own 四化. Where the period's 化忌 lands on the birth 化忌 it doubles the obstruction (疊忌); where its 化祿 meets the birth 化祿 or 祿存 it doubles the gain (疊祿). Patterns are re-checked with the period palace as the Life palace. Years (流年) are read the same way, with the year's 化忌 stacking on both the birth and period ones. Each period and year shows how its rating was added up.</p>
+        <h3>Advice notes</h3>
+        <p>Some readings carry an <strong>Advice</strong> note on what to do about a hard period or star (趨吉避凶). Each one comes from the 全書 or from a published case reading by a named teacher, and is cited:</p>
+        <ul>
+          <li>Hard periods: the 全書 on 陰騭: quietly helping others and correcting your own conduct carries you through.</li>
+          <li>陀羅 in a period: 「限遇陀羅事亦多，必然忍耐要謙和」 (全書 卷二).</li>
+          <li>化忌 in the Siblings or Friends palace: no joint ventures or lending with them (倪海廈, 范振木).</li>
+          <li>化忌 on the Spouse palace in a year: marry after it has passed (倪海廈).</li>
+        </ul>
+        <p>Feng shui remedies and anything claiming to avert illness or death are left out.</p>
+      </section>
+
+      <section class="card" id="sources">
+        <h2>Sources</h2>
+        <h3>Classical texts (quoted)</h3>
+        <ul>
+          <li><strong>《紫微斗數全書》</strong>, attributed to 陳希夷 and compiled in the Ming dynasty, volumes 1–3. Public domain; quoted from the <a href="https://zh.wikisource.org/wiki/紫微斗數全書">Wikisource transcription</a>.</li>
+          <li><strong>《紫微斗數》</strong>, attributed to 陳摶, in the Ming 萬曆 《續道藏》. Public domain; used for a few star descriptions.</li>
+        </ul>
+        <p>Every classical quotation in the app is checked by a script against these transcriptions, including the section it is attributed to, and the verified list is kept with the tests. The test suite, which runs before every deploy, fails if any quoted line is not on that list.</p>
+        <h3>Modern teachers and case studies (cited, not quoted)</h3>
+        <ul>
+          <li><strong>范振木</strong> (占驗派), worked cases at <a href="https://www.fjm.tw/xoops/modules/tadnews/index.php?ncsn=4">逸雲閣星相研究所</a>: period readings, 夾 and 空劫 techniques, 天馬 by month.</li>
+          <li><strong>倪海廈</strong>, 天紀 lectures 10–15, from students' notes at <a href="http://www.finalhopes.com/blog/79.html">finalhopes.com</a>: case readings, career and timing advice, his 庚 and 壬 transformations.</li>
+          <li><strong>kunde.org.tw</strong> 紫微案例故事, 「淑真的廉貞故事」: a fully printed chart with brightness and palace-by-palace ratings.</li>
+          <li><strong><a href="https://www.mingli.study/famous">mingli.study</a></strong>: Life-palace stars and pattern labels for public figures.</li>
+          <li>A modern 格局 catalogue (59 patterns with formation and break conditions), used for structural conditions only.</li>
+        </ul>
+        <p>These works are copyrighted, so the app paraphrases them in its own words and cites them by name and article.</p>
+        <h3>Software</h3>
+        <ul>
+          <li><a href="https://github.com/SylarLong/iztro">iztro</a> (MIT): star placement and calendar conversion.</li>
+          <li><a href="https://github.com/Renhuai123/ziwei-doushu">Renhuai123/ziwei-doushu</a> (MIT): compared rule by rule for its 45 patterns.</li>
+          <li><a href="https://open-meteo.com/">Open-Meteo</a> geocoding with <a href="https://www.geonames.org/">GeoNames</a> data (CC BY 4.0): place search.</li>
+        </ul>
+      </section>
+
+      <section class="card" id="checks">
+        <h2>How it was checked</h2>
+        <p>Published cases rarely give exact birth times, so most checks work backwards: find every chart that matches what the case states, then test each claim against those charts.</p>
+        <ul>
+          <li><strong>Chart placement.</strong> The kunde.org.tw printout matches star for star, including every brightness, the 五行局, 命主, 身主 and the period order. 范振木's three cases with birth data match in every palace once his dates are read as lunar dates.</li>
+          <li><strong>倪海廈's cases.</strong> Of 18 cases in lectures 10 and 12–15, 15 reproduce every stated chart feature; the other three each have one claim that never occurs (likely slips in the notes or a different brightness table).</li>
+          <li><strong>Patterns.</strong> Against the pattern labels mingli.study gives for 39 reproducible public figures, agreement rose from 21 to 49 labels after aligning definitions with the 全書. Remaining differences are mostly the site using looser definitions than the 全書.</li>
+          <li><strong>Palace ratings.</strong> Against 20 palace ratings published by kunde.org.tw and 范振木, the app's rating matches 10 exactly and never gives the opposite rating.</li>
+          <li><strong>A problem in the 全書 itself.</strong> Its definitions of 財蔭夾印 and 財印夾祿 can't occur as written (0 in 4,800 generated charts), because 天相's neighbours are fixed. Swapping the flanking stars between the two definitions makes both workable; the app uses that reading and says so.</li>
+        </ul>
+        <p>These checks are kept as automated tests, so a later change that breaks one of them fails the build. The full write-up is in the project's <a href="https://github.com/williamwuofficial/ziwei-chart/blob/main/docs/CROSS-CHECK.md">cross-check notes</a>.</p>
+      </section>
+
+      <section class="card" id="limits">
+        <h2>Limits</h2>
+        <ul>
+          <li><strong>Birth time matters.</strong> A different 時辰 is a different chart. If you're unsure, compare the charts for the neighbouring periods.</li>
+          <li><strong>One method.</strong> The app reads the 三合 way. It does not yet use 飛星 self-transformations (自化), 小限, monthly periods (流月) or compatibility between two charts.</li>
+          <li><strong>Brightness tables differ.</strong> Schools disagree on some brightness values (for example 火星); the app uses iztro's.</li>
+          <li><strong>No verified life events.</strong> The case studies confirm that rules are applied as teachers apply them, not that the readings come true.</li>
+          <li><strong>Privacy.</strong> Everything is calculated in your browser. Only the place name you type is sent to the place search; your birth data stays on your device.</li>
+        </ul>
+        <p class="hint">For entertainment and cultural interest. Not advice on health, money or relationships.</p>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <p><a href="./">Back to the chart</a> · <a href="./learn.html">Learn</a> · <a href="https://github.com/williamwuofficial/ziwei-chart">Source</a></p>
+    </footer>
+    <script type="module" src="./src/about.ts"></script>
+  </body>
+</html>

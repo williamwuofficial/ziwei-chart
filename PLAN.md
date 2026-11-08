@@ -302,3 +302,8 @@ Each phase is shippable on its own.
   - **廉貞 命 with 七殺 in 夫妻:** a partner of steadier temperament (kunde.org.tw).
   
   Left out: feng shui remedies (倪's bed and desk directions) and anything about averting illness or death. Modern teachers are paraphrased and cited, not quoted.
+- **Learn and Methods & sources pages, 2026-11-09:** the site is now three pages (`index.html`, `learn.html`, `about.html`, built as a Vite multi-page app) with a shared nav.
+  - **Learn** (`src/learn.ts`) is generated from the rule data the analysis uses (PALACE_DOMAIN, MAJOR_NATURE, MINOR_NATURE, the quote maps, the iztro stem table, ALL_PATTERNS, GLOSSARY), so it can't drift from the readings. It has filters for patterns and the glossary.
+  - **Methods & sources** is static HTML: the approach, the solar-time calculation, the school settings and 四化 tables, how patterns, palace ratings, periods and advice are made, sources, the cross-check results, and limits. Pattern counts are filled in live.
+  - Both pages share the chart's 繁/简 setting (`src/ui/pageScript.ts`). `npm run t2s` now also scans the two HTML pages.
+  - The service worker caches each page under its own URL (cache v2); before, every navigation was stored as `./`.

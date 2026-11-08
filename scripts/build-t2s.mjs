@@ -16,6 +16,8 @@ const walk = (d) => {
   }
 };
 walk(join(root, 'src'));
+// The Methods page is static HTML converted in the browser, so its text needs mapping too.
+files.push(join(root, 'about.html'), join(root, 'learn.html'));
 
 const chars = new Set();
 for (const f of files) for (const ch of readFileSync(f, 'utf8')) if (/[㐀-鿿]/.test(ch)) chars.add(ch);
