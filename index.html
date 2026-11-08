@@ -6,22 +6,117 @@
     <meta name="color-scheme" content="light dark" />
     <title>Zi Wei Chart</title>
     <meta name="description" content="Zi Wei Dou Shu (紫微斗數) chart calculator with rule-based, cited analysis." />
-    <link rel="stylesheet" href="./src/style.css" />
   </head>
   <body>
     <header class="site-header">
       <h1>Zi Wei Chart <span lang="zh-Hant">紫微斗數</span></h1>
       <p class="tagline">Purple Star Astrology chart and analysis. Every reading is traced to a classical star configuration.</p>
     </header>
+
     <main id="app">
-      <section class="card">
-        <h2>Under construction</h2>
-        <p>The birth-data form, chart and analysis are being built. See the plan in the repository.</p>
-        <p class="engine-check" id="engine-check">Checking chart engine…</p>
+      <form id="birth-form" class="card" novalidate>
+        <h2>Birth details</h2>
+
+        <fieldset class="field gender">
+          <legend>Gender</legend>
+          <label class="choice"><input type="radio" name="gender" value="male" required /> Male</label>
+          <label class="choice"><input type="radio" name="gender" value="female" /> Female</label>
+          <p class="hint">Sets the direction of the 10-year periods.</p>
+        </fieldset>
+
+        <div class="row">
+          <label class="field">
+            <span class="label">Date of birth</span>
+            <input type="date" name="date" min="1900-01-01" max="2099-12-31" required />
+          </label>
+
+          <div class="field">
+            <span class="label" id="time-label">Time of birth</span>
+            <div class="seg" role="radiogroup" aria-labelledby="time-label">
+              <label><input type="radio" name="timeMode" value="exact" checked /> Exact time</label>
+              <label><input type="radio" name="timeMode" value="shichen" /> Only the 時辰</label>
+            </div>
+            <input type="time" name="time" aria-label="Exact time of birth (local clock time)" />
+            <select name="shichen" aria-label="Two-hour period of birth" hidden></select>
+          </div>
+        </div>
+
+        <div class="field place-field">
+          <label class="label" for="place-input">Place of birth</label>
+          <div class="combo">
+            <input id="place-input" type="search" autocomplete="off" placeholder="Start typing a city…" role="combobox"
+              aria-expanded="false" aria-controls="place-list" aria-autocomplete="list" />
+            <ul id="place-list" class="combo-list" role="listbox" hidden></ul>
+          </div>
+          <p class="hint" id="place-status">Needed with an exact time, to work out the time zone and true solar time.</p>
+        </div>
+
+        <details class="advanced">
+          <summary>Advanced settings</summary>
+          <label class="check"><input type="checkbox" name="useSolar" /> Use true solar time (longitude and equation of time)</label>
+          <label class="field">
+            <span class="label">Late 子 hour (23:00–24:00)</span>
+            <select name="dayDivide">
+              <option value="forward">Counts as the next day</option>
+              <option value="current">Counts as the same day</option>
+            </select>
+          </label>
+          <label class="field">
+            <span class="label">Star placement school</span>
+            <select name="algorithm">
+              <option value="default">全書 (classical, default)</option>
+              <option value="zhongzhou">中州派 (Wang Ting Zhi)</option>
+            </select>
+          </label>
+          <label class="field">
+            <span class="label">Chinese script</span>
+            <select name="script">
+              <option value="zh-TW">Traditional 繁體</option>
+              <option value="zh-CN">Simplified 简体</option>
+            </select>
+          </label>
+          <label class="check"><input type="checkbox" name="showAdjective" /> Show miscellaneous stars (雜曜)</label>
+        </details>
+
+        <p class="form-error" id="form-error" role="alert" hidden></p>
+        <button type="submit" class="primary">Calculate chart</button>
+      </form>
+
+      <section id="result" hidden>
+        <div class="card warn" id="boundary-warning" hidden></div>
+        <div class="card chart-card">
+          <div class="chart-head">
+            <h2>Natal chart</h2>
+            <p class="hint">Tap a palace to show its 三方四正 (the palace, its two trines and the opposite palace).</p>
+          </div>
+          <div class="chart-wrap">
+            <div id="chart" class="chart"></div>
+            <svg id="chart-lines" class="chart-lines" aria-hidden="true"></svg>
+          </div>
+          <div class="decades">
+            <span class="label">10-year period (大限)</span>
+            <div id="decade-list" class="decade-list" role="radiogroup" aria-label="Show a 10-year period"></div>
+          </div>
+          <div class="legend">
+            <span><i class="mut lu">祿</i> Prosperity</span>
+            <span><i class="mut quan">權</i> Power</span>
+            <span><i class="mut ke">科</i> Fame</span>
+            <span><i class="mut ji">忌</i> Obstacle</span>
+            <span><i class="mut lu dec">祿</i> outlined = from the selected 10-year period</span>
+            <span><b class="decade-name">大命</b> = palace role in the selected 10-year period</span>
+            <span>Brightness: 廟 strongest → 旺 得 利 平 不 → 陷 weakest</span>
+          </div>
+        </div>
+        <section class="card">
+          <h2>Analysis</h2>
+          <p class="hint">The rule-based reading of star configurations is coming in the next phase.</p>
+        </section>
       </section>
     </main>
+
     <footer class="site-footer">
-      <p>For entertainment and cultural interest. Calculations run entirely in your browser.</p>
+      <p>For entertainment and cultural interest. Calculations run entirely in your browser; only the place name you type is sent to the place search.</p>
+      <p>Chart engine <a href="https://github.com/SylarLong/iztro">iztro</a> (MIT). Place search by <a href="https://open-meteo.com/">Open-Meteo</a> with <a href="https://www.geonames.org/">GeoNames</a> data (CC BY 4.0). <a href="https://github.com/williamwuofficial/ziwei-chart">Source</a>.</p>
     </footer>
     <script type="module" src="./src/main.ts"></script>
   </body>
