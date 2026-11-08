@@ -190,6 +190,11 @@ export function drawLines(svg: SVGSVGElement, grid: HTMLElement, selected: numbe
   const tri = document.createElementNS(ns, 'polygon');
   tri.setAttribute('points', pts.map((p) => p.join(',')).join(' '));
   tri.setAttribute('class', 'trine');
+  // Presentation attributes inline (not only via CSS) so PNG export keeps them.
+  const stroke = getComputedStyle(svg).getPropertyValue('--line').trim() || 'rgba(107,63,160,0.55)';
+  tri.setAttribute('fill', 'none');
+  tri.setAttribute('stroke', stroke);
+  tri.setAttribute('stroke-width', '1.5');
   const opp = document.createElementNS(ns, 'line');
   const [a, b] = [centre(f.self), centre(f.opposite)];
   opp.setAttribute('x1', String(a[0]));
@@ -197,6 +202,9 @@ export function drawLines(svg: SVGSVGElement, grid: HTMLElement, selected: numbe
   opp.setAttribute('x2', String(b[0]));
   opp.setAttribute('y2', String(b[1]));
   opp.setAttribute('class', 'opposite');
+  opp.setAttribute('stroke', stroke);
+  opp.setAttribute('stroke-width', '1.5');
+  opp.setAttribute('stroke-dasharray', '5 4');
   svg.append(tri, opp);
 }
 

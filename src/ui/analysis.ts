@@ -1,4 +1,5 @@
 import type { DecadeReading, DecadeTone } from '../analysis/decades';
+import type { YearReading } from '../analysis/years';
 import type { Analysis, Finding, PalaceCard, PatternFinding } from '../analysis/evaluate';
 import type { PatternStatus } from '../analysis/rules/types';
 import type { Script } from '../engine/chart';
@@ -108,6 +109,50 @@ export interface DecadeOptions {
   /** Current nominal age, to mark the decade you are in. */
   nowAge?: number;
   onPick: (palaceIndex: number) => void;
+  /** Year-by-year readings for a decade palace (computed when opened). */
+  years?: (palaceIndex: number) => YearReading[];
+}
+
+function toneWhy(parts: string[], score: number, script: Script): HTMLElement {
+  const how = h('details', 'why tone-why');
+  how.append(h('summary', undefined, 'How the tone was set'));
+  const ul = h('ul');
+  for (const part of parts) {
+    const li = h('li');
+    li.append(rich(part, script));
+    ul.append(li);
+  }
+  how.append(ul, h('p', 'source', `Total ${score}: 2 or more is Favourable, −2 or less is Challenging, anything between is Mixed.`));
+  return how;
+}
+
+function yearsBlock(d: DecadeReading, o: DecadeOptions, script: Script, open: boolean): HTMLElement {
+  const box = h('details', 'years');
+  box.append(h('summary', undefined, 'Year by year (流年)'));
+  const fill = () => {
+    if (box.dataset.filled) return;
+    box.dataset.filled = '1';
+    for (const y of o.years!(d.index)) {
+      const row = h('details', `year-row${o.nowAge === y.age ? ' now' : ''}`);
+      const sum = h('summary');
+      const gz = h('span', 'zh', `${y.stem}${y.branch}`);
+      gz.lang = script === 'zh-TW' ? 'zh-Hant' : 'zh-Hans';
+      sum.append(h('span', 'yr', String(y.year)), gz, h('span', 'en', `age ${y.age}`));
+      if (o.nowAge === y.age) sum.append(h('span', 'chip now', 'This year'));
+      sum.append(h('span', `chip ${DECADE_TONE[y.tone].cls}`, DECADE_TONE[y.tone].label));
+      row.append(sum);
+      for (const f of y.findings) row.append(finding(f, script));
+      row.append(toneWhy(y.scoreParts, y.score, script));
+      if (o.nowAge === y.age) row.open = true;
+      box.append(row);
+    }
+  };
+  box.addEventListener('toggle', fill);
+  if (open) {
+    box.open = true;
+    fill();
+  }
+  return box;
 }
 
 function decadesSection(o: DecadeOptions, script: Script, onShow: (palaces: number[]) => void): HTMLElement {
@@ -121,6 +166,11 @@ function decadesSection(o: DecadeOptions, script: Script, onShow: (palaces: numb
     ),
   );
   sec.append(hint);
+  if (o.years) {
+    const yh = h('p', 'hint');
+    yh.append(rich('Each period also opens year by year (流年): the year’s palace is the one matching the year’s earthly branch, and the year stem brings its own four transformations, which can stack on the birth and period ones (疊忌, 疊祿).', script));
+    sec.append(yh);
+  }
 
   const inDecade = (d: DecadeReading) => o.nowAge !== undefined && o.nowAge >= d.range[0] && o.nowAge <= d.range[1];
   const bar = h('div', 'timeline');
@@ -172,16 +222,8 @@ function decadesSection(o: DecadeOptions, script: Script, onShow: (palaces: numb
       card.append(pl);
     }
 
-    const how = h('details', 'why tone-why');
-    how.append(h('summary', undefined, 'How the tone was set'));
-    const ul = h('ul');
-    for (const part of d.scoreParts) {
-      const li = h('li');
-      li.append(rich(part, script));
-      ul.append(li);
-    }
-    how.append(ul, h('p', 'source', `Total ${d.score}: 2 or more is Favourable, −2 or less is Challenging, anything between is Mixed.`));
-    card.append(how);
+    card.append(toneWhy(d.scoreParts, d.score, script));
+    if (o.years) card.append(yearsBlock(d, o, script, inDecade(d)));
 
     const actions = h('div', 'decade-actions');
     const overlay = h('button', 'link', 'Show this period on the chart');

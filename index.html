@@ -86,7 +86,13 @@
         <div class="card warn" id="boundary-warning" hidden></div>
         <div class="card chart-card">
           <div class="chart-head">
-            <h2>Natal chart</h2>
+            <div class="chart-title">
+              <h2>Natal chart</h2>
+              <div class="chart-tools">
+                <button type="button" class="link" id="save-png">Save as PNG</button>
+                <button type="button" class="link" id="print-page">Print</button>
+              </div>
+            </div>
             <p class="hint">Tap a palace to show its 三方四正 (the palace, its two trines and the opposite palace).</p>
           </div>
           <div class="chart-wrap">
@@ -112,7 +118,7 @@
     </main>
 
     <footer class="site-footer">
-      <p>For entertainment and cultural interest. Calculations run entirely in your browser; only the place name you type is sent to the place search.</p>
+      <p>For entertainment and cultural interest. Calculations run entirely in your browser; only the place name you type is sent to the place search. After the first visit the site also works offline (place search needs a connection).</p>
       <p>Chart engine <a href="https://github.com/SylarLong/iztro">iztro</a> (MIT). Place search by <a href="https://open-meteo.com/">Open-Meteo</a> with <a href="https://www.geonames.org/">GeoNames</a> data (CC BY 4.0). <a href="https://github.com/williamwuofficial/ziwei-chart">Source</a>.</p>
     </footer>
     <script type="module" src="./src/main.ts"></script>

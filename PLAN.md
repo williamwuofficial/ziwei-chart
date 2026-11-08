@@ -260,8 +260,15 @@ Each phase is shippable on its own.
 
 ## 9. Status
 
-- Phases 0–3 are live: scaffold, chart, natal analysis and life stages.
+- Phases 0–4 are live: scaffold, chart, natal analysis, life stages and polish.
 - Phase 2 has 46 auspicious and 19 adverse patterns, 14 star natures, 24 star pairs, transformation and 身宮 rules, 12 palace cards, a "Why?" panel on every statement, and pinyin + English tooltips.
 - Quoted verses are checked against the catalogue text, and the verified list is kept in `tests/fixtures/verses.txt`.
 - The Simplified display uses a generated character map (`npm run t2s`). A test fails if the map is missing a character.
 - Phase 3 reads each 大限 from five things: the natal palace it runs through, that palace's stars, the decade 四化 (where 祿 and 忌 land), 疊忌 and 疊祿, and patterns re-checked with the decade palace as 命. The tone score is shown under "How the tone was set". Across ~1,500 sample decades the tones came out about 61% mixed, 30% favourable and 9% challenging.
+- Phase 4 added:
+  - 11 more catalogue patterns, for 52 auspicious and 24 adverse in total;
+  - year-by-year (流年) readings inside each decade, cross-checked against iztro's own 流年 palace and 四化;
+  - PNG export at a fixed 900 px width;
+  - print styles;
+  - an offline service worker.
+- Known limitation: decade and year 四化 use iztro's standard stem table, not per-chart overrides. A future 四化-school setting would need to pass its table through `stemMutagens`.

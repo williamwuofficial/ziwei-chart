@@ -4,5 +4,5 @@ import { defineConfig } from 'vite';
 export default defineConfig({
   base: '/ziwei-chart/',
   // iztro ships every locale (~490 KB); trimming it is a Phase 4 task.
-  build: { target: 'es2022', chunkSizeWarningLimit: 600 },
+  build: { target: 'es2022', chunkSizeWarningLimit: 700 },
 });

@@ -6,6 +6,9 @@ A static Zi Wei Dou Shu (Purple Star Astrology) chart calculator and analyser, h
 - The chart shows the main and minor stars, with star and palace names in Chinese.
 - The analysis below the chart covers the natal chart and each 10-year period. Every statement comes from a known star configuration, with its source cited.
 
+- The analysis covers 76 named patterns (格局), all twelve palaces, each 10-year period (大限), and each year within it (流年).
+- The chart can be saved as a PNG or printed. After the first visit the site works offline.
+
 Everything runs in the browser. Birth data is never sent anywhere. The only network request is the place-name search.
 
 See [PLAN.md](PLAN.md) for the design and research notes.
@@ -16,6 +19,7 @@ See [PLAN.md](PLAN.md) for the design and research notes.
 npm install
 npm run dev
 npm test
+npm run t2s   # after editing any Chinese text: regenerates the Simplified character map
 ```
 
 ## Credits

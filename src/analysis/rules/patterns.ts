@@ -571,6 +571,85 @@ export const AUSPICIOUS: PatternRule[] = [
     match: (x) => (x.hasMut(x.ming, '科') && x.has(anhe(x.ming), '祿存') ? m(x, [`化科 in ${x.label(x.ming)}`, `⟨祿存⟩ in its 暗合 partner ${x.label(anhe(x.ming))}`], [x.ming, anhe(x.ming)]) : undefined),
     text: 'A public reputation with quiet material backing. Classically a respected position with resources behind it.',
   },
+  {
+    id: 'ge.fugong-wenxing',
+    zh: '輔拱文星格',
+    en: 'Helper supports the literary star',
+    kind: 'auspicious',
+    sources: [{ basis: `${CATALOGUE}: 文昌 in 命宮 with 左輔 in its trines or opposite palace` }],
+    match: (x) => {
+      if (!x.has(x.ming, '文昌')) return undefined;
+      const fu = [...trines(x.ming), opp(x.ming)].find((i) => x.has(i, '左輔'));
+      return fu !== undefined ? m(x, [`⟨文昌⟩ in ${x.label(x.ming)}`, `⟨左輔⟩ in ${x.label(fu)}`]) : undefined;
+    },
+    text: 'Learning backed by able helpers. Classically quick, talented and ahead of peers, with a path into senior administrative or advisory roles.',
+  },
+  {
+    id: 'ge.luma-peiyin',
+    zh: '祿馬佩印格',
+    en: 'Prosperity and Horse wear the seal',
+    kind: 'auspicious',
+    sources: [{ basis: `${CATALOGUE}: 祿存 or 化祿 together with 天馬 and a bright 天相 in 命宮` }],
+    match: (x) =>
+      x.bright(x.ming, '天相') && x.has(x.ming, '天馬') && (x.has(x.ming, '祿存') || x.hasMut(x.ming, '祿'))
+        ? m(x, [`⟨天相⟩ ${x.brightness(x.ming, '天相')}, ⟨天馬⟩ and a 祿 star in ${x.label(x.ming)}`])
+        : undefined,
+    text: 'Prosperity, mobility and the official seal together. Classically authority and income that grow through movement: postings, travel or work that crosses regions.',
+  },
+  {
+    id: 'ge.riyue-zhaobi',
+    zh: '日月照壁格',
+    en: 'Sun and Moon light the walls',
+    kind: 'auspicious',
+    sources: [{ basis: `${CATALOGUE}: 太陽 and 太陰 together in the 田宅 palace at 丑 or 未` }],
+    match: (x) => {
+      const t = x.byName('田宅');
+      return x.at(t, '丑', '未') && x.has(t, '太陽', '太陰') ? m(x, [`⟨太陽⟩ and ⟨太陰⟩ in ${x.label(t)}`], [t, ...sfsz(x.ming)]) : undefined;
+    },
+    text: 'Both luminaries in the Property palace. Classically wealth in land and buildings: owning property, inheriting a family base or doing well in real estate. The catalogue adds that the Life palace must also be supported for this to count.',
+  },
+  {
+    id: 'ge.cailu-jiama',
+    zh: '財祿夾馬格',
+    en: 'Wealth and Prosperity flank the Horse',
+    kind: 'auspicious',
+    sources: [{ basis: `${CATALOGUE}: 天馬 in 命宮 flanked by 武曲 on one side and birth-year 化祿 on the other` }],
+    match: (x) =>
+      x.has(x.ming, '天馬') && flanked(x, x.ming, (i) => x.has(i, '武曲'), (i) => x.hasMut(i, '祿'))
+        ? m(x, [`⟨天馬⟩ in ${x.label(x.ming)}`, '⟨武曲⟩ and 化祿 on either side'], [...neighbours(x.ming), x.ming])
+        : undefined,
+    text: 'Movement hemmed in by money. Classically daring and opportunistic: poor first and rich later through risk and enterprise, wealthy rather than titled. The catalogue says it needs 左右 or 昌曲 to be more than ordinary.',
+  },
+  {
+    id: 'ge.quansha-hualu',
+    zh: '權煞化祿格',
+    en: 'Malefic turned into power',
+    kind: 'auspicious',
+    sources: [{ verse: '擎羊入廟加吉，富貴聲揚', basis: `${CATALOGUE}: 擎羊, 陀羅, 火星 or 鈴星 at 廟 brightness in 命宮, with lucky stars in the 三方四正` }],
+    match: (x) => {
+      const sha = SHA4.filter((s) => x.brightness(x.ming, s) === '廟');
+      return sha.length ? m(x, [`${sha.map((s) => `⟨${s}⟩ 廟`).join(', ')} in ${x.label(x.ming)}`]) : undefined;
+    },
+    tolerates: SHA4,
+    text: 'A malefic star at full strength becomes drive and nerve. Classically a bold, forceful character who passes through danger and comes out on top; suited to high-risk, competitive or physical work. Without lucky stars the catalogue warns of recklessness.',
+  },
+  {
+    id: 'ge.huaxing-fangui',
+    zh: '化星返貴格',
+    en: 'Transformations turn weakness into honour',
+    kind: 'auspicious',
+    sources: [
+      { verse: '天同戌宮為反背，丁人化吉主大貴', basis: `${CATALOGUE}: 天同 in 命宮 at 戌 for a 丁 year` },
+      { verse: '辰戌應嫌陷巨門，辛人命遇反為奇格', basis: `${CATALOGUE}: 巨門 in 命宮 at 辰 for a 辛 year` },
+    ],
+    match: (x) => {
+      if (x.at(x.ming, '戌') && x.has(x.ming, '天同') && x.yearStemIs('丁')) return m(x, [`⟨天同⟩ in ${x.label(x.ming)}`, '丁 year']);
+      if (x.at(x.ming, '辰') && x.has(x.ming, '巨門') && x.yearStemIs('辛')) return m(x, [`⟨巨門⟩ in ${x.label(x.ming)}`, '辛 year']);
+      return undefined;
+    },
+    tolerates: ['巨門化忌', '文昌化忌'],
+    text: 'A star in a poor position is rescued by the year’s transformations. Classically a reversal: what looks like a weak placement becomes a source of wealth and standing.',
+  },
 ];
 
 export const ADVERSE: PatternRule[] = [
@@ -822,6 +901,73 @@ export const ADVERSE: PatternRule[] = [
         ? m(x, [`⟨破軍⟩ in ${x.label(x.ming)}`, 'no lucky stars in the 三方四正'])
         : undefined,
     text: 'The pioneer star without allies. Classically a hard, lonely road with little inherited help. Read today as a strongly self-made life: progress comes from your own effort and from building your own network.',
+  },
+  {
+    id: 'ge.wutan-shoushen',
+    zh: '武貪守身格',
+    en: 'Wealth and Desire guard the Body palace',
+    kind: 'adverse',
+    sources: [{ verse: '貪狼武曲同宮，先貧而後富', basis: `${CATALOGUE}: 命宮 has no main star while 武曲 and 貪狼 occupy the 身宮` }],
+    match: (x) =>
+      x.noMain(x.ming) && x.body !== x.ming && x.has(x.body, '武曲', '貪狼')
+        ? m(x, [`${x.label(x.ming)} has no main star`, `⟨武曲⟩ and ⟨貪狼⟩ in the 身宮 ${x.label(x.body)}`], [x.ming, x.body])
+        : undefined,
+    text: 'An empty Life palace with the wealth and desire stars in the Body palace. Classically a hard start and a better finish: poor first and rich later, often through a skill, craft or the arts. Lucky stars decide how far it goes.',
+  },
+  {
+    id: 'ge.juji-huayou',
+    zh: '巨機化酉格',
+    en: 'Great Gate and Strategist in 酉 with Obstacle',
+    kind: 'adverse',
+    sources: [{ verse: '巨機酉上化吉者，縱遇財官也不榮', basis: `${CATALOGUE}: 巨門 and 天機 in 命宮 at 酉 with 化忌 in the same palace` }],
+    match: (x) =>
+      x.at(x.ming, '酉') && x.has(x.ming, '巨門', '天機') && x.hasMut(x.ming, '忌')
+        ? m(x, [sitsIn(x, x.ming, ['巨門', '天機']), `化忌 in ${x.label(x.ming)}`])
+        : undefined,
+    text: 'The 酉 form of the 巨機 pair, with the obstacle transformation. Classically restless effort and words that cause trouble: sharp speech, arguments and plans that change too often. Measured speech and finishing what is started are the remedies.',
+  },
+  {
+    id: 'ge.wenxing-yujia',
+    zh: '文星遇夾格',
+    en: 'Literary star trapped by the voids',
+    kind: 'adverse',
+    sources: [{ basis: `${CATALOGUE}: 文昌 or 文曲 in 命宮 flanked by 地空 and 地劫` }],
+    match: (x) => {
+      const wen = x.hasAny(x.ming, ['文昌', '文曲']);
+      return wen.length && flanked(x, x.ming, (i) => x.has(i, '地空'), (i) => x.has(i, '地劫'))
+        ? m(x, [`${wen.map((s) => `⟨${s}⟩`).join(', ')} in ${x.label(x.ming)}`, '⟨地空⟩ and ⟨地劫⟩ on either side'], [...neighbours(x.ming), x.ming])
+        : undefined;
+    },
+    text: 'Talent squeezed by the two voids. Classically ability that goes unused: studying one thing and working in another, or abandoning projects half-way. Strong main stars and good transformations in the Life palace cancel it.',
+  },
+  {
+    id: 'ge.kuiyue-xiongchong',
+    zh: '魁鉞凶沖格',
+    en: 'Noble helpers overwhelmed by malefics',
+    kind: 'adverse',
+    sources: [{ verse: '魁鉞重逢羊陀空劫湊，痼疾尤多', basis: `${CATALOGUE}: 天魁 or 天鉞 in 命宮 meeting three or more of 四煞 and 空劫 in the 三方四正` }],
+    match: (x) => {
+      const kui = x.hasAny(x.ming, ['天魁', '天鉞']);
+      if (!kui.length) return undefined;
+      const bad = sfsz(x.ming).flatMap((i) => x.hasAny(i, [...SHA4, '地空', '地劫']));
+      return bad.length >= 3 ? m(x, [`${kui.map((s) => `⟨${s}⟩`).join(', ')} in ${x.label(x.ming)}`, `malefics: ${[...new Set(bad)].map((s) => `⟨${s}⟩`).join(', ')}`]) : undefined;
+    },
+    text: 'The noble-helper stars are crowded out. Classically help that does not arrive when needed, and a warning about persistent health complaints. Building your own support and looking after your health are the remedies.',
+  },
+  {
+    id: 'ge.cai-yu-qiuchou',
+    zh: '財與囚仇格',
+    en: 'Wealth and the Prisoner at odds',
+    kind: 'adverse',
+    sources: [{ basis: `${CATALOGUE}: 武曲 and 廉貞 split between 命宮 and 身宮, with 四煞, 空劫 or 化忌 on either` }],
+    match: (x) => {
+      if (x.body === x.ming) return undefined;
+      const split = (x.has(x.ming, '武曲') && x.has(x.body, '廉貞')) || (x.has(x.ming, '廉貞') && x.has(x.body, '武曲'));
+      if (!split) return undefined;
+      const bad = x.malefic([x.ming, x.body]);
+      return bad.length ? m(x, [`⟨武曲⟩ and ⟨廉貞⟩ in ${x.label(x.ming)} and the 身宮 ${x.label(x.body)}`, `malefics: ${bad.map((s) => `⟨${s}⟩`).join(', ')}`], [x.ming, x.body]) : undefined;
+    },
+    text: 'Metal (武曲) and fire (廉貞) set against each other across your Life and Body palaces. Classically inner conflict between money and principle, with a warning about sudden setbacks. The catalogue drops the warning when both stars are bright and well supported.',
   },
 ];
 

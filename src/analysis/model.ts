@@ -2,8 +2,8 @@
 // iztro chart, so rules can name stars and palaces in Traditional regardless of display script.
 // Tests build these objects by hand.
 
-import { HEAVENLY_STEMS, heavenlyStems } from 'iztro/lib/data';
-import ZH_TW_STARS from 'iztro/lib/i18n/locales/zh-TW/star';
+import * as IZTRO_DATA from 'iztro/lib/data';
+import * as ZH_TW_STAR_MODULE from 'iztro/lib/i18n/locales/zh-TW/star';
 import type { Astrolabe } from '../engine/chart';
 
 export type Mut = '祿' | '權' | '科' | '忌';
@@ -42,6 +42,8 @@ export interface ChartM {
   yearBranch: string;
   /** iztro 時辰 index 0–12. */
   timeIndex: number;
+  /** Lunar year of birth (nominal age 1). Optional so hand-built test charts can omit it. */
+  lunarYear?: number;
 }
 
 export const BRANCHES = ['寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥', '子', '丑'] as const;
@@ -51,6 +53,7 @@ export function toModel(chart: Astrolabe, gender: 'male' | 'female', timeIndex: 
   return {
     gender,
     timeIndex,
+    lunarYear: chart.rawDates.lunarDate.lunarYear,
     yearStem: yearPillar[0],
     yearBranch: yearPillar[1],
     palaces: chart.palaces.map((p) => ({
@@ -63,7 +66,7 @@ export function toModel(chart: Astrolabe, gender: 'male' | 'female', timeIndex: 
       adjective: p.adjectiveStars.map((s) => s.name),
       isBody: p.isBodyPalace,
       decade: [p.decadal.range[0], p.decadal.range[1]],
-      decadeMut: p.decadal.range[0] <= 95 ? decadeMutagens(p.heavenlyStem) : undefined,
+      decadeMut: p.decadal.range[0] <= 95 ? stemMutagens(p.heavenlyStem) : undefined,
     })),
   };
 }
@@ -76,6 +79,18 @@ function star(s: { name: string; brightness?: string; mutagen?: string }): StarM
   };
 }
 
+/**
+ * iztro ships CommonJS. Node (Vitest) and Vite's browser pre-bundling wrap its `exports.default`
+ * differently (once vs twice), so unwrap `default` until the real object appears.
+ */
+function unwrap<T>(mod: unknown, has: string): T {
+  let m = mod as Record<string, unknown>;
+  for (let i = 0; i < 3 && m && !(has in m) && 'default' in m; i++) m = m.default as Record<string, unknown>;
+  return m as T;
+}
+const DATA = unwrap<{ HEAVENLY_STEMS: readonly string[]; heavenlyStems: Record<string, { mutagen: readonly string[] }> }>(IZTRO_DATA, 'heavenlyStems');
+const ZH_TW_STARS = unwrap<Record<string, string>>(ZH_TW_STAR_MODULE, 'ziweiMaj');
+
 const STEMS = '甲乙丙丁戊己庚辛壬癸';
 
 /**
@@ -83,9 +98,13 @@ const STEMS = '甲乙丙丁戊己庚辛壬癸';
  * chart.horoscope per decade costs ~30 ms each). If a per-chart 四化 override setting is added
  * later, apply it here too.
  */
-function decadeMutagens(stem: string): PalaceM['decadeMut'] {
-  const key = HEAVENLY_STEMS[STEMS.indexOf(stem)];
-  const keys = key ? (heavenlyStems as Record<string, { mutagen: readonly string[] }>)[key]?.mutagen : undefined;
-  const names = keys?.map((k) => (ZH_TW_STARS as Record<string, string>)[k]);
+export function stemMutagens(stem: string): PalaceM['decadeMut'] {
+  const key = DATA.HEAVENLY_STEMS[STEMS.indexOf(stem)];
+  const keys = key ? DATA.heavenlyStems[key]?.mutagen : undefined;
+  const names = keys?.map((k) => ZH_TW_STARS[k]);
   return names?.length === 4 && names.every(Boolean) ? (names as [string, string, string, string]) : undefined;
 }
+
+// Self-check: the interop above broke once in the browser while tests passed in Node. If the
+// table fails to resolve, say so loudly instead of silently dropping every 大限/流年 四化 reading.
+if (!stemMutagens('甲')) console.error('ziwei-chart: iztro stem 四化 table did not load; decade and year 四化 readings are missing.');

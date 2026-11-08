@@ -252,3 +252,26 @@ details.why .rule-id { font-family: ui-monospace, monospace; font-size: 0.72rem;
 .pattern-row .finding { margin-top: 6px; }
 .tone-why { margin-top: 4px; }
 .decade-actions { display: flex; flex-wrap: wrap; gap: 4px 16px; margin-top: 8px; font-size: 0.82rem; }
+details.years { margin-top: 8px; border-top: 1px solid var(--border); padding-top: 6px; }
+details.years > summary { cursor: pointer; font-weight: 600; font-size: 0.88rem; color: var(--accent); }
+.year-row { border-top: 1px dashed var(--border); padding: 6px 0 4px; }
+.year-row:first-of-type { border-top: 0; }
+.year-row > summary { cursor: pointer; display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 10px; font-size: 0.88rem; }
+.year-row .yr { font-weight: 700; }
+.year-row .zh { color: var(--accent); }
+.year-row .en { color: var(--muted); font-size: 0.8rem; }
+.year-row.now { background: color-mix(in srgb, var(--accent-soft) 40%, transparent); border-radius: 6px; padding-left: 6px; padding-right: 6px; }
+.year-row .finding { margin-top: 6px; }
+
+/* ---------- Export and print ---------- */
+.chart-title { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.chart-tools { display: flex; gap: 16px; font-size: 0.85rem; }
+@media print {
+  :root { --bg: #fff; --surface: #fff; --surface-2: #fff; --text: #000; --muted: #444; --border: #bbb; }
+  body { background: #fff; }
+  #birth-form, .chart-tools, .decades, .decade-actions, .show-on-chart, .timeline, .site-header .tagline, #boundary-warning, details.why { display: none !important; }
+  .card { border: 0; padding: 0; margin: 12px 0; }
+  .chart-wrap, .pattern, .decade-card, .palace-card, .year-row { break-inside: avoid; }
+  .chart-head .hint { display: none; }
+  a { color: inherit; text-decoration: none; }
+}

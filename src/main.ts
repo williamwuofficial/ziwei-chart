@@ -5,6 +5,7 @@ import { drawLines, renderChart, renderDecades, type ChartView } from './ui/char
 import { setupForm, type BirthInput } from './ui/form';
 import { analyse } from './analysis/evaluate';
 import { readDecades } from './analysis/decades';
+import { readYears } from './analysis/years';
 import { toModel } from './analysis/model';
 import { renderAnalysis } from './ui/analysis';
 import { toScript } from './ui/zhText';
@@ -76,6 +77,7 @@ function show(input: BirthInput, birth: ResolvedBirth): void {
     },
     {
       decades: readDecades(model),
+      years: (i) => readYears(model, i),
       nowAge: nowAge !== undefined && nowAge > 0 ? nowAge : undefined,
       onPick: (i) => {
         if (!view) return;
@@ -144,3 +146,54 @@ const formApi = setupForm(form, (input, auto) => {
 
 new ResizeObserver(() => view && drawLines(lines, grid, view.selected)).observe(grid);
 formApi.submitIfReady();
+
+// --- Export -------------------------------------------------------------------------------
+const saveBtn = $<HTMLButtonElement>('save-png');
+saveBtn.addEventListener('click', async () => {
+  if (!view) return;
+  const label = saveBtn.textContent;
+  saveBtn.disabled = true;
+  saveBtn.textContent = 'Saving…';
+  try {
+    // Loaded on demand so the main bundle stays smaller.
+    const { toPng } = await import('html-to-image');
+    const node = document.querySelector<HTMLElement>('.chart-wrap')!;
+    const bg = getComputedStyle(document.body).backgroundColor;
+    // Render at a fixed desktop width so phone exports are not cramped. The ResizeObserver
+    // redraws the 三方四正 lines for the new size before the capture.
+    const prev = node.style.width;
+    node.style.width = '900px';
+    await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
+    drawLines(lines, grid, view.selected);
+    let url: string;
+    try {
+      url = await toPng(node, { pixelRatio: 2, backgroundColor: bg, cacheBust: true });
+    } finally {
+      node.style.width = prev;
+      drawLines(lines, grid, view.selected);
+    }
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `ziwei-chart-${view.birth.dateStr}.png`;
+    a.click();
+  } catch (err) {
+    alert(`Could not create the image: ${String(err)}`);
+  } finally {
+    saveBtn.disabled = false;
+    saveBtn.textContent = label;
+  }
+});
+$<HTMLButtonElement>('print-page').addEventListener('click', () => {
+  // Open every reading so the printout is complete, then restore.
+  const closed = [...document.querySelectorAll<HTMLDetailsElement>('#analysis details:not([open])')].filter((d) => !d.classList.contains('why'));
+  closed.forEach((d) => (d.open = true));
+  window.print();
+  closed.forEach((d) => (d.open = false));
+});
+
+// --- Offline -------------------------------------------------------------------------------
+if (import.meta.env.PROD && 'serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./sw.js').catch(() => {
+    /* offline support is optional */
+  });
+}
