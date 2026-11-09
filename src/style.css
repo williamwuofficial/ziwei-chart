@@ -234,6 +234,11 @@ details.why .rule-id { font-family: ui-monospace, monospace; font-size: 0.72rem;
 .tl-item.mixed { border-top-color: var(--decade); }
 .tl-item.bad { border-top-color: var(--ji); }
 .tl-item.now { box-shadow: 0 0 0 2px var(--accent); }
+.tl-item.selected { background: var(--accent-soft); border-color: var(--accent); }
+.tl-item.selected .tl-ages { color: var(--accent); }
+.tl-item:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.decade-nav { display: flex; justify-content: space-between; gap: 12px; margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--border); }
+.decade-nav .next { margin-left: auto; }
 .tl-ages { font-weight: 700; font-size: 0.85rem; }
 .tl-tone { font-size: 0.7rem; color: var(--muted); }
 .tl-now { font-size: 0.65rem; font-weight: 700; color: var(--accent); }
@@ -316,6 +321,8 @@ h4.learn-name { font-size: 1rem; }
   body { background: #fff; }
   .site-nav, .learn-toc, .learn-filter, #birth-form, .chart-tools, .decades, .decade-actions, .show-on-chart, .timeline, .site-header .tagline, #boundary-warning, details.why { display: none !important; }
   .card { border: 0; padding: 0; margin: 12px 0; }
+  .decade-card[hidden] { display: block !important; }
+  .decade-nav { display: none !important; }
   .chart-wrap, .pattern, .decade-card, .palace-card, .year-row { break-inside: avoid; }
   .chart-head .hint { display: none; }
   a { color: inherit; text-decoration: none; }

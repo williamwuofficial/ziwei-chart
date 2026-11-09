@@ -170,6 +170,14 @@ function yearsBlock(d: DecadeReading, o: DecadeOptions, script: Script, open: bo
   return box;
 }
 
+/** Selects a period card by its palace index; set while a decades section is on the page. */
+let selectDecade: ((palaceIndex: number) => void) | undefined;
+
+/** Show the reading for the period in this palace (e.g. when it is picked on the chart). */
+export function showDecade(palaceIndex: number): void {
+  selectDecade?.(palaceIndex);
+}
+
 function decadesSection(o: DecadeOptions, script: Script, onShow: (palaces: number[]) => void): HTMLElement {
   const sec = h('section', 'an-section decades-section');
   sec.append(h('h3', undefined, 'Life stages by 10-year period'));
@@ -188,23 +196,52 @@ function decadesSection(o: DecadeOptions, script: Script, onShow: (palaces: numb
   }
 
   const inDecade = (d: DecadeReading) => o.nowAge !== undefined && o.nowAge >= d.range[0] && o.nowAge <= d.range[1];
+  // The timeline works as tabs: only the selected period's card is shown, so moving between
+  // periods doesn't mean scrolling past all the others.
   const bar = h('div', 'timeline');
-  bar.setAttribute('role', 'list');
-  for (const d of o.decades) {
+  bar.setAttribute('role', 'tablist');
+  bar.setAttribute('aria-label', '10-year periods');
+  const tabs: HTMLButtonElement[] = [];
+  const cards: HTMLElement[] = [];
+  const select = (k: number, focusTop = false) => {
+    tabs.forEach((t, j) => {
+      t.setAttribute('aria-selected', String(j === k));
+      t.tabIndex = j === k ? 0 : -1;
+      t.classList.toggle('selected', j === k);
+    });
+    cards.forEach((c, j) => (c.hidden = j !== k));
+    // Coming from the bottom of a long card, bring the new card's top back into view.
+    if (focusTop && bar.getBoundingClientRect().top < 0) bar.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+  o.decades.forEach((d, k) => {
     const b = h('button', `tl-item ${DECADE_TONE[d.tone].cls}${inDecade(d) ? ' now' : ''}`);
     b.type = 'button';
-    b.setAttribute('role', 'listitem');
+    b.id = `decade-tab-${d.range[0]}`;
+    b.setAttribute('role', 'tab');
+    b.setAttribute('aria-controls', `decade-${d.range[0]}`);
     b.append(h('span', 'tl-ages', `${d.range[0]}–${d.range[1]}`), h('span', 'tl-tone', DECADE_TONE[d.tone].label));
     if (inDecade(d)) b.append(h('span', 'tl-now', 'Now'));
     b.title = `${d.stage} · ${DECADE_TONE[d.tone].label}`;
-    b.addEventListener('click', () => document.getElementById(`decade-${d.range[0]}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' }));
+    b.addEventListener('click', () => select(k));
+    b.addEventListener('keydown', (e) => {
+      const step = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
+      if (!step) return;
+      e.preventDefault();
+      const n = (k + step + tabs.length) % tabs.length;
+      select(n);
+      tabs[n].focus();
+    });
+    tabs.push(b);
     bar.append(b);
-  }
+  });
   sec.append(bar);
 
-  for (const d of o.decades) {
+  o.decades.forEach((d, k) => {
     const card = h('article', `decade-card${inDecade(d) ? ' now' : ''}`);
     card.id = `decade-${d.range[0]}`;
+    card.setAttribute('role', 'tabpanel');
+    card.setAttribute('aria-labelledby', `decade-tab-${d.range[0]}`);
+    cards.push(card);
     const head = h('header');
     const title = h('h4');
     title.append(h('span', 'ages', `Ages ${d.range[0]}–${d.range[1]}`));
@@ -249,8 +286,34 @@ function decadesSection(o: DecadeOptions, script: Script, onShow: (palaces: numb
     pals.addEventListener('click', () => onShow([d.index, (d.index + 4) % 12, (d.index + 8) % 12, (d.index + 6) % 12]));
     actions.append(overlay, pals);
     card.append(actions);
+
+    // Step to the neighbouring periods from the bottom of the card.
+    const nav = h('nav', 'decade-nav');
+    nav.setAttribute('aria-label', 'Neighbouring periods');
+    const prev = o.decades[k - 1];
+    const next = o.decades[k + 1];
+    if (prev) {
+      const p = h('button', 'link', `← Ages ${prev.range[0]}–${prev.range[1]}`);
+      p.type = 'button';
+      p.addEventListener('click', () => select(k - 1, true));
+      nav.append(p);
+    }
+    if (next) {
+      const n = h('button', 'link next', `Ages ${next.range[0]}–${next.range[1]} →`);
+      n.type = 'button';
+      n.addEventListener('click', () => select(k + 1, true));
+      nav.append(n);
+    }
+    card.append(nav);
     sec.append(card);
-  }
+  });
+
+  const now = o.decades.findIndex(inDecade);
+  select(now >= 0 ? now : 0);
+  selectDecade = (palaceIndex) => {
+    const k = o.decades.findIndex((d) => d.index === palaceIndex);
+    if (k >= 0) select(k);
+  };
   return sec;
 }
 

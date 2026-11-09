@@ -7,7 +7,7 @@ import { analyse } from './analysis/evaluate';
 import { readDecades } from './analysis/decades';
 import { readYears } from './analysis/years';
 import { toModel } from './analysis/model';
-import { renderAnalysis } from './ui/analysis';
+import { renderAnalysis, showDecade } from './ui/analysis';
 import { toScript } from './ui/zhText';
 
 const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
@@ -171,6 +171,8 @@ function draw(): void {
   });
   renderDecades(decadeList, view, (i) => {
     view!.decade = i === undefined ? undefined : decadeOverlay(view!.chart, i, view!.birth.timeIndex);
+    // Keep the written reading on the same period as the chart.
+    if (i !== undefined) showDecade(i);
     draw();
   });
   drawLines(lines, grid, view.selected);
