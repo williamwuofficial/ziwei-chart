@@ -8,7 +8,7 @@ export interface Source {
   /** Original classical text, quoted in Chinese (public domain). */
   verse?: string;
   /** Work the verse comes from, when verified against its text (scripts/verify-sources.mjs). */
-  work?: '紫微斗數全書' | '紫微斗數';
+  work?: '紫微斗數全書' | '紫微斗數' | '三命通會' | '滴天髓' | '淵海子平';
   /** Section of that work, e.g. 斗數骨髓賦. */
   section?: string;
   basis: string;

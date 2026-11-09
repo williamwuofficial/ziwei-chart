@@ -10,6 +10,9 @@ import { toModel } from './analysis/model';
 import { renderAnalysis, showDecade } from './ui/analysis';
 import { toScript } from './ui/zhText';
 import { renderCompat } from './ui/compat';
+import { renderBazi } from './ui/bazi';
+import { parsePillars, readBazi, type Pillars } from './analysis/bazi';
+import type { Settings } from './engine/chart';
 
 const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
 const form = $<HTMLFormElement>('birth-form');
@@ -21,6 +24,13 @@ const warning = $<HTMLElement>('boundary-warning');
 const notices = $<HTMLElement>('chart-notices');
 const analysisRoot = $<HTMLElement>('analysis');
 const compatRoot = $<HTMLElement>('compat');
+const baziRoot = $<HTMLElement>('bazi');
+
+/** 八字 pillars: the year from 立春 and months from the solar terms, whatever the 斗數 setting. */
+function pillarsFor(date: string, timeIndex: number, gender: 'male' | 'female', s: Settings): Pillars {
+  return parsePillars(buildChart(date, timeIndex, gender, { ...s, yearDivide: 'exact', script: 'zh-TW' }).chineseDate);
+}
+const shiftDate = (date: string, days: number) => new Date(Date.parse(`${date}T12:00:00Z`) + days * 86_400_000).toISOString().slice(0, 10);
 const chartCard = document.querySelector<HTMLElement>('.chart-card')!;
 
 let view: ChartView | undefined;
@@ -95,11 +105,25 @@ function show(input: BirthInput, birth: ResolvedBirth): void {
       },
     },
   );
+  const pillars = pillarsFor(birth.dateStr, birth.timeIndex, input.gender, input.settings);
+  // A solar term on the day before or after means the month pillar may hinge on the exact time.
+  const month = (d: string) => pillarsFor(d, birth.timeIndex, input.gender, input.settings).month;
+  const same = (a: Pillars['month'], b: Pillars['month']) => a.stem === b.stem && a.branch === b.branch;
+  const prev = month(shiftDate(birth.dateStr, -1));
+  const next = month(shiftDate(birth.dateStr, 1));
+  const nearTerm =
+    !same(prev, pillars.month) || !same(next, pillars.month)
+      ? `This birth is within a day of a solar term (節氣), where the month pillar changes${!same(prev, pillars.month) ? ` (the day before is ⟨${prev.stem}${prev.branch}⟩)` : ` (the day after is ⟨${next.stem}${next.branch}⟩)`}. The app goes by date, so check the month pillar against the term’s exact time.`
+      : undefined;
+  renderBazi(baziRoot, readBazi(pillars, input.gender), input.settings.script, { nearTerm, lateZi: input.settings.dayDivide === 'forward' });
   const sihua = { overrides: SIHUA_TABLES[input.settings.sihua], label: SIHUA_LABEL[input.settings.sihua] };
   renderCompat(
     compatRoot,
-    model,
-    (p) => toModel(buildChart(p.date, p.timeIndex, p.gender, { ...input.settings, script: 'zh-TW' }), p.gender, p.timeIndex, sihua),
+    { c: model, pillars },
+    (p) => ({
+      c: toModel(buildChart(p.date, p.timeIndex, p.gender, { ...input.settings, script: 'zh-TW' }), p.gender, p.timeIndex, sihua),
+      pillars: pillarsFor(p.date, p.timeIndex, p.gender, input.settings),
+    }),
     input.settings.script,
   );
 }

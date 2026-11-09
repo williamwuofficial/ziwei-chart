@@ -3,6 +3,7 @@
 
 import { compare, type CompatSection, type Layer } from '../analysis/compat';
 import type { ChartM } from '../analysis/model';
+import type { Pillars } from '../analysis/bazi';
 import { SHICHEN } from '../input/solarTime';
 import type { Gender, Script } from '../engine/chart';
 import { finding } from './analysis';
@@ -34,14 +35,19 @@ let partner: Partner | undefined;
  * Draw the card. `own` is the main chart's model; `build` makes the partner's model with the same
  * settings as the main chart.
  */
-export function renderCompat(root: HTMLElement, own: ChartM, build: (p: Partner) => ChartM, script: Script): void {
+export interface Side {
+  c: ChartM;
+  pillars: Pillars;
+}
+
+export function renderCompat(root: HTMLElement, own: Side, build: (p: Partner) => Side, script: Script): void {
   const head = h('h2', undefined, 'Compatibility');
   const zh = h('span', 'zh', toScript(' 合婚', script));
   head.append(zh);
   const intro = h('p', 'hint');
   intro.append(
     rich(
-      'Compare this chart with a partner’s. The 紫微斗數全書 has no compatibility method, so this follows a modern compilation, the 紫微斗數集成全書, with folk 生肖 matching as a separate last layer. The partner’s details stay on this page and are not saved.',
+      'Compare this chart with a partner’s. The 紫微斗數全書 has no compatibility method, so this follows a modern compilation, the 紫微斗數集成全書, with a comparison of the two 八字 (Four Pillars) as a separate last layer. The partner’s details stay on this page and are not saved.',
       script,
     ),
   );
@@ -91,7 +97,7 @@ export function renderCompat(root: HTMLElement, own: ChartM, build: (p: Partner)
 
   const run = () => {
     if (!partner) return;
-    let other: ChartM;
+    let other: Side;
     try {
       other = build(partner);
     } catch (e) {
@@ -99,7 +105,7 @@ export function renderCompat(root: HTMLElement, own: ChartM, build: (p: Partner)
       err.textContent = `Could not build the partner’s chart: ${String(e)}`;
       return;
     }
-    const res = compare({ c: own, who: 'You', whose: 'Your' }, { c: other, who: 'Your partner', whose: 'Your partner’s' });
+    const res = compare({ ...own, who: 'You', whose: 'Your' }, { ...other, who: 'Your partner', whose: 'Your partner’s' });
     out.replaceChildren(...res.sections.map((s) => section(s, script)), limits(res.limits, script));
   };
 
@@ -131,9 +137,8 @@ function section(s: CompatSection, script: Script): HTMLElement {
   t.append(name);
   const tone = TONE[s.tone];
   t.append(h('span', `chip ${tone.cls}`, tone.label));
-  const b = h('span', 'chip neutral', s.basis === 'folk' ? 'Folk custom' : '集成全書');
-  b.textContent = toScript(b.textContent ?? '', script);
-  b.title = s.basis === 'folk' ? 'Folk 生肖 matching, not part of 紫微斗數' : 'From the modern 紫微斗數集成全書';
+  const b = h('span', 'chip neutral', toScript(s.basis === 'bazi' ? '八字' : '集成全書', script));
+  b.title = s.basis === 'bazi' ? 'From the 八字 classics 三命通會 and 淵海子平' : 'From the modern 紫微斗數集成全書';
   t.append(b);
   sec.append(t);
   for (const f of s.findings) sec.append(finding(f, script));

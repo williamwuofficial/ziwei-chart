@@ -7,8 +7,8 @@
 //   2. sort stars into groups (殺破狼, 機月同梁, 紫府 with 殺破狼, 巨日). The match is closest when one
 //      person's 夫妻 palace group is the other's Life or Body palace group, best both ways (互垣);
 //   3. compare the two 五行局.
-// A last, separate layer is folk 生肖 matching from the 地支 relations, which belongs to the 八字
-// tradition, not to 斗數.
+// A last, separate layer compares the two 八字 (Four Pillars): day stems, day branches (the 八字
+// spouse palace) and year branches, quoted from 三命通會 and 淵海子平 (see bazi.ts).
 //
 // The book never says when two sets of stars "get on" (和合) or "harm each other" (克害). This module
 // reads that through the 全書's own star elements and the 五行 生克 cycle, and says so in the text.
@@ -17,6 +17,7 @@ import type { Finding } from './evaluate';
 import type { ChartM, PalaceName } from './model';
 import { xiaoxianIndex } from './xiaoxian';
 import { Ctx, trines } from './predicates';
+import { baziCompat, branchRelation, type Pillars } from './bazi';
 import { BRANCH_ANIMAL, ELEMENT_EN, JU_ELEMENT, STAR_ELEMENT, type Element } from './rules/elements';
 import type { Source } from './rules/types';
 
@@ -26,7 +27,7 @@ export interface CompatSection {
   id: string;
   title: string;
   /** Which source this layer rests on, shown as a small label. */
-  basis: 'modern' | 'folk';
+  basis: 'modern' | 'bazi';
   tone: Layer;
   findings: Finding[];
 }
@@ -58,9 +59,6 @@ const STAR_DIRECT_SRC: Source = {
 };
 const JU_SRC: Source = {
   basis: `${JICHENG}: beyond the star groups, note whether the two 五行局 are the same. 水二局 quick-witted and changeable, 木三局 cheerful and orderly, 金四局 blunt and sharp, 土五局 practical and easy-going, 火六局 active and forceful`,
-};
-const ZODIAC_SRC: Source = {
-  basis: 'Folk 生肖 matching from the 地支 relations (三合, 六合, 六沖, 六害, 相刑) as set out in 《三命通會》 (明, 萬民英) 卷二. This belongs to 八字 and almanac practice, not to 紫微斗數, and it applies to everyone born in the same year',
 };
 
 // ── Star elements and groups ───────────────────────────────────────────────
@@ -126,32 +124,6 @@ export function starGroup(x: Ctx, i: number): { group: StarGroup; stars: string[
 /** 紫府殺破狼 counts as meeting 殺破狼: it is that group with 紫微 or 天府 added. */
 const sameFamily = (a: StarGroup, b: StarGroup) => a === b || (a.endsWith('殺破狼') && b.endsWith('殺破狼'));
 
-// ── Zodiac ─────────────────────────────────────────────────────────────────
-
-const SANHE = ['申子辰', '亥卯未', '寅午戌', '巳酉丑'];
-const LIUHE = ['子丑', '寅亥', '卯戌', '辰酉', '巳申', '午未'];
-const LIUHAI = ['子未', '丑午', '寅巳', '卯辰', '申亥', '酉戌'];
-const XING = ['寅巳', '巳申', '寅申', '丑戌', '戌未', '丑未', '子卯'];
-const SELF_XING = '辰午酉亥';
-const ORDER = '子丑寅卯辰巳午未申酉戌亥';
-const pairIn = (list: string[], a: string, b: string) => list.some((p) => p.includes(a) && p.includes(b) && a !== b);
-
-export interface ZodiacRelation {
-  good: string[];
-  bad: string[];
-}
-export function zodiacRelation(a: string, b: string): ZodiacRelation {
-  const good: string[] = [];
-  const bad: string[] = [];
-  if (pairIn(SANHE, a, b)) good.push('三合 (same trine)');
-  if (pairIn(LIUHE, a, b)) good.push('六合 (paired)');
-  if ((ORDER.indexOf(a) + 6) % 12 === ORDER.indexOf(b)) bad.push('六沖 (opposite signs clash)');
-  if (pairIn(LIUHAI, a, b)) bad.push('六害 (harm)');
-  if (pairIn(XING, a, b)) bad.push('相刑 (punishment)');
-  if (a === b && SELF_XING.includes(a)) bad.push('自刑 (self-punishment, same sign)');
-  return { good, bad };
-}
-
 // ── The comparison ─────────────────────────────────────────────────────────
 
 export interface Person {
@@ -159,6 +131,8 @@ export interface Person {
   /** "You" / "Your partner", used in the text. */
   who: string;
   whose: string;
+  /** The 八字 pillars, when known. Without them only the year branches are compared. */
+  pillars?: Pillars;
 }
 
 function decadeAt(c: ChartM, age: number): number {
@@ -325,39 +299,45 @@ export function compare(A: Person, B: Person, year = new Date().getFullYear()): 
     if (findings.length) sections.push({ id: 'compat.periods', title: `Current periods (${year})`, basis: 'modern', tone: toneOf(good, bad), findings });
   }
 
-  // 5. Zodiac.
+  // 5. 八字 (Four Pillars).
   {
     const a = A.c.yearBranch;
     const b = B.c.yearBranch;
-    const r = zodiacRelation(a, b);
     const an = BRANCH_ANIMAL[a];
     const bn = BRANCH_ANIMAL[b];
-    const both = `⟨${a}⟩ ${an.zh} ${an.en} and ⟨${b}⟩ ${bn.zh} ${bn.en}`;
-    const text = r.good.length && !r.bad.length
-      ? `${both} are a favourable pairing in folk 生肖 matching: ${r.good.join(' and ')}.`
-      : r.bad.length && !r.good.length
-        ? `${both} are an uneasy pairing in folk 生肖 matching: ${r.bad.join(' and ')}. Almanacs advise care rather than avoidance.`
-        : r.bad.length
-          ? `${both} are both favourable (${r.good.join(', ')}) and uneasy (${r.bad.join(', ')}) in folk 生肖 matching.`
-          : `${both} have no special relation in folk 生肖 matching: neither favoured nor warned against.`;
-    sections.push({
-      id: 'compat.zodiac',
-      title: 'Zodiac signs (生肖)',
-      basis: 'folk',
-      tone: toneOf(r.good.length, r.bad.length),
-      findings: [{ id: 'compat.zodiac', text, evidence: [`${A.who}: born in a ⟨${a}⟩ year`, `${B.who}: born in a ⟨${b}⟩ year`, ...r.good, ...r.bad], sources: [ZODIAC_SRC] }],
-    });
+    if (A.pillars && B.pillars) {
+      const m = baziCompat(A.pillars, B.pillars, A.who, B.who);
+      const yr = m.findings.find((f) => f.id === 'compat.bazi.year')!;
+      yr.text = yr.text.replace(`Your birth-year signs ⟨${a}⟩ and ⟨${b}⟩`, `Your birth-year signs, ⟨${a}⟩ ${an.en} and ⟨${b}⟩ ${bn.en},`);
+      sections.push({ id: 'compat.bazi', title: 'Four Pillars (八字)', basis: 'bazi', tone: toneOf(m.good, m.bad), findings: m.findings });
+    } else {
+      const r = branchRelation(a, b);
+      sections.push({
+        id: 'compat.bazi',
+        title: 'Four Pillars (八字)',
+        basis: 'bazi',
+        tone: toneOf(r.good.length, r.bad.length),
+        findings: [
+          {
+            id: 'compat.bazi.year',
+            text: `Your birth-year signs, ${an.en} (${an.zh}) and ${bn.en} (${bn.zh}), ${r.good.length ? `are in harmony (${r.good.join(', ')})` : ''}${r.good.length && r.bad.length ? ' and ' : ''}${r.bad.length ? `meet with friction (${r.bad.join(', ')})` : ''}${!r.good.length && !r.bad.length ? 'have no special relation' : ''}.`,
+            evidence: [`${A.who}: ⟨${a}⟩`, `${B.who}: ⟨${b}⟩`],
+            sources: [{ basis: '八字 branch relations (三命通會 卷二)' }],
+          },
+        ],
+      });
+    }
   }
 
   return { sections, limits: LIMITS };
 }
 
 export const LIMITS = [
-  'The classical 紫微斗數全書 has no method for comparing two charts. Everything above except the zodiac follows one modern compilation, the 紫微斗數集成全書; other modern schools (such as the flying-四化 schools) compare charts differently and may disagree.',
+  'The classical 紫微斗數全書 has no method for comparing two charts. Everything above except the 八字 layer follows one modern compilation, the 紫微斗數集成全書; other modern schools (such as the flying-四化 schools) compare charts differently and may disagree.',
   'That book never says when two sets of stars “get on” or “harm each other”. This app judges it by each star’s element in the 全書 and the 五行 cycle, which is its own reading, not the book’s.',
   'The book names four star groups. Charts whose stars fit none of them (紫府廉武相) get a label from this app, with no description from the book.',
   'Both birth times matter: the Life and Body palaces move every two hours, so a wrong 時辰 for either person changes most of this comparison. The partner’s chart uses the 時辰 only, without true solar time.',
-  'The zodiac layer is folk 生肖 matching from the 八字 tradition. It is the same for everyone born in those years, so it says very little about two particular people.',
+  'The 八字 layer compares the day stems, the day branches (the 八字 spouse palace) and the birth-year signs. It does not weigh whole charts against each other (each person’s useful element, 用神), where 八字 schools disagree most. Day pillars change at midnight, or at 23:00 with the late-子-hour setting, so a birth near midnight needs care.',
   'There is no overall score. The book gives none, and its own advice is that a mismatch works when one partner gives way. A number would suggest a precision the method does not have.',
   'The method was written for husband and wife. Nothing in the rules depends on gender except the direction of the 10-year periods, so it reads the same for any couple, but no published couple cases were available to test it against.',
   'It describes temperament and fit, not whether a relationship will last. That depends on the two people.',

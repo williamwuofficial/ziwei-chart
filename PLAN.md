@@ -324,4 +324,10 @@ Each phase is shippable on its own.
   - **Interpretation:** the book doesn't define 和合 and 克害, so stars are compared by their 全書 elements (same or 相生 = fit; 相剋 = friction). The 紫府廉武相 group is the app's own label.
   - **UI:** a partner form (gender, date, 時辰) under the analysis. It uses the main chart's settings and is kept in memory only. Each layer is rated on its own (Good fit / Mixed / Differs), with no overall score, and a shortcomings list is shown with every result.
   - **Not included:** flying-四化 overlays and the 古法 福德 balance.
+- **Four Pillars (八字), 2026-11-09** (`src/analysis/bazi.ts`, `src/ui/bazi.ts`):
+  - **Pillars:** from iztro with `yearDivide: 'exact'` (year from 立春, months from 節氣), checked against known dates. The day pillar follows the late-子-hour setting. A note shows when the month pillar differs on the day before or after.
+  - **Readings:** Day Master (滴天髓 天干論), Ten Gods for stems and hidden stems (三命通會 卷五–六, 淵海子平 論日為主), hidden stems (淵海子平 地支藏遁歌), the element count, and the spouse palace and star (淵海子平 六親總篇, 論妻妾).
+  - **Sources:** the verifier now also checks 三命通會 (卷一–九), 滴天髓 (42 sections) and 淵海子平 from Wikisource. 子平真詮 isn't on Wikisource.
+  - **Compatibility:** the old folk-zodiac layer is now an 八字 layer: day-stem 合 or 七殺 clash, day-branch (spouse palace) relations weighted ×2, and year-branch relations.
+  - **Left out:** 身強/身弱, 用神, 大運, 格局 and 神煞.
 

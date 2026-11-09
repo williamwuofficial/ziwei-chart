@@ -2,7 +2,8 @@ import { describe, expect, it } from 'vitest';
 import { buildChart, DEFAULT_SETTINGS } from '../src/engine/chart';
 import { toModel } from '../src/analysis/model';
 import { Ctx } from '../src/analysis/predicates';
-import { compare, elementRelation, LIMITS, starGroup, starHarmony, zodiacRelation } from '../src/analysis/compat';
+import { compare, elementRelation, LIMITS, starGroup, starHarmony } from '../src/analysis/compat';
+import { branchRelation as zodiacRelation, parsePillars } from '../src/analysis/bazi';
 
 const model = (d: string, t: number, g: 'male' | 'female') => toModel(buildChart(d, t, g, DEFAULT_SETTINGS), g, t);
 const A = (c: ReturnType<typeof model>) => ({ c, who: 'You', whose: 'Your' });
@@ -28,12 +29,12 @@ describe('生肖 relations', () => {
   it('三合, 六合, 六沖, 六害, 刑', () => {
     expect(zodiacRelation('申', '子').good).toContain('三合 (same trine)');
     expect(zodiacRelation('子', '丑').good).toContain('六合 (paired)');
-    expect(zodiacRelation('子', '午').bad).toContain('六沖 (opposite signs clash)');
+    expect(zodiacRelation('子', '午').bad).toContain('六沖 (clash)');
     expect(zodiacRelation('子', '未').bad).toContain('六害 (harm)');
     expect(zodiacRelation('子', '卯').bad).toContain('相刑 (punishment)');
-    expect(zodiacRelation('辰', '辰').bad).toContain('自刑 (self-punishment, same sign)');
-    expect(zodiacRelation('子', '子')).toEqual({ good: [], bad: [] });
-    expect(zodiacRelation('子', '寅')).toEqual({ good: [], bad: [] });
+    expect(zodiacRelation('辰', '辰').bad).toContain('自刑 (self-punishment)');
+    expect(zodiacRelation('子', '子')).toEqual({ good: [], bad: [], kinds: [] });
+    expect(zodiacRelation('子', '寅')).toEqual({ good: [], bad: [], kinds: [] });
   });
 });
 
@@ -59,10 +60,10 @@ describe('star groups (集成全書)', () => {
 describe('compare', () => {
   const a = model('1955-03-07', 8, 'female');
   const b = model('1958-06-27', 11, 'male');
-  it('gives the layers in order, with the zodiac last and marked folk', () => {
+  it('gives the layers in order, with the 八字 layer last', () => {
     const r = compare(A(a), B(b), 2026);
-    expect(r.sections.map((s) => s.id)).toEqual(['compat.ming', 'compat.groups', 'compat.ju', 'compat.periods', 'compat.zodiac']);
-    expect(r.sections.at(-1)!.basis).toBe('folk');
+    expect(r.sections.map((s) => s.id)).toEqual(['compat.ming', 'compat.groups', 'compat.ju', 'compat.periods', 'compat.bazi']);
+    expect(r.sections.at(-1)!.basis).toBe('bazi');
     expect(r.sections.slice(0, -1).every((s) => s.basis === 'modern')).toBe(true);
     expect(r.limits).toBe(LIMITS);
   });
@@ -72,7 +73,7 @@ describe('compare', () => {
     expect(ba).toEqual(ab);
   });
   it('未 (Goat) and 戌 (Dog) years: 相刑', () => {
-    const z = compare(A(a), B(b), 2026).sections.find((s) => s.id === 'compat.zodiac')!;
+    const z = compare(A(a), B(b), 2026).sections.find((s) => s.id === 'compat.bazi')!;
     expect(a.yearBranch + b.yearBranch).toBe('未戌');
     expect(z.tone).toBe('differs');
   });
@@ -88,6 +89,12 @@ describe('compare', () => {
         }
       }
     expect(found).toBeGreaterThan(0);
+  });
+  it('uses the day pillars when both 八字 are given', () => {
+    const pa = parsePillars(buildChart('1955-03-07', 8, 'female', { ...DEFAULT_SETTINGS, yearDivide: 'exact' }).chineseDate);
+    const pb = parsePillars(buildChart('1958-06-27', 11, 'male', { ...DEFAULT_SETTINGS, yearDivide: 'exact' }).chineseDate);
+    const r = compare({ ...A(a), pillars: pa }, { ...B(b), pillars: pb }, 2026).sections.find((s) => s.id === 'compat.bazi')!;
+    expect(r.findings.map((f) => f.id)).toEqual(['compat.bazi.daystem', 'compat.bazi.daybranch', 'compat.bazi.year']);
   });
   it('every finding cites a source and no text is left with a placeholder', () => {
     for (const s of compare(A(a), B(b), 2026).sections)

@@ -1,4 +1,5 @@
-// Verifies every classical quote the rules attribute to a work (《紫微斗數全書》 or 《紫微斗數》)
+// Verifies every classical quote the rules attribute to a work (《紫微斗數全書》, 《紫微斗數》, and the
+// 八字 classics 《三命通會》, 《滴天髓》 and 《淵海子平》)
 // against the public-domain transcription on Chinese Wikisource, then writes the verified list to
 // tests/fixtures/sources.json. Tests fail if a rule quotes something not in that list.
 //
@@ -19,11 +20,15 @@ const PAGES = [
   ['紫微斗數全書', '紫微斗數全書/卷二'],
   ['紫微斗數全書', '紫微斗數全書/卷三'],
   ['紫微斗數', '紫微斗數'],
+  // 八字 classics, for the Four Pillars readings.
+  ...['一', '二', '三', '四', '五', '六', '七', '八', '九'].map((n) => ['三命通會', `三命通會/卷${n}`]),
+  ...Array.from({ length: 42 }, (_, i) => ['滴天髓', `滴天髓/${String(i + 1).padStart(2, '0')}`]),
+  ['淵海子平', '淵海子平'],
 ];
 
 const toS = OpenCC.Converter({ from: 'tw', to: 'cn' });
 // Variant characters the transcription and OpenCC disagree on.
-const VARIANTS = { 锺: '钟', 衆: '众', 爲: '为' };
+const VARIANTS = { 锺: '钟', 衆: '众', 爲: '为', 綬: '绶', 囍: '喜', 逄: '逢' };
 const norm = (s) => [...toS(s).replace(/[\s，。、：；（）「」！？,.·…—\-\[\]【】]/g, '')].map((c) => VARIANTS[c] ?? c).join('');
 
 async function page(title) {
@@ -64,7 +69,7 @@ async function sections() {
 }
 
 // Collect quotes from the rule sources: { verse, work, section } objects in src/analysis.
-const files = ['src/analysis/rules/patterns.ts', 'src/analysis/rules/stars.ts', 'src/analysis/decades.ts', 'src/analysis/years.ts', 'src/analysis/advice.ts', 'src/analysis/rules/elements.ts', 'src/analysis/xiaoxian.ts'];
+const files = ['src/analysis/rules/patterns.ts', 'src/analysis/rules/stars.ts', 'src/analysis/decades.ts', 'src/analysis/years.ts', 'src/analysis/advice.ts', 'src/analysis/rules/elements.ts', 'src/analysis/xiaoxian.ts', 'src/analysis/bazi.ts'];
 const quotes = [];
 for (const f of files) {
   const src = readFileSync(join(root, f), 'utf8');
