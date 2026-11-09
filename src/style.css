@@ -408,3 +408,14 @@ details.pattern-group > summary.group { font-size: 0.95rem; color: var(--muted);
 .pentagon .pg-role.dm { fill: var(--accent); font-weight: 600; }
 .pentagon-fig figcaption { text-align: center; max-width: 460px; }
 .pentagon .pg-disc.zero { fill-opacity: 0.05; stroke-dasharray: 2 3; }
+
+/* This year at a glance */
+.glance { border-left: 4px solid var(--accent); }
+.glance-head { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.glance-head h2 { margin: 0; font-size: 1.15rem; }
+.glance-head h2 .zh { font-weight: 500; color: var(--muted); margin-left: 0.2em; }
+.glance .hint { margin: 4px 0 8px; }
+.glance-line { display: grid; grid-template-columns: 7.5em 1fr; gap: 8px; margin: 6px 0; }
+.glance-label { font-weight: 600; font-size: 0.85rem; color: var(--muted); padding-top: 1px; }
+@media (max-width: 520px) { .glance-line { grid-template-columns: 1fr; gap: 0; } }
+.year-row.now { scroll-margin-top: 64px; }

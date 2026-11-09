@@ -11,7 +11,8 @@ import { renderAnalysis, showDecade } from './ui/analysis';
 import { toScript } from './ui/zhText';
 import { renderCompat } from './ui/compat';
 import { renderBazi } from './ui/bazi';
-import { setupTabs } from './ui/tabs';
+import { setupTabs, showTab } from './ui/tabs';
+import { renderGlance } from './ui/glance';
 import { parsePillars, readBazi, type Pillars } from './analysis/bazi';
 import type { Settings } from './engine/chart';
 
@@ -26,6 +27,7 @@ const notices = $<HTMLElement>('chart-notices');
 const analysisRoot = $<HTMLElement>('analysis');
 const compatRoot = $<HTMLElement>('compat');
 const baziRoot = $<HTMLElement>('bazi');
+const glanceRoot = $<HTMLElement>('glance');
 
 /** 八字 pillars: the year from 立春 and months from the solar terms, whatever the 斗數 setting. */
 function pillarsFor(date: string, timeIndex: number, gender: 'male' | 'female', s: Settings): Pillars {
@@ -82,6 +84,10 @@ function show(input: BirthInput, birth: ResolvedBirth): void {
     nowAge = undefined;
   }
   const focusChart = () => chartCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  const decades = readDecades(model);
+  const age = nowAge !== undefined && nowAge > 0 ? nowAge : undefined;
+  const nowDecade = age === undefined ? undefined : decades.find((d) => age >= d.range[0] && age <= d.range[1]);
+  const nowYear = nowDecade && readYears(model, nowDecade.index).find((y) => y.age === age);
   renderAnalysis(
     analysisRoot,
     analysis,
@@ -94,9 +100,9 @@ function show(input: BirthInput, birth: ResolvedBirth): void {
       focusChart();
     },
     {
-      decades: readDecades(model),
+      decades,
       years: (i) => readYears(model, i),
-      nowAge: nowAge !== undefined && nowAge > 0 ? nowAge : undefined,
+      nowAge: age,
       onPick: (i) => {
         if (!view) return;
         view.decade = decadeOverlay(view.chart, i, view.birth.timeIndex);
@@ -128,6 +134,19 @@ function show(input: BirthInput, birth: ResolvedBirth): void {
     input.settings.script,
   );
   setupTabs($<HTMLElement>('result-tabs'), input.settings.script);
+  renderGlance(glanceRoot, model, nowYear, nowDecade, input.settings.script, () => {
+    // Open this year inside its 10-year period and bring it into view.
+    showTab('decades');
+    if (nowDecade) showDecade(nowDecade.index);
+    requestAnimationFrame(() => {
+      const row = document.querySelector<HTMLDetailsElement>('[data-panel="decades"] .year-row.now');
+      if (!row) return;
+      const years = row.closest<HTMLDetailsElement>('details.years');
+      if (years) years.open = true;
+      row.open = true;
+      row.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
 }
 
 const detailsToggle = $<HTMLInputElement>('details-toggle');
