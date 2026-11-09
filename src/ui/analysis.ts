@@ -63,7 +63,7 @@ function verseLine(s: Source, script: Script): HTMLElement {
   return fig;
 }
 
-function finding(f: Finding, script: Script, showVerse = true): HTMLElement {
+export function finding(f: Finding, script: Script, showVerse = true): HTMLElement {
   const box = h('div', f.advice ? 'finding advice' : 'finding');
   const p = h('p');
   if (f.advice) {

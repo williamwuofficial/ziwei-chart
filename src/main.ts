@@ -9,6 +9,7 @@ import { readYears } from './analysis/years';
 import { toModel } from './analysis/model';
 import { renderAnalysis, showDecade } from './ui/analysis';
 import { toScript } from './ui/zhText';
+import { renderCompat } from './ui/compat';
 
 const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
 const form = $<HTMLFormElement>('birth-form');
@@ -19,6 +20,7 @@ const decadeList = $<HTMLElement>('decade-list');
 const warning = $<HTMLElement>('boundary-warning');
 const notices = $<HTMLElement>('chart-notices');
 const analysisRoot = $<HTMLElement>('analysis');
+const compatRoot = $<HTMLElement>('compat');
 const chartCard = document.querySelector<HTMLElement>('.chart-card')!;
 
 let view: ChartView | undefined;
@@ -92,6 +94,13 @@ function show(input: BirthInput, birth: ResolvedBirth): void {
         focusChart();
       },
     },
+  );
+  const sihua = { overrides: SIHUA_TABLES[input.settings.sihua], label: SIHUA_LABEL[input.settings.sihua] };
+  renderCompat(
+    compatRoot,
+    model,
+    (p) => toModel(buildChart(p.date, p.timeIndex, p.gender, { ...input.settings, script: 'zh-TW' }), p.gender, p.timeIndex, sihua),
+    input.settings.script,
   );
 }
 

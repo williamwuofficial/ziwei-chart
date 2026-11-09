@@ -319,3 +319,9 @@ Each phase is shippable on its own.
   - **Scoring:** the 小限 reaching the birth 化祿 or 化權 counts +1 (「小限逢之主進財入仕之喜」, 「小限相逢，無有不吉」), and the birth 化忌 counts −1 (「小限逢之一年不足」).
   - **Overlaps:** 大限, 小限 and 流年 meeting are noted (論二限太歲吉凶). All three meeting on a 化忌 counts −1 (「二限太歲交臨，斷然蹭蹬」).
   - **Tests:** 倪海廈 命例實批2 (age 37 in 遷移) and 范振木 論命實務一 (民國91年 小限 in 遷移).
+- **Compatibility (合婚), 2026-11-09** (`src/analysis/compat.ts`, `src/ui/compat.ts`):
+  - **Source:** the 全書 has no two-chart method. Layers follow the modern 紫微斗數集成全書 (紫微斗數論合婚與夫妻關係大全), paraphrased: Life-palace stars, star groups with 互垣 and the stricter 夫妻-stars-are-partner's-命/身 rule, 五行局, and the current 大限 and 小限. Folk 生肖 relations (三合, 六合, 六沖, 六害, 刑, from 三命通會) come last, labelled as folk custom.
+  - **Interpretation:** the book doesn't define 和合 and 克害, so stars are compared by their 全書 elements (same or 相生 = fit; 相剋 = friction). The 紫府廉武相 group is the app's own label.
+  - **UI:** a partner form (gender, date, 時辰) under the analysis. It uses the main chart's settings and is kept in memory only. Each layer is rated on its own (Good fit / Mixed / Differs), with no overall score, and a shortcomings list is shown with every result.
+  - **Not included:** flying-四化 overlays and the 古法 福德 balance.
+

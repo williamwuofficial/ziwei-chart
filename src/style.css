@@ -336,3 +336,12 @@ figure.verse figcaption { font-size: 0.75rem; color: var(--muted); margin-top: 2
 details.why figure.verse { margin: 6px 0 2px; }
 details.why figure.verse blockquote { font-size: 0.85rem; }
 .warn p + p { margin-top: 8px; }
+
+/* Compatibility */
+.compat h2 .zh { font-weight: 500; margin-left: 0.3em; }
+.compat-form { display: grid; gap: 12px; margin: 12px 0 4px; }
+.compat-form .primary { justify-self: start; }
+.compat-layer h3 { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.compat-limits ul { padding-left: 1.2em; margin: 0; }
+.compat-limits li { margin: 0.35em 0; color: var(--muted); }
+@media print { .compat-form { display: none; } }
