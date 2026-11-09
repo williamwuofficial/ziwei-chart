@@ -30,7 +30,11 @@ const TONE_LABEL: Record<PalaceCard['tone'], { label: string; cls: string }> = {
 
 function why(f: Finding, script: Script, showVerse = true): HTMLElement {
   const d = h('details', 'why');
-  d.append(h('summary', undefined, 'Why?'));
+  const sum = h('summary', undefined, 'Why?');
+  // The rule ID is for bug reports and debugging, so it stays out of the visible text.
+  sum.title = `Rule ${f.id}`;
+  d.dataset.rule = f.id;
+  d.append(sum);
   const ul = h('ul');
   for (const e of f.evidence) {
     const li = h('li');
@@ -44,7 +48,6 @@ function why(f: Finding, script: Script, showVerse = true): HTMLElement {
     p.append(rich(`Basis: ${s.basis}.`, script));
     d.append(p);
   }
-  d.append(h('p', 'rule-id', `Rule ${f.id}`));
   return d;
 }
 
