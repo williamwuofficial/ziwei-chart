@@ -212,3 +212,35 @@ Changes from this check:
 ### 范振木 論命實務十一
 
 This case gives no birth data. Searching the 丁 years found charts matching every published palace: lunar 二月 at 亥時, with 1967 fitting his narrative. In that chart the Body palace sits in an empty 夫妻 with 截路, and the periods run 甲辰 → 癸卯 → 壬寅 → 癸丑. Together with 論命實務十, both of his no-birth-data cases reproduce exactly.
+
+## Files shared in iztro discussion #205 (2026-11-09)
+
+[iztro discussion #205](https://github.com/SylarLong/iztro/discussions/205) links about 20 PDFs.
+
+**Not used.** Most are scans of modern books that are still in copyright, shared without the publishers' permission:
+- 蔡明宏, 張開卷, 紫雲, 陸斌兆/王亭之, 大德山人, 令東來, 徐曾生, 陸在田, 朱雲山 and 許銓仁;
+- the 天翼 course notes.
+
+These were not downloaded or used.
+
+**Downloaded.** Seven files that looked like shared notes, web articles or classical text were downloaded outside the repository, to `~/Development/ziwei-sources/`.
+
+| File | What it is | Use |
+|---|---|---|
+| 紫微斗數全書 (南北山人 簡體版) | A different edition of the 全書, with 羅洪先's preface | Cross-check of our Wikisource text |
+| 天紀--紫微斗數聽課筆記 (2022) | Students' notes on 倪海廈's 天紀 lectures 2–15 | Cases and rules, paraphrased |
+| 劉金府 象數心學紫微斗數札記 | Notes on 劉金府's 象數 teaching | Checked for its 四化 table only |
+| 紫微斗數的創作原理 (謝昕潤) | Web article on 十八飛星 and 四化 theory | Theory only |
+| 紫微斗數集成全書 (yibooks.net) | Modern mainland compilation | Checked for its 四化 table only |
+| 紫微斗數古法 內部講義 (2015–16) | A study group's 宮氣 course | Different method; not used |
+| 紫微斗數星性 母本 | Star descriptions compiled from chinazwds.com | Not used (copyright unclear) |
+
+### Findings
+
+- **The 全書 textual problem is in the text, not the transcription.** The second edition has the same 財蔭夾印 「天相守命，武，梁來夾」 and 財印夾祿 「祿存守命，天梁，天相來夾」 as Wikisource. Its 君臣慶會, 月生滄海, 日月照壁, 生不逢時 and 極居卯酉 definitions also match ours word for word. So the swapped reading the app uses fixes a fault in the 全書 tradition itself.
+- **四化 tables.** 劉金府 and the 集成全書 both use the common modern table: 庚 陽武陰同, 壬 梁紫左武, 戊 貪陰右機. 劉金府 explicitly defends 庚 太陰化科 against case examples. This supports keeping it as the default.
+- **倪海廈's two dated cases reproduce exactly.** Lecture 9 gives full birth data for two cases. Both match every palace he describes, and the tests are in `tests/ni.test.ts`.
+  - 命例實批2 (1955-03-07 申時, 陰女): every palace he names matches.
+  - 命例實批4 (1958-06-27, 陽男): only 亥時 fits his 局, 命 and 紫微. That chart then matches all his natal points and all four decades.
+- **倪 reads year events from the 小限.** In 命例實批2 he says that at 37 sui (1991) 「流年運在遷移」. The 1991 year palace (未) is the Life palace, but the 小限 at 37 is 丑, the 遷移 palace. The app doesn't use 小限 yet.
+- **倪's stance on remedies (lecture 2).** He says remedies aren't charms or bought feng-shui objects, but changes of place and intention. He puts it as fate, place and human effort each counting a third, so place plus effort outweighs fate. This matches the conduct-based approach of the app's advice notes.
