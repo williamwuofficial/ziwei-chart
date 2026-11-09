@@ -187,6 +187,7 @@ export function showDecade(palaceIndex: number): void {
 
 function decadesSection(o: DecadeOptions, script: Script, onShow: (palaces: number[]) => void): HTMLElement {
   const sec = h('section', 'an-section decades-section');
+  sec.dataset.panel = 'decades';
   sec.append(h('h3', undefined, 'Life stages by 10-year period'));
   const hint = h('p', 'hint');
   hint.append(
@@ -340,12 +341,14 @@ export function renderAnalysis(
   );
 
   const overview = h('section', 'an-section');
-  overview.append(h('h3', undefined, 'Life palace overview'));
+  overview.dataset.panel = 'overview';
+  overview.append(h('h3', undefined, 'Life palace overview'), intro);
   for (const f of a.overview) overview.append(finding(f, script));
 
   const good = a.patterns.filter((p) => p.rule.kind === 'auspicious');
   const bad = a.patterns.filter((p) => p.rule.kind === 'adverse');
   const pats = h('section', 'an-section');
+  pats.dataset.panel = 'patterns';
   pats.append(h('h3', undefined, 'Named patterns (格局)'));
   const legend = h('p', 'hint');
   legend.append(
@@ -363,23 +366,29 @@ export function renderAnalysis(
   ];
   for (const [title, list] of groups) {
     if (!list.length && title === 'Star structures') continue;
-    pats.append(h('h4', 'group', `${title} (${list.length})`));
+    // Each group folds; the lucky and challenging ones start open, the structures closed.
+    const grp = h('details', 'pattern-group');
+    grp.open = title !== 'Star structures' && list.length > 0;
+    grp.append(h('summary', 'group', `${title} (${list.length})`));
     if (!list.length)
-      pats.append(h('p', 'hint', title.startsWith('Auspicious') ? 'None found in this chart. Many charts form few or no named patterns; the palace readings below still apply.' : 'None found in this chart.'));
+      grp.append(h('p', 'hint', title.startsWith('Auspicious') ? 'None found in this chart. Many charts form few or no named patterns; the palace readings still apply.' : 'None found in this chart.'));
     const grid = h('div', 'pattern-grid');
     for (const f of list) grid.append(patternCard(f, script, onShow));
-    pats.append(grid);
+    grp.append(grid);
+    pats.append(grp);
   }
 
   const pal = h('section', 'an-section');
+  pal.dataset.panel = 'palaces';
   pal.append(h('h3', undefined, 'The twelve palaces'));
   const palHint = h('p', 'hint');
   palHint.append(rich('Tone weighs the palace’s own stars first: lucky stars and 祿/權/科 help, malefics hurt, and the birth 化忌 counts heavily. Its 三方四正 count a quarter, and 空劫 weaken it. Empty palaces borrow the stars opposite.', script));
   pal.append(palHint);
   for (const c of a.palaces) pal.append(palaceCard(c, script, onShow));
 
-  const sections: HTMLElement[] = [h('h2', undefined, 'Analysis'), intro, overview];
+  // Each section is a tab panel (see ui/tabs.ts), in the order of the tab bar.
+  const sections: HTMLElement[] = [overview];
   if (decades) sections.push(decadesSection(decades, script, onShow));
-  sections.push(pats, pal);
+  sections.push(pal, pats);
   root.replaceChildren(...sections);
 }

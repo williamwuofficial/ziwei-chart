@@ -11,6 +11,7 @@ import { renderAnalysis, showDecade } from './ui/analysis';
 import { toScript } from './ui/zhText';
 import { renderCompat } from './ui/compat';
 import { renderBazi } from './ui/bazi';
+import { setupTabs } from './ui/tabs';
 import { parsePillars, readBazi, type Pillars } from './analysis/bazi';
 import type { Settings } from './engine/chart';
 
@@ -126,6 +127,7 @@ function show(input: BirthInput, birth: ResolvedBirth): void {
     }),
     input.settings.script,
   );
+  setupTabs($<HTMLElement>('result-tabs'), input.settings.script);
 }
 
 const detailsToggle = $<HTMLInputElement>('details-toggle');
@@ -292,7 +294,7 @@ saveBtn.addEventListener('click', async () => {
 });
 $<HTMLButtonElement>('print-page').addEventListener('click', () => {
   // Open every reading so the printout is complete, then restore.
-  const closed = [...document.querySelectorAll<HTMLDetailsElement>('#analysis details:not([open])')].filter((d) => !d.classList.contains('why'));
+  const closed = [...document.querySelectorAll<HTMLDetailsElement>('#result details:not([open])')].filter((d) => !d.classList.contains('why'));
   closed.forEach((d) => (d.open = true));
   window.print();
   closed.forEach((d) => (d.open = false));

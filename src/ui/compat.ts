@@ -146,8 +146,10 @@ function section(s: CompatSection, script: Script): HTMLElement {
 }
 
 function limits(list: string[], script: Script): HTMLElement {
-  const box = h('section', 'an-section compat-limits');
-  box.append(h('h3', undefined, 'What this comparison can’t tell you'));
+  const box = h('details', 'an-section compat-limits fold');
+  const sum = h('summary');
+  sum.append(h('span', 'fold-title', 'What this comparison can’t tell you'), ' ', h('span', 'fold-teaser', `${list.length} known gaps: there is no classical method, and both birth times must be right`));
+  box.append(sum);
   const ul = h('ul');
   for (const l of list) {
     const li = h('li');

@@ -122,8 +122,30 @@ export function renderBazi(root: HTMLElement, r: BaziReading, script: Script, no
   }
   const barHint = h('p', 'hint', 'Solid: the eight visible characters (each stem, and each branch by its main element). Faded: extra weight from the hidden stems.');
 
+  // The Day Master leads; the rest fold into labelled groups with a one-line teaser.
+  const byId = (id: string) => r.findings.find((f) => f.id === id)!;
+  const fold = (title: string, teaser: string, ...content: Node[]) => {
+    const d = h('details', 'fold');
+    const sum = h('summary');
+    sum.append(h('span', 'fold-title', title), ' ');
+    const t = h('span', 'fold-teaser');
+    t.append(rich(teaser, script));
+    sum.append(t);
+    d.append(sum, ...content);
+    return d;
+  };
+  const els = ['木', '火', '土', '金', '水'] as Element[];
+  const top = Math.max(...els.map((e) => r.counts[e]));
+  const missing = els.filter((e) => r.counts[e] === 0);
+  const gods = [...new Set(r.pillars.filter((p) => p.god).map((p) => p.god!))];
+  const dayBranch = r.pillars.find((p) => p.key === 'day')!.branch;
   const sec = h('section', 'an-section');
-  for (const f of r.findings) sec.append(finding(f, script));
+  sec.append(
+    finding(byId('bazi.daymaster'), script),
+    fold('Element balance', `most ${els.filter((e) => r.counts[e] === top).map((e) => ELEMENT_EN[e]).join(', ')}${missing.length ? ` · none visible: ${missing.map((e) => ELEMENT_EN[e]).join(', ')}` : ''}`, bars, barHint, finding(byId('bazi.elements'), script)),
+    fold('Ten Gods', gods.map((g) => `⟨${g}⟩`).join(' '), finding(byId('bazi.tengods'), script)),
+    fold('Spouse palace and star', `day branch ⟨${dayBranch}⟩`, finding(byId('bazi.spouse'), script)),
+  );
 
   const warn: HTMLElement[] = [];
   if (notes.nearTerm) {
@@ -149,5 +171,5 @@ export function renderBazi(root: HTMLElement, r: BaziReading, script: Script, no
   }
   lim.append(ul);
 
-  root.replaceChildren(head, intro, ...warn, wrap, bars, barHint, sec, lim);
+  root.replaceChildren(head, intro, ...warn, wrap, sec, lim);
 }
