@@ -268,6 +268,7 @@ details.years > summary { cursor: pointer; font-weight: 600; font-size: 0.88rem;
 .year-row .en { color: var(--muted); font-size: 0.8rem; }
 .year-row.now { background: color-mix(in srgb, var(--accent-soft) 40%, transparent); border-radius: 6px; padding-left: 6px; padding-right: 6px; }
 .year-row .finding { margin-top: 6px; }
+.yr-palaces { font-size: 0.78rem; color: var(--muted); }
 
 /* ---------- Export and print ---------- */
 .chart-title { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }

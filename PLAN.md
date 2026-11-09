@@ -313,3 +313,9 @@ Each phase is shippable on its own.
   - **Zodiac:** the 生肖 from the birth-year branch, shown in the chart centre and the overview.
   - **Year notes:** 本命年 and clash-year (沖太歲) notes, informational with no score change. They quote 卷三 論大小限星辰過十二宮遇十二支所忌訣 where it names the year for that branch.
   - **Learn page:** new Elements and colours, and Chinese zodiac sections. The Western zodiac is deliberately not used.
+- **小限 (age palace), 2026-11-09** (`src/analysis/xiaoxian.ts`):
+  - **Placement:** per 全書 卷二 安小限訣. It matches iztro's 小限 ages for all branches and both genders.
+  - **Year rows:** each one shows both palaces (流年 · 小限), with a 小限 reading.
+  - **Scoring:** the 小限 reaching the birth 化祿 or 化權 counts +1 (「小限逢之主進財入仕之喜」, 「小限相逢，無有不吉」), and the birth 化忌 counts −1 (「小限逢之一年不足」).
+  - **Overlaps:** 大限, 小限 and 流年 meeting are noted (論二限太歲吉凶). All three meeting on a 化忌 counts −1 (「二限太歲交臨，斷然蹭蹬」).
+  - **Tests:** 倪海廈 命例實批2 (age 37 in 遷移) and 范振木 論命實務一 (民國91年 小限 in 遷移).

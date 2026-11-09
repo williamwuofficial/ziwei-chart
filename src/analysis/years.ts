@@ -5,12 +5,15 @@
 //  3. Stacking: the year 化忌 on a palace that already holds the natal or decade 化忌 (疊忌,
 //     or 三忌 when all three meet), and the year 化祿 joining the natal or decade 祿 (疊祿).
 //  4. The year 化忌 in, or opposite, the year's own palace.
+//  5. The 小限 (age palace): its palace, the birth 祿/權/忌 it reaches, and where it meets the
+//     大限 or 流年 palace (see xiaoxian.ts).
 // The tone uses the same transparent scoring as the decades, with smaller weights.
 
 import type { Finding } from './evaluate';
-import { stemMutagens, type ChartM, type Mut } from './model';
+import { stemMutagens, type ChartM, type Mut, type PalaceName } from './model';
 import { Ctx, opp, sfsz } from './predicates';
 import { yearAdvice } from './advice';
+import { readXiaoxian } from './xiaoxian';
 import { BRANCH_ANIMAL, CLASH_BASIS, CLASH_QUOTE, clashBranch, OWN_YEAR_BASIS, OWN_YEAR_QUOTE } from './rules/elements';
 import { MUT_QUOTE, MUT_TEXT, PALACE_DOMAIN } from './rules/stars';
 import type { Source } from './rules/types';
@@ -36,6 +39,11 @@ export interface YearReading {
   stem: string;
   branch: string;
   palace: number;
+  /** Palace index of the 小限 (age palace) for this year. */
+  xiaoxian: number;
+  /** Natal palace name of both yearly palaces, for display. */
+  palaceName: PalaceName;
+  xiaoxianName: PalaceName;
   tone: DecadeTone;
   score: number;
   scoreParts: string[];
@@ -158,11 +166,14 @@ export function readYear(c: ChartM, decadePalace: number, year: number): YearRea
     }
   });
 
+  const xx = readXiaoxian(x, id, age, decadePalace, yi, muts ? x.find(muts[3]) : -1);
+  findings.push(...xx.findings);
+  for (const [n, why] of xx.score) add(n, why);
   if (!parts.length) parts.push('0: no strong signals either way');
   const tone: DecadeTone = score >= 2 ? 'favourable' : score <= -2 ? 'challenging' : 'mixed';
   findings.push(...zodiacNotes(c.yearBranch, branch, id));
   findings.push(...yearAdvice(x, id, tone === 'challenging', muts ? x.find(muts[3]) : -1));
-  return { year, age, stem, branch, palace: yi, tone, score, scoreParts: parts, findings };
+  return { year, age, stem, branch, palace: yi, xiaoxian: xx.index, palaceName: p.name, xiaoxianName: c.palaces[xx.index].name, tone, score, scoreParts: parts, findings };
 }
 
 /** Every year of a decade, by nominal age. Needs the chart's lunar birth year. */

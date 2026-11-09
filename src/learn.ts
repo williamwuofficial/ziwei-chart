@@ -286,7 +286,7 @@ const BASICS: [string, string][] = [
   ],
   [
     '10-year periods (大限) and years (流年)',
-    'Periods start at the age given by the chart’s 五行局 (水二局 starts at 2, 火六局 at 6) and move one palace every ten years: clockwise for 陽 men and 陰 women, counter-clockwise for 陰 men and 陽 women. Each year’s Life palace is the palace of that year’s branch. Ages are nominal (虛歲): you are 1 at birth and gain a year at each Lunar New Year.',
+    'Periods start at the age given by the chart’s 五行局 (水二局 starts at 2, 火六局 at 6) and move one palace every ten years: clockwise for 陽 men and 陰 women, counter-clockwise for 陰 men and 陽 women. Each year’s Life palace is the palace of that year’s branch; alongside it runs the 小限, an age palace that starts from a palace set by your birth-year branch and moves one palace a year (forward for men, backward for women). Ages are nominal (虛歲): you are 1 at birth and gain a year at each Lunar New Year.',
   ],
   [
     'Patterns (格局)',

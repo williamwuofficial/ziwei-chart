@@ -64,7 +64,7 @@ async function sections() {
 }
 
 // Collect quotes from the rule sources: { verse, work, section } objects in src/analysis.
-const files = ['src/analysis/rules/patterns.ts', 'src/analysis/rules/stars.ts', 'src/analysis/decades.ts', 'src/analysis/years.ts', 'src/analysis/advice.ts', 'src/analysis/rules/elements.ts'];
+const files = ['src/analysis/rules/patterns.ts', 'src/analysis/rules/stars.ts', 'src/analysis/decades.ts', 'src/analysis/years.ts', 'src/analysis/advice.ts', 'src/analysis/rules/elements.ts', 'src/analysis/xiaoxian.ts'];
 const quotes = [];
 for (const f of files) {
   const src = readFileSync(join(root, f), 'utf8');

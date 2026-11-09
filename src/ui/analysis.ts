@@ -156,6 +156,10 @@ function yearsBlock(d: DecadeReading, o: DecadeOptions, script: Script, open: bo
       const gz = h('span', 'zh', `${y.stem}${y.branch}`);
       gz.lang = script === 'zh-TW' ? 'zh-Hant' : 'zh-Hans';
       sum.append(h('span', 'yr', String(y.year)), gz, h('span', 'en', `age ${y.age}`));
+      // Both yearly palaces: the 流年 palace (by the year's branch) and the 小限 (by age).
+      const pals = h('span', 'yr-palaces');
+      pals.append(rich(`流年 ${y.palaceName} · 小限 ${y.xiaoxianName}`, script));
+      sum.append(pals);
       if (o.nowAge === y.age) sum.append(h('span', 'chip now', 'This year'));
       sum.append(h('span', `chip ${DECADE_TONE[y.tone].cls}`, DECADE_TONE[y.tone].label));
       row.append(sum);
@@ -194,7 +198,7 @@ function decadesSection(o: DecadeOptions, script: Script, onShow: (palaces: numb
   sec.append(hint);
   if (o.years) {
     const yh = h('p', 'hint');
-    yh.append(rich('Each period also opens year by year (流年): the year’s palace is the one matching the year’s earthly branch, and the year stem brings its own four transformations, which can stack on the birth and period ones (疊忌, 疊祿).', script));
+    yh.append(rich('Each period also opens year by year. Every year has two palaces: the 流年 palace, matching the year’s earthly branch, and the 小限 (age palace), which moves one palace per year of age from a starting point set by your birth year. The year stem brings its own four transformations, which can stack on the birth and period ones (疊忌, 疊祿).', script));
     sec.append(yh);
   }
 
