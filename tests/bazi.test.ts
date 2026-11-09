@@ -40,13 +40,20 @@ describe('readBazi', () => {
   const r = readBazi(pillars('2000-01-01', 6), 'male');
   it('counts eight characters', () => expect(Object.values(r.counts).reduce((a, b) => a + b)).toBe(8));
   it('has the Day Master, elements, Ten Gods and spouse findings, all cited', () => {
-    expect(r.findings.map((f) => f.id)).toEqual(['bazi.daymaster', 'bazi.elements', 'bazi.tengods', 'bazi.spouse']);
+    expect(r.findings.map((f) => f.id)).toEqual(['bazi.daymaster', 'bazi.elements', 'bazi.cycle', 'bazi.tengods', 'bazi.spouse']);
     for (const f of r.findings) expect(f.sources.length).toBeGreaterThan(0);
     expect(r.findings[0].text).toContain('⟨戊⟩');
   });
   it('spouse star: 正財 for a man, 正官 for a woman', () => {
-    expect(r.findings[3].text).toContain('⟨正財⟩');
-    expect(readBazi(pillars('2000-01-01', 6), 'female').findings[3].text).toContain('⟨正官⟩');
+    expect(r.findings.find((f) => f.id === 'bazi.spouse')!.text).toContain('⟨正財⟩');
+    expect(readBazi(pillars('2000-01-01', 6), 'female').findings.find((f) => f.id === 'bazi.spouse')!.text).toContain('⟨正官⟩');
+  });
+});
+
+describe('element roles', () => {
+  it('from an Earth Day Master: Metal output, Water wealth, Wood officer, Fire resource', async () => {
+    const { elementRole } = await import('../src/analysis/bazi');
+    expect(['土', '金', '水', '木', '火'].map((e) => elementRole('土', e as never))).toEqual(['self', 'output', 'wealth', 'officer', 'resource']);
   });
 });
 

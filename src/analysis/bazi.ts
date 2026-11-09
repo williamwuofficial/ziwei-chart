@@ -187,6 +187,33 @@ export const SPOUSE_PALACE: Source = { verse: '年為祖上，月為父母伯叔
 const WIFE_STAR: Source = { verse: '正財為正妻，偏財妾也', work: '淵海子平', section: '論妻妾', basis: '淵海子平: in a man’s chart the spouse star is 正財' };
 const HUSBAND_STAR: Source = { verse: '婦人命取六親，與男命不同：取官星為夫星', work: '淵海子平', section: '六親總篇', basis: '淵海子平: in a woman’s chart the spouse star is 正官' };
 
+// ── The five-element cycle, seen from the Day Master ─────────────────────
+
+export const CYCLE: Element[] = ['木', '火', '土', '金', '水']; // generating order (相生)
+export type Role = 'self' | 'output' | 'wealth' | 'officer' | 'resource';
+export const ROLE: Record<Role, { zh: string; en: string }> = {
+  self: { zh: '比劫', en: 'Companions' },
+  output: { zh: '食傷', en: 'Output' },
+  wealth: { zh: '財', en: 'Wealth' },
+  officer: { zh: '官殺', en: 'Officer' },
+  resource: { zh: '印', en: 'Resource' },
+};
+/** What element `e` is to a Day Master of element `dm`. */
+export function elementRole(dm: Element, e: Element): Role {
+  if (e === dm) return 'self';
+  if (GEN[dm] === e) return 'output';
+  if (CTRL[dm] === e) return 'wealth';
+  if (CTRL[e] === dm) return 'officer';
+  return 'resource';
+}
+const CYCLE_SRC: Source = { verse: '五者流行而更轉，順則相生，逆則相剋', work: '三命通會', section: '論五行生剋', basis: '三命通會 卷一: the five elements turn in a cycle, each feeding the next and checking the one beyond' };
+const CLASSES_SRC: Source = {
+  verse: '一曰官，分之陰陽，曰官、曰殺，甲乙見庚辛也；二曰財，分之陰陽，曰正財、偏財，甲乙見戊己也',
+  work: '淵海子平',
+  section: '論日為主',
+  basis: '淵海子平: every element stands in one of five relations to the Day Master: officer, wealth, resource, output or companion',
+};
+
 // ── Reading ────────────────────────────────────────────────────────────────
 
 export interface PillarView {
@@ -253,6 +280,20 @@ export function readBazi(p: Pillars, gender: 'male' | 'female'): BaziReading {
       ' The classics go on to judge whether the Day Master is strong or weak and which element it needs; schools disagree on how, so this app leaves that out.',
     evidence: [`eight characters: ${fmt(counts)}`, `with hidden stems: ${fmt(countsHidden)}`],
     sources: [COUNT_SRC, ...HIDDEN_SRC],
+  });
+
+  // The cycle, seen from the Day Master.
+  const roleOf = (e: Element) => ROLE[elementRole(el, e)];
+  const heavy = EL_ORDER.filter((e) => countsHidden[e] === Math.max(...EL_ORDER.map((x) => countsHidden[x])));
+  const light = EL_ORDER.filter((e) => countsHidden[e] === Math.min(...EL_ORDER.map((x) => countsHidden[x])));
+  findings.push({
+    id: 'bazi.cycle',
+    text:
+      `Around the pentagon each element feeds the next (Wood → Fire → Earth → Metal → Water → Wood) and checks the one two steps on. ` +
+      `Seen from your ${ELEMENT_EN[el]} Day Master, ${CYCLE.map((e) => `${ELEMENT_EN[e]} is ${e === el ? 'your own element' : `your ${roleOf(e).en.toLowerCase()}`} (${roleOf(e).zh})`).join(', ')}. ` +
+      `Counting hidden stems, the chart leans most to ${heavy.map((e) => `${ELEMENT_EN[e]} (${roleOf(e).en.toLowerCase()})`).join(' and ')} and least to ${light.map((e) => `${ELEMENT_EN[e]} (${roleOf(e).en.toLowerCase()})`).join(' and ')}.`,
+    evidence: [`Day Master ⟨${dm}⟩ ${ELEMENT_EN[el]}`, ...CYCLE.map((e) => `${ELEMENT_EN[e]}: ${roleOf(e).en} ${roleOf(e).zh}, ${counts[e]} visible, ${countsHidden[e]} with hidden stems`)],
+    sources: [CYCLE_SRC, CLASSES_SRC],
   });
 
   // The Ten Gods that show in the stems.

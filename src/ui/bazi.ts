@@ -1,7 +1,7 @@
 // Four Pillars (八字) card: the pillars table with Ten Gods and hidden stems, element counts, and the
 // cited readings.
 
-import { BRANCH_EL, PILLAR_LABEL, STEM_EL, TEN_GOD, type BaziReading } from '../analysis/bazi';
+import { BRANCH_EL, CYCLE, elementRole, PILLAR_LABEL, ROLE, STEM_EL, TEN_GOD, type BaziReading } from '../analysis/bazi';
 import { ELEMENT_COLOUR, ELEMENT_EN, type Element } from '../analysis/rules/elements';
 import type { Script } from '../engine/chart';
 import { finding } from './analysis';
@@ -21,6 +21,85 @@ const zh = (text: string, script: Script, cls = 'zh') => {
 };
 
 const elCls = (e: Element) => `el-${ELEMENT_EN[e].toLowerCase()}`;
+const EL_INK: Record<Element, string> = { 木: '#2e8b57', 火: '#d2402f', 土: '#b8860b', 金: '#8a8f98', 水: '#3a6fd8' };
+
+const SVG = 'http://www.w3.org/2000/svg';
+const svg = <K extends keyof SVGElementTagNameMap>(tag: K, attrs: Record<string, string | number>) => {
+  const e = document.createElementNS(SVG, tag);
+  for (const [k, v] of Object.entries(attrs)) e.setAttribute(k, String(v));
+  return e;
+};
+
+/**
+ * The five elements on a pentagon in generating order (木 top, then clockwise). Solid discs grow with
+ * the visible count, dashed rings with the count including hidden stems. Arrows round the edge are
+ * 相生 (feeds); the inner star is 相剋 (checks). Each node is labelled with its role to the Day Master.
+ */
+function pentagon(r: BaziReading, script: Script): SVGSVGElement {
+  const W = 420;
+  const H = 340;
+  const cx = W / 2;
+  const cy = 172;
+  const R = 112;
+  const dmEl = STEM_EL[r.dayMaster];
+  const pos = CYCLE.map((e, i) => {
+    const a = ((-90 + i * 72) * Math.PI) / 180;
+    return { e, x: cx + R * Math.cos(a), y: cy + R * Math.sin(a), ux: Math.cos(a), uy: Math.sin(a) };
+  });
+  const disc = (e: Element) => 14 + 3.2 * r.counts[e];
+  const ring = (e: Element) => 14 + 3.2 * r.countsHidden[e];
+  const root = svg('svg', { viewBox: `0 0 ${W} ${H}`, class: 'pentagon', role: 'img' });
+  root.setAttribute(
+    'aria-label',
+    `Five-element pentagon. ${CYCLE.map((e) => `${ELEMENT_EN[e]} ${r.counts[e]} visible, ${r.countsHidden[e]} with hidden stems, ${ROLE[elementRole(dmEl, e)].en}`).join('; ')}.`,
+  );
+  const defs = svg('defs', {});
+  for (const [id, cls] of [['pg-gen', 'gen'], ['pg-ctl', 'ctl']]) {
+    const m = svg('marker', { id, viewBox: '0 0 10 10', refX: 9, refY: 5, markerWidth: 7, markerHeight: 7, orient: 'auto-start-reverse' });
+    m.append(svg('path', { d: 'M0,0 L10,5 L0,10 z', class: `arrowhead ${cls}` }));
+    defs.append(m);
+  }
+  root.append(defs);
+
+  const link = (i: number, j: number, cls: 'gen' | 'ctl') => {
+    const a = pos[i];
+    const b = pos[j];
+    const dx = b.x - a.x;
+    const dy = b.y - a.y;
+    const len = Math.hypot(dx, dy);
+    const ra = Math.max(disc(a.e), ring(a.e)) + 5;
+    const rb = Math.max(disc(b.e), ring(b.e)) + 7;
+    if (ra + rb >= len - 6) return;
+    root.append(svg('line', { x1: a.x + (dx / len) * ra, y1: a.y + (dy / len) * ra, x2: b.x - (dx / len) * rb, y2: b.y - (dy / len) * rb, class: `pg-${cls}`, 'marker-end': `url(#pg-${cls})` }));
+  };
+  for (let i = 0; i < 5; i++) link(i, (i + 2) % 5, 'ctl');
+  for (let i = 0; i < 5; i++) link(i, (i + 1) % 5, 'gen');
+
+  for (const p of pos) {
+    const g = svg('g', { class: `pg-node${p.e === dmEl ? ' dm' : ''}` });
+    const ink = EL_INK[p.e];
+    if (r.countsHidden[p.e] > r.counts[p.e]) g.append(svg('circle', { cx: p.x, cy: p.y, r: ring(p.e), class: 'pg-ring', style: `stroke:${ink}` }));
+    g.append(svg('circle', { cx: p.x, cy: p.y, r: disc(p.e), class: `pg-disc${r.counts[p.e] ? '' : ' zero'}`, style: `fill:${ink};stroke:${ink}` }));
+    if (p.e === dmEl) g.append(svg('circle', { cx: p.x, cy: p.y, r: Math.max(disc(p.e), ring(p.e)) + 4, class: 'pg-dm' }));
+    const t = svg('text', { x: p.x, y: p.y + 1, class: 'pg-zh', 'dominant-baseline': 'middle', 'text-anchor': 'middle' });
+    t.textContent = toScript(p.e, script);
+    g.append(t);
+    // Label outside the node, away from the centre.
+    const off = Math.max(disc(p.e), ring(p.e)) + 12;
+    const lx = p.x + p.ux * off;
+    const ly = p.y + p.uy * off;
+    const anchor = Math.abs(p.ux) < 0.3 ? 'middle' : p.ux > 0 ? 'start' : 'end';
+    const dy = p.uy < -0.5 ? -18 : p.uy > 0.5 ? 6 : -6;
+    const role = ROLE[elementRole(dmEl, p.e)];
+    const l1 = svg('text', { x: lx, y: ly + dy, class: 'pg-label', 'text-anchor': anchor });
+    l1.textContent = `${ELEMENT_EN[p.e]} ${r.counts[p.e]}${r.countsHidden[p.e] > r.counts[p.e] ? ` (+${r.countsHidden[p.e] - r.counts[p.e]})` : ''}`;
+    const l2 = svg('text', { x: lx, y: ly + dy + 14, class: `pg-role${p.e === dmEl ? ' dm' : ''}`, 'text-anchor': anchor });
+    l2.textContent = p.e === dmEl ? `Day Master · ${toScript(role.zh, script)}` : `${role.en} · ${toScript(role.zh, script)}`;
+    g.append(l1, l2);
+    root.append(g);
+  }
+  return root;
+}
 
 export interface BaziNotes {
   /** Set when the birth is within a day of a solar term (節氣), where the month pillar may change. */
@@ -140,8 +219,16 @@ export function renderBazi(root: HTMLElement, r: BaziReading, script: Script, no
   const gods = [...new Set(r.pillars.filter((p) => p.god).map((p) => p.god!))];
   const dayBranch = r.pillars.find((p) => p.key === 'day')!.branch;
   const sec = h('section', 'an-section');
+  const fig = h('figure', 'pentagon-fig');
+  const cap = h('figcaption', 'hint');
+  cap.append(
+    rich('Solid disc: the eight visible characters. Dashed ring: with hidden stems (the number in brackets). Outer arrows: feeds (相生). Inner star: checks (相剋). Labels give each element’s role to your Day Master.', script),
+  );
+  fig.append(pentagon(r, script), cap);
   sec.append(
     finding(byId('bazi.daymaster'), script),
+    fig,
+    finding(byId('bazi.cycle'), script),
     fold('Element balance', `most ${els.filter((e) => r.counts[e] === top).map((e) => ELEMENT_EN[e]).join(', ')}${missing.length ? ` · none visible: ${missing.map((e) => ELEMENT_EN[e]).join(', ')}` : ''}`, bars, barHint, finding(byId('bazi.elements'), script)),
     fold('Ten Gods', gods.map((g) => `⟨${g}⟩`).join(' '), finding(byId('bazi.tengods'), script)),
     fold('Spouse palace and star', `day branch ⟨${dayBranch}⟩`, finding(byId('bazi.spouse'), script)),

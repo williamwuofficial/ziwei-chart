@@ -332,3 +332,4 @@ Each phase is shippable on its own.
   - **Left out:** 身強/身弱, 用神, 大運, 格局 and 神煞.
 
 - **Tabbed results, 2026-11-09** (`src/ui/tabs.ts`): under the chart, a sticky tab bar (Overview · 10-year periods · Palaces · Patterns · 八字 · Compatibility) shows one reading at a time; the choice is remembered per browser and printing shows every tab. Inside tabs, secondary detail folds: pattern groups (structures start closed), the 八字 element balance, Ten Gods and spouse star, and the compatibility shortcomings (with a one-line summary always visible). The page went from about 7,300px to 2,200–3,500px.
+- **Five-element pentagon, 2026-11-09:** an SVG in the 八字 tab. Nodes sit in 相生 order with the 相剋 star inside. Disc size is the visible count, a dashed ring adds the hidden stems, and the Day Master is outlined. Each label gives the role to the Day Master (印, 食傷, 財, 官殺, 比劫). A cited `bazi.cycle` finding goes with it (三命通會 論五行生剋, 淵海子平 論日為主).
