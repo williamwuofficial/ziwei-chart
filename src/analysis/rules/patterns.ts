@@ -293,13 +293,16 @@ export const AUSPICIOUS: PatternRule[] = [
     zh: '馬頭帶箭格',
     en: 'Arrow at the horse’s head',
     kind: 'auspicious',
-    sources: [{ verse: '天同貪羊陀居午位', work: '紫微斗數全書', section: '論諸星同垣各司所宜', basis: `${CATALOGUE} and the 全書 note (…丙戊鎮御邊疆，為馬頭帶箭富且貴): 命宮 at 午 with 擎羊, holding 貪狼 or 天同+太陰` }],
+    sources: [
+      { verse: '天同貪羊陀居午位', work: '紫微斗數全書', section: '論諸星同垣各司所宜', basis: `${CATALOGUE} and the 全書 note (…丙戊鎮御邊疆，為馬頭帶箭富且貴): 命宮 at 午 with 擎羊, holding 貪狼 or 天同+太陰` },
+      { verse: '馬頭帶劍，非夭折則主刑傷', work: '紫微斗數全書', section: '斗數骨髓賦', basis: '全書 卷一 warns about the same 擎羊-at-午 placement; the app softens this to a caution about injury and does not predict early death' },
+    ],
     match: (x) =>
       x.at(x.ming, '午') && x.has(x.ming, '擎羊') && (x.has(x.ming, '貪狼') || x.has(x.ming, '天同', '太陰'))
         ? m(x, [`⟨擎羊⟩ with ${x.majors(x.ming).map((s) => `⟨${s}⟩`).join(' + ')} in ${x.label(x.ming)}`])
         : undefined,
     tolerates: ['擎羊', '火星', '鈴星'],
-    text: 'The blade star sits at the horse position and turns into drive. Classically hard early years and success that comes from going far from home; good fortune arrives in mid-life through enterprise or a demanding career. Some modern readers apply the name to any 擎羊 in a 午 Life palace; the 全書 ties it to 同陰 or 貪狼.',
+    text: 'The blade star sits at the horse position and turns into drive. Classically hard early years and success that comes from going far from home; good fortune arrives in mid-life through enterprise or a demanding career. The 全書’s 骨髓賦 also gives a stark warning about this placement; the app reads it as a caution: the drive comes with a higher risk of accidents and injury, so physical risks deserve care. Some modern readers apply the name to any 擎羊 in a 午 Life palace; the 全書 ties it to 同陰 or 貪狼.',
   },
   {
     id: 'ge.matou-daijian-ma',
