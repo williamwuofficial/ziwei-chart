@@ -23,24 +23,41 @@ export const COLOUR_BASIS: Source = {
 };
 
 /** Element of each main star, with the 全書 line that states it. */
-export const STAR_ELEMENT: Record<string, { el: Element; note?: string; src: Source }> = {
+/** `alt` is a second element the 全書 also gives; the app reads the first (`el`) and shows `alt` as a note. */
+export const STAR_ELEMENT: Record<string, { el: Element; alt?: Element; note?: string; src: Source }> = {
   紫微: { el: '土', src: { verse: '紫微屬土', work: '紫微斗數全書', section: '問紫微所主若何', basis: '全書 卷一: 紫微 is earth' } },
   天機: { el: '木', src: { verse: '天機屬木', work: '紫微斗數全書', section: '問天機所主如何', basis: '全書 卷一: 天機 is wood' } },
   太陽: { el: '火', src: { verse: '太陽星屬火', work: '紫微斗數全書', section: '問太陽所主若何', basis: '全書 卷一: 太陽 is fire' } },
   武曲: { el: '金', src: { verse: '武曲北斗第六星，屬金', work: '紫微斗數全書', section: '問武曲星所主為何', basis: '全書 卷一: 武曲 is metal' } },
-  天同: { el: '水', src: { verse: '天同星屬水', work: '紫微斗數全書', section: '問天同星所主若何', basis: '全書 卷一: 天同 is water' } },
+  天同: {
+    el: '水',
+    alt: '金',
+    note: 'the 卷二 star table adds metal (「天同屬水金」); the app uses its first element, water',
+    src: { verse: '天同星屬水', work: '紫微斗數全書', section: '問天同星所主若何', basis: '全書 卷一: 天同 is water; the 卷二 star table gives water and metal' },
+  },
   廉貞: { el: '火', src: { verse: '廉貞屬火', work: '紫微斗數全書', section: '問廉貞所主若何', basis: '全書 卷一: 廉貞 is fire' } },
   天府: { el: '土', src: { verse: '天府屬土', work: '紫微斗數全書', section: '問天府所主若何', basis: '全書 卷一: 天府 is earth' } },
   太陰: { el: '水', src: { verse: '太陰屬水南北斗化富為財帛田宅主', work: '紫微斗數全書', section: '安身命例', basis: '全書 卷二 star table: 太陰 is water' } },
   貪狼: {
     el: '水',
+    alt: '木',
     note: 'its body is water and its qi wood (卷一: 「其氣屬木，體屬水」)',
     src: { verse: '貪狼北斗解厄之神，第一星也。屬水', work: '紫微斗數全書', section: '問貪狼所主若何', basis: '全書 卷一: 貪狼 is water in body; 希夷 adds that its qi is wood' },
   },
-  巨門: { el: '水', src: { verse: '巨門屬水', work: '紫微斗數全書', section: '問巨門所主若何', basis: '全書 卷一: 巨門 is water' } },
+  巨門: {
+    el: '水',
+    alt: '金',
+    note: 'the 全書 also gives metal (卷一: 「巨門屬水、金」); the app uses its first element, water',
+    src: { verse: '巨門屬水、金', work: '紫微斗數全書', section: '問巨門所主若何', basis: '全書 卷一: 巨門 is water and metal; 卷二 lists water only' },
+  },
   天相: { el: '水', src: { verse: '天相屬水', work: '紫微斗數全書', section: '問天相星所主若何', basis: '全書 卷一: 天相 is water' } },
   天梁: { el: '土', src: { verse: '天梁屬土', work: '紫微斗數全書', section: '問天梁星所主若何', basis: '全書 卷一: 天梁 is earth' } },
-  七殺: { el: '火', src: { verse: '七殺南斗第六星也，屬火', work: '紫微斗數全書', section: '問七殺星所主若何', basis: '全書 卷一: 七殺 is fire' } },
+  七殺: {
+    el: '火',
+    alt: '金',
+    note: 'the 全書 gives fire and metal (「屬火、金」), and many modern books treat it as metal; the app uses its first element, fire',
+    src: { verse: '七殺南斗第六星也，屬火、金', work: '紫微斗數全書', section: '問七殺星所主若何', basis: '全書 卷一 and 卷二: 七殺 is fire and metal' },
+  },
   破軍: { el: '水', src: { verse: '破軍屬水', work: '紫微斗數全書', section: '問破軍所主若何', basis: '全書 卷一: 破軍 is water' } },
 };
 
@@ -89,3 +106,9 @@ export const OWN_YEAR_QUOTE: Partial<Record<string, Source>> = {
 
 export const CLASH_BASIS: Source = { basis: '六沖: a year whose branch is opposite the birth-year branch clashes with it (沖太歲). The 全書 names such clashes for several branches and reads them together with the year’s stars' };
 export const OWN_YEAR_BASIS: Source = { basis: '本命年: the year that repeats the birth-year branch. Widely observed as a year for care; the 全書 names it only for 辰, 巳, 丑 and 午 births' };
+
+/** "⟨七殺⟩ is read as fire; the 全書 also gives metal" for stars with a second element, else undefined. */
+export function altElementNote(star: string): string | undefined {
+  const e = STAR_ELEMENT[star];
+  return e?.alt ? `⟨${star}⟩ is read as ${ELEMENT_EN[e.el].toLowerCase()}; the 全書 also gives ${ELEMENT_EN[e.alt].toLowerCase()}` : undefined;
+}

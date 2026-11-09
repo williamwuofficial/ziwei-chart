@@ -8,7 +8,7 @@ import {
 import type { PatternRule, PatternStatus, Source } from './rules/types';
 import { mingClassics, palaceClassics } from './juan2Read';
 import { palaceAdvice } from './advice';
-import { BRANCH_ANIMAL, COLOUR_BASIS, ELEMENT_COLOUR, ELEMENT_EN, JU_ELEMENT, STAR_ELEMENT } from './rules/elements';
+import { altElementNote, BRANCH_ANIMAL, COLOUR_BASIS, ELEMENT_COLOUR, ELEMENT_EN, JU_ELEMENT, STAR_ELEMENT } from './rules/elements';
 
 /** One statement in the analysis, with everything needed for its "Why?" panel. */
 export interface Finding {
@@ -288,6 +288,7 @@ function elementFinding(x: Ctx): Finding[] {
         `年支 ${x.c.yearBranch}${animal ? ` (${animal.zh})` : ''}`,
         `五行局 ${ju}`,
         ...stars.map((s) => `⟨${s}⟩ is ${STAR_ELEMENT[s].el} (${ELEMENT_EN[STAR_ELEMENT[s].el].toLowerCase()})`),
+        ...stars.map(altElementNote).filter((n): n is string => !!n),
       ],
       sources: [...stars.map((s) => STAR_ELEMENT[s].src), COLOUR_BASIS],
     },

@@ -18,7 +18,7 @@ import type { ChartM, PalaceName } from './model';
 import { xiaoxianIndex } from './xiaoxian';
 import { Ctx, trines } from './predicates';
 import { baziCompat, branchRelation, type Pillars } from './bazi';
-import { BRANCH_ANIMAL, ELEMENT_EN, JU_ELEMENT, STAR_ELEMENT, type Element } from './rules/elements';
+import { altElementNote, BRANCH_ANIMAL, ELEMENT_EN, JU_ELEMENT, STAR_ELEMENT, type Element } from './rules/elements';
 import type { Source } from './rules/types';
 
 export type Layer = 'match' | 'partial' | 'differs' | 'none';
@@ -96,6 +96,10 @@ export function starHarmony(a: string[], b: string[]): { tone: Layer; pairs: str
       pairs.push(`⟨${s}⟩ ${ELEMENT_EN[ea]} · ⟨${t}⟩ ${ELEMENT_EN[eb]}: ${word}`);
     }
   if (!pairs.length) return { tone: 'none', pairs };
+  for (const s of new Set([...a, ...b])) {
+    const n = altElementNote(s);
+    if (n) pairs.push(n);
+  }
   return { tone: bad === 0 ? 'match' : good === 0 ? 'differs' : 'partial', pairs };
 }
 
