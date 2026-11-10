@@ -4,32 +4,27 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="color-scheme" content="light dark" />
-    <title>Learn · Zi Wei Chart</title>
-    <meta name="description" content="A reference to Zi Wei Dou Shu (紫微斗數): the 12 palaces, 14 main stars, minor stars, 四化 and classical patterns, with the original 全書 text." />
+    <title data-zh="入門・紫微斗數命盤">Learn · Zi Wei Chart</title>
+    <meta name="description" content="A reference to Zi Wei Dou Shu (紫微斗數): the 12 palaces, 14 main stars, minor stars, 四化 and classical patterns, with the original 全書 text." data-zh-content="紫微斗數入門：十二宮、十四主星、輔星、四化和古典格局，附全書原文。" />
   </head>
   <body>
     <header class="site-header">
       <nav class="site-nav" aria-label="Site">
-        <a href="./">Chart</a>
-        <a href="./learn.html" aria-current="page">Learn</a>
-        <a href="./about.html">Methods &amp; sources</a>
-        <label class="nav-script">Script
-          <select id="page-script">
-            <option value="zh-TW">繁體</option>
-            <option value="zh-CN">简体</option>
-          </select>
-        </label>
+        <a href="./" data-zh="排盤">Chart</a>
+        <a href="./learn.html" aria-current="page" data-zh="入門">Learn</a>
+        <a href="./about.html" data-zh="方法與出處">Methods &amp; sources</a>
+        <div class="langs" role="group" aria-label="Language" data-zh-aria-label="語言"><button type="button" data-lang="zh-TW" lang="zh-Hant">繁</button><button type="button" data-lang="zh-CN" lang="zh-Hans">简</button><button type="button" data-lang="en">EN</button></div>
       </nav>
-      <h1>Learn <span lang="zh-Hant">紫微斗數</span></h1>
-      <p class="tagline">The palaces, stars, transformations and patterns the chart uses, with the classical text behind each one. Hover a Chinese term for its pinyin and meaning.</p>
-      <nav class="learn-toc" id="learn-toc" aria-label="On this page"></nav>
+      <h1 data-zh="紫微斗數入門">Learn <span lang="zh-Hant">紫微斗數</span></h1>
+      <p class="tagline" data-zh="命盤所用的宮位、星曜、四化和格局，以及每一項背後的古典原文。">The palaces, stars, transformations and patterns the chart uses, with the classical text behind each one. Hover a Chinese term for its pinyin and meaning.</p>
+      <nav class="learn-toc" id="learn-toc" aria-label="On this page" data-zh-aria-label="本頁內容"></nav>
     </header>
 
     <main id="learn"></main>
 
     <footer class="site-footer">
-      <p>Quotations are from 《紫微斗數全書》 (Ming dynasty, public domain), as transcribed on Wikisource. For entertainment and cultural interest.</p>
-      <p><a href="./">Back to the chart</a> · <a href="https://github.com/williamwuofficial/ziwei-chart">Source</a></p>
+      <p data-zh="引文出自《紫微斗數全書》（明代，公有領域），依維基文庫的抄本。僅供娛樂和文化參考。">Quotations are from 《紫微斗數全書》 (Ming dynasty, public domain), as transcribed on Wikisource. For entertainment and cultural interest.</p>
+      <p data-zh='<a href="./">回到命盤</a>・<a href="https://github.com/williamwuofficial/ziwei-chart">原始碼</a>'><a href="./">Back to the chart</a> · <a href="https://github.com/williamwuofficial/ziwei-chart">Source</a></p>
     </footer>
     <script type="module" src="./src/learn.ts"></script>
   </body>

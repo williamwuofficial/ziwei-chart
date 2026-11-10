@@ -1,6 +1,8 @@
 import { DEFAULT_SETTINGS, type Gender, type Settings } from '../engine/chart';
 import { placeDetail, placeLabel, searchPlaces, type Place } from '../input/geocode';
 import { SHICHEN } from '../input/solarTime';
+import { scriptOf } from '../i18n/lang';
+import { ui } from './zhText';
 
 export interface BirthInput {
   gender: Gender;
@@ -42,7 +44,7 @@ function save(input: BirthInput): void {
   }
 }
 
-export function setupForm(form: HTMLFormElement, onSubmit: (input: BirthInput, auto: boolean) => void): { submitIfReady(): void } {
+export function setupForm(form: HTMLFormElement, onSubmit: (input: BirthInput, auto: boolean) => void): { submitIfReady(): void; relabel(): void } {
   const el = <T extends Element>(sel: string) => form.querySelector<T>(sel)!;
   const timeInput = el<HTMLInputElement>('input[name="time"]');
   const shichenSelect = el<HTMLSelectElement>('select[name="shichen"]');
@@ -50,7 +52,7 @@ export function setupForm(form: HTMLFormElement, onSubmit: (input: BirthInput, a
   const placeList = el<HTMLUListElement>('#place-list');
   const placeStatus = el<HTMLParagraphElement>('#place-status');
   const errorBox = el<HTMLParagraphElement>('#form-error');
-  const placeHint = placeStatus.textContent ?? '';
+  const placeHint = () => ui('Needed with an exact time, to work out the time zone and true solar time.', '填寫準確時間時需要，用來推算時區和真太陽時。');
 
   for (const [i, s] of SHICHEN.entries()) shichenSelect.add(new Option(`${s.zh}時 · ${s.range}`, String(i)));
 
@@ -69,7 +71,7 @@ export function setupForm(form: HTMLFormElement, onSubmit: (input: BirthInput, a
     place = p;
     placeStatus.textContent = p
       ? `${placeLabel(p)} · ${placeDetail(p).split(' · ')[1]} · ${p.timezone}`
-      : placeHint;
+      : placeHint();
     placeStatus.classList.toggle('ok', !!p);
   };
 
@@ -130,9 +132,9 @@ export function setupForm(form: HTMLFormElement, onSubmit: (input: BirthInput, a
         results = await searchPlaces(q, inflight.signal);
         active = -1;
         renderList();
-        if (results.length === 0) placeStatus.textContent = 'No matching place found. Try the nearest city.';
+        if (results.length === 0) placeStatus.textContent = ui('No matching place found. Try the nearest city.', '找不到相符的地點，請試試最近的城市。');
       } catch (err) {
-        if ((err as Error).name !== 'AbortError') placeStatus.textContent = 'Place search is unavailable right now. Try again shortly.';
+        if ((err as Error).name !== 'AbortError') placeStatus.textContent = ui('Place search is unavailable right now. Try again shortly.', '地點搜尋暫時無法使用，請稍後再試。');
       }
     }, 300);
   });
@@ -164,12 +166,11 @@ export function setupForm(form: HTMLFormElement, onSubmit: (input: BirthInput, a
   if (prev?.place) {
     placeInput.value = placeLabel(prev.place);
     showPlace(prev.place);
-  }
+  } else showPlace(undefined);
   el<HTMLInputElement>('input[name="useSolar"]').checked = settings.useSolar;
   el<HTMLInputElement>('input[name="showDetails"]').checked = settings.showDetails;
   el<HTMLSelectElement>('select[name="dayDivide"]').value = settings.dayDivide;
   el<HTMLSelectElement>('select[name="algorithm"]').value = settings.algorithm;
-  el<HTMLSelectElement>('select[name="script"]').value = settings.script;
   el<HTMLSelectElement>('select[name="sihua"]').value = settings.sihua;
   el<HTMLSelectElement>('select[name="yearDivide"]').value = settings.yearDivide;
   el<HTMLSelectElement>('select[name="fixLeap"]').value = String(settings.fixLeap);
@@ -188,16 +189,17 @@ export function setupForm(form: HTMLFormElement, onSubmit: (input: BirthInput, a
     const gender = data.get('gender') as Gender | null;
     const date = String(data.get('date') ?? '');
     const timeMode = data.get('timeMode') as 'exact' | 'shichen';
-    if (!gender) return 'Choose a gender.';
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) return 'Enter a date of birth.';
+    if (!gender) return ui('Choose a gender.', '請選擇性別。');
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) return ui('Enter a date of birth.', '請輸入出生日期。');
     const year = Number(date.slice(0, 4));
-    if (year < 1900 || year > 2099) return 'Dates from 1900 to 2099 are supported.';
+    if (year < 1900 || year > 2099) return ui('Dates from 1900 to 2099 are supported.', '支援1900至2099年的日期。');
     const s: Settings = {
       useSolar: data.get('useSolar') === 'on',
       showDetails: data.get('showDetails') === 'on',
       dayDivide: data.get('dayDivide') as Settings['dayDivide'],
       algorithm: data.get('algorithm') as Settings['algorithm'],
-      script: data.get('script') as Settings['script'],
+      // The chart's Chinese script follows the display language (English uses Traditional terms).
+      script: scriptOf(),
       sihua: data.get('sihua') as Settings['sihua'],
       yearDivide: data.get('yearDivide') as Settings['yearDivide'],
       fixLeap: data.get('fixLeap') !== 'false',
@@ -206,8 +208,8 @@ export function setupForm(form: HTMLFormElement, onSubmit: (input: BirthInput, a
     };
     if (timeMode === 'exact') {
       const time = String(data.get('time') ?? '');
-      if (!/^\d{2}:\d{2}$/.test(time)) return 'Enter the time of birth, or switch to “Only the 時辰”.';
-      if (!place) return 'Choose the place of birth from the list.';
+      if (!/^\d{2}:\d{2}$/.test(time)) return ui('Enter the time of birth, or switch to “Only the 時辰”.', '請輸入出生時間，或改選「只知時辰」。');
+      if (!place) return ui('Choose the place of birth from the list.', '請從清單中選擇出生地。');
       return { gender, date, timeMode, time, place, settings: s };
     }
     return { gender, date, timeMode, shichen: Number(data.get('shichen')), place, settings: s };
@@ -231,6 +233,14 @@ export function setupForm(form: HTMLFormElement, onSubmit: (input: BirthInput, a
   return {
     submitIfReady() {
       if (typeof read() !== 'string') submit(true);
+    },
+    /** Redraw the text the form writes itself, after a language switch. */
+    relabel() {
+      showPlace(place);
+      if (!errorBox.hidden) {
+        const r = read();
+        if (typeof r === 'string') errorBox.textContent = r;
+      }
     },
   };
 }

@@ -3,6 +3,7 @@
 // classical 經云 / 賦 lines, public domain. Meanings are paraphrased as tendencies, not fates.
 
 import { anhe, neighbours, opp, sfsz, SHA4, trines, type Ctx } from '../predicates';
+import { L } from '../../i18n/lang';
 import type { Match, PatternRule } from './types';
 
 const CATALOGUE = 'Traditional 格局 catalogue: formation conditions';
@@ -262,7 +263,7 @@ export const AUSPICIOUS: PatternRule[] = [
     match: (x) => {
       if (!(x.at(x.ming, '子', '午') && x.has(x.ming, '破軍'))) return undefined;
       if (x.yearStemIs('丙', '戊')) return undefined;
-      return m(x, [`⟨破軍⟩ in ${x.label(x.ming)}`], sfsz(x.ming), x.yearStemIs('甲', '癸') ? `A ${x.c.yearStem} year, which the catalogue rates the best.` : undefined);
+      return m(x, [`⟨破軍⟩ in ${x.label(x.ming)}`], sfsz(x.ming), x.yearStemIs('甲', '癸') ? L(`A ${x.c.yearStem} year, which the catalogue rates the best.`, `${x.c.yearStem}年生人，格局書評為最佳。`) : undefined);
     },
     text: 'The pioneer star at full strength. Classically success away from one’s birthplace, in enterprise or command; bold breaks with the old that pay off, with sudden rises.',
   },
@@ -275,7 +276,7 @@ export const AUSPICIOUS: PatternRule[] = [
     match: (x) => {
       if (!(x.at(x.ming, '子', '午') && x.has(x.ming, '巨門'))) return undefined;
       const full = x.yearStemIs('辛', '癸');
-      return m(x, [`⟨巨門⟩ in ${x.label(x.ming)}`], sfsz(x.ming), full ? undefined : `For a ${x.c.yearStem} year the catalogue treats this as a partial form; 辛 and 癸 years qualify fully.`);
+      return m(x, [`⟨巨門⟩ in ${x.label(x.ming)}`], sfsz(x.ming), full ? undefined : L(`For a ${x.c.yearStem} year the catalogue treats this as a partial form; 辛 and 癸 years qualify fully.`, `${x.c.yearStem}年生人，格局書只算部分成格；辛、癸年生人才完全入格。`));
     },
     text: 'Talent hidden like jade in rough stone. Classically high ideals and unusual ability that only show after years of hard work; the reward comes later, in business, public office or as an authority in a field.',
   },

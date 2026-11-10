@@ -3,6 +3,7 @@
 // palace governs, and what 祿/權/科/忌 do. Texts are paraphrased as tendencies.
 
 import type { Mut, PalaceName } from '../model';
+import { L, tr } from '../../i18n/lang';
 import type { Source } from './types';
 
 export const STAR_BASIS: Source = { basis: 'Standard star nature (化氣 and 星性) shared across schools' };
@@ -176,12 +177,17 @@ export const PALACE_DOMAIN: Record<PalaceName, PalaceDomain> = {
   父母: { en: 'Parents', domain: 'parents, superiors, documents and your relationship with authority' },
 };
 
+/** A palace's display name: "Wealth palace" / 財帛宮. */
+export const palaceTitle = (name: PalaceName): string => L(`${PALACE_DOMAIN[name].en} palace`, name === '命宮' ? '命宮' : `${name}宮`);
+/** A main star's English epithet, or nothing in Chinese (the star's name says it). */
+export const starEpithet = (star: string): string => L(` (${MAJOR_NATURE[star]?.en ?? 'main star'})`, '');
+
 /** What each birth-year transformation does when it sits in a palace. */
 export const MUT_TEXT: Record<Mut, (domain: string) => string> = {
-  祿: (d) => `brings ease, opportunity and gain to ${d}`,
-  權: (d) => `brings drive, control and competitiveness to ${d}`,
-  科: (d) => `brings reputation, helpful people and smooth resolutions to ${d}`,
-  忌: (d) => `is where attachment, worry and setbacks concentrate, so take extra care with ${d}`,
+  祿: (d) => L(`brings ease, opportunity and gain to ${d}`, `為${tr(d)}帶來順利、機會和收穫`),
+  權: (d) => L(`brings drive, control and competitiveness to ${d}`, `為${tr(d)}帶來衝勁、掌控力和競爭心`),
+  科: (d) => L(`brings reputation, helpful people and smooth resolutions to ${d}`, `為${tr(d)}帶來名聲、貴人和圓滿的解決`),
+  忌: (d) => L(`is where attachment, worry and setbacks concentrate, so take extra care with ${d}`, `執著、煩惱和挫折集中於此，${tr(d)}方面要格外小心`),
 };
 
 export const BODY_TEXT: Partial<Record<PalaceName, string>> = {

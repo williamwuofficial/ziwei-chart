@@ -7,7 +7,8 @@ import type { Pillars } from '../analysis/bazi';
 import { SHICHEN } from '../input/solarTime';
 import type { Gender, Script } from '../engine/chart';
 import { finding } from './analysis';
-import { rich, toScript } from './zhText';
+import { isZh, L, tr } from '../i18n/lang';
+import { rich, toScript, ui } from './zhText';
 
 const h = <K extends keyof HTMLElementTagNameMap>(tag: K, cls?: string, text?: string) => {
   const e = document.createElement(tag);
@@ -16,11 +17,11 @@ const h = <K extends keyof HTMLElementTagNameMap>(tag: K, cls?: string, text?: s
   return e;
 };
 
-const TONE: Record<Layer, { label: string; cls: string }> = {
-  match: { label: 'Good fit', cls: 'good' },
-  partial: { label: 'Mixed', cls: 'mixed' },
-  differs: { label: 'Differs', cls: 'bad' },
-  none: { label: 'No signal', cls: 'neutral' },
+const TONE: Record<Layer, { label: string; zh: string; cls: string }> = {
+  match: { label: 'Good fit', zh: '相合', cls: 'good' },
+  partial: { label: 'Mixed', zh: '有合有不合', cls: 'mixed' },
+  differs: { label: 'Differs', zh: '不同', cls: 'bad' },
+  none: { label: 'No signal', zh: '無訊號', cls: 'neutral' },
 };
 
 export interface Partner {
@@ -41,13 +42,16 @@ export interface Side {
 }
 
 export function renderCompat(root: HTMLElement, own: Side, build: (p: Partner) => Side, script: Script): void {
-  const head = h('h2', undefined, 'Compatibility');
-  const zh = h('span', 'zh', toScript(' 合婚', script));
+  const head = h('h2', undefined, ui('Compatibility', ''));
+  const zh = h('span', 'zh', toScript(isZh() ? '合婚' : ' 合婚', script));
   head.append(zh);
   const intro = h('p', 'hint');
   intro.append(
     rich(
-      'Compare this chart with a partner’s. The 紫微斗數全書 has no compatibility method, so this follows a modern compilation, the 紫微斗數集成全書, with a comparison of the two 八字 (Four Pillars) as a separate last layer. The partner’s details stay on this page and are not saved.',
+      ui(
+        'Compare this chart with a partner’s. The 紫微斗數全書 has no compatibility method, so this follows a modern compilation, the 紫微斗數集成全書, with a comparison of the two 八字 (Four Pillars) as a separate last layer. The partner’s details stay on this page and are not saved.',
+        '把這張命盤與伴侶的命盤比較。紫微斗數全書沒有合婚的方法，所以這裡依照一本現代彙編：紫微斗數集成全書，最後另加一層兩人八字的比較。伴侶的資料只留在這個頁面上，不會儲存。',
+      ),
       script,
     ),
   );
@@ -55,8 +59,8 @@ export function renderCompat(root: HTMLElement, own: Side, build: (p: Partner) =
   const form = h('form', 'compat-form');
   form.noValidate = true;
   const g = h('fieldset', 'field gender');
-  g.append(h('legend', undefined, 'Partner’s gender'));
-  for (const [v, l] of [['male', 'Male'], ['female', 'Female']] as const) {
+  g.append(h('legend', undefined, ui('Partner’s gender', '伴侶性別')));
+  for (const [v, l] of [['male', ui('Male', '男')], ['female', ui('Female', '女')]] as const) {
     const lab = h('label', 'choice');
     const r = h('input');
     r.type = 'radio';
@@ -68,7 +72,7 @@ export function renderCompat(root: HTMLElement, own: Side, build: (p: Partner) =
   }
   const row = h('div', 'row');
   const dl = h('label', 'field');
-  dl.append(h('span', 'label', 'Partner’s date of birth'));
+  dl.append(h('span', 'label', ui('Partner’s date of birth', '伴侶出生日期')));
   const date = h('input');
   date.type = 'date';
   date.name = 'pdate';
@@ -77,10 +81,10 @@ export function renderCompat(root: HTMLElement, own: Side, build: (p: Partner) =
   date.value = partner?.date ?? '';
   dl.append(date);
   const tl = h('label', 'field');
-  tl.append(h('span', 'label', 'Partner’s time of birth (時辰)'));
+  tl.append(h('span', 'label', ui('Partner’s time of birth (時辰)', '伴侶出生時辰')));
   const sel = h('select');
   sel.name = 'ptime';
-  sel.append(new Option('Choose…', ''));
+  sel.append(new Option(ui('Choose…', '請選擇…'), ''));
   SHICHEN.forEach((s, i) => sel.append(new Option(toScript(`${s.zh}時 ${s.range}`, script), String(i))));
   if (partner) sel.value = String(partner.timeIndex);
   tl.append(sel);
@@ -88,7 +92,7 @@ export function renderCompat(root: HTMLElement, own: Side, build: (p: Partner) =
   const err = h('p', 'form-error');
   err.setAttribute('role', 'alert');
   err.hidden = true;
-  const btn = h('button', 'primary', 'Compare');
+  const btn = h('button', 'primary', ui('Compare', '比較'));
   btn.type = 'submit';
   form.append(g, row, err, btn);
 
@@ -102,20 +106,20 @@ export function renderCompat(root: HTMLElement, own: Side, build: (p: Partner) =
       other = build(partner);
     } catch (e) {
       err.hidden = false;
-      err.textContent = `Could not build the partner’s chart: ${String(e)}`;
+      err.textContent = ui(`Could not build the partner’s chart: ${String(e)}`, `無法排出伴侶的命盤：${String(e)}`);
       return;
     }
-    const res = compare({ ...own, who: 'You', whose: 'Your' }, { ...other, who: 'Your partner', whose: 'Your partner’s' });
+    const res = compare({ ...own, who: L('You', '你'), whose: L('Your', '你的') }, { ...other, who: L('Your partner', '對方'), whose: L('Your partner’s', '對方的') });
     out.replaceChildren(...res.sections.map((s) => section(s, script)), limits(res.limits, script));
   };
 
   form.addEventListener('submit', (ev) => {
     ev.preventDefault();
     const gender = form.querySelector<HTMLInputElement>('input[name="pgender"]:checked')?.value as Gender | undefined;
-    const missing = [!gender && 'gender', !date.value && 'date of birth', sel.value === '' && 'time of birth'].filter(Boolean);
+    const missing = [!gender && ui('gender', '性別'), !date.value && ui('date of birth', '出生日期'), sel.value === '' && ui('time of birth', '出生時辰')].filter(Boolean);
     if (missing.length) {
       err.hidden = false;
-      err.textContent = `Please enter the partner’s ${missing.join(', ')}.`;
+      err.textContent = ui(`Please enter the partner’s ${missing.join(', ')}.`, `請填寫伴侶的${missing.join('、')}。`);
       return;
     }
     err.hidden = true;
@@ -136,9 +140,9 @@ function section(s: CompatSection, script: Script): HTMLElement {
   name.append(rich(s.title, script));
   t.append(name);
   const tone = TONE[s.tone];
-  t.append(h('span', `chip ${tone.cls}`, tone.label));
+  t.append(h('span', `chip ${tone.cls}`, ui(tone.label, tone.zh)));
   const b = h('span', 'chip neutral', toScript(s.basis === 'bazi' ? '八字' : '集成全書', script));
-  b.title = s.basis === 'bazi' ? 'From the 八字 classics 三命通會 and 淵海子平' : 'From the modern 紫微斗數集成全書';
+  b.title = s.basis === 'bazi' ? ui('From the 八字 classics 三命通會 and 淵海子平', '出自八字古書三命通會和淵海子平') : ui('From the modern 紫微斗數集成全書', '出自現代的紫微斗數集成全書');
   t.append(b);
   sec.append(t);
   for (const f of s.findings) sec.append(finding(f, script));
@@ -148,12 +152,16 @@ function section(s: CompatSection, script: Script): HTMLElement {
 function limits(list: string[], script: Script): HTMLElement {
   const box = h('details', 'an-section compat-limits fold');
   const sum = h('summary');
-  sum.append(h('span', 'fold-title', 'What this comparison can’t tell you'), ' ', h('span', 'fold-teaser', `${list.length} known gaps: there is no classical method, and both birth times must be right`));
+  sum.append(
+    h('span', 'fold-title', ui('What this comparison can’t tell you', '這個比較無法告訴你的事')),
+    ' ',
+    h('span', 'fold-teaser', ui(`${list.length} known gaps: there is no classical method, and both birth times must be right`, `已知的${list.length}個限制：沒有古典方法，兩人的出生時間都必須正確`)),
+  );
   box.append(sum);
   const ul = h('ul');
   for (const l of list) {
     const li = h('li');
-    li.append(rich(l, script));
+    li.append(rich(tr(l), script));
     ul.append(li);
   }
   box.append(ul);

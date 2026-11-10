@@ -3,6 +3,7 @@
 // standard 五行 correspondences (五色), not a 紫微 rule: the 全書 never prescribes colours, so the
 // app shows them as cultural background only.
 
+import { L } from '../../i18n/lang';
 import type { Source } from './types';
 
 export type Element = '木' | '火' | '土' | '金' | '水';
@@ -110,5 +111,6 @@ export const OWN_YEAR_BASIS: Source = { basis: '本命年: the year that repeats
 /** "⟨七殺⟩ is read as fire; the 全書 also gives metal" for stars with a second element, else undefined. */
 export function altElementNote(star: string): string | undefined {
   const e = STAR_ELEMENT[star];
-  return e?.alt ? `⟨${star}⟩ is read as ${ELEMENT_EN[e.el].toLowerCase()}; the 全書 also gives ${ELEMENT_EN[e.alt].toLowerCase()}` : undefined;
+  if (!e?.alt) return undefined;
+  return L(`⟨${star}⟩ is read as ${ELEMENT_EN[e.el].toLowerCase()}; the 全書 also gives ${ELEMENT_EN[e.alt].toLowerCase()}`, `⟨${star}⟩按${e.el}論；全書另有屬${e.alt}之說`);
 }

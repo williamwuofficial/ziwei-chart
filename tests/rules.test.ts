@@ -2,6 +2,7 @@ import VERSES_RAW from './fixtures/verses.txt?raw';
 import SOURCES_JSON from './fixtures/sources.json';
 import * as OpenCC from 'opencc-js';
 import T2S from '../src/i18n/t2s.json';
+import { ZH } from '../src/i18n/zh';
 import { GLOSSARY } from '../src/i18n/glossary';
 import * as STARS from '../src/analysis/rules/stars';
 import { describe, expect, it } from 'vitest';
@@ -160,7 +161,7 @@ describe('real charts', () => {
 describe('Simplified display map', () => {
   it('covers every character in rule and glossary text (run `npm run t2s` after editing text)', () => {
     const convert = OpenCC.Converter({ from: 'tw', to: 'cn' });
-    const text = JSON.stringify([ALL_PATTERNS.map((r) => [r.zh, r.text, r.sources]), STARS, Object.keys(GLOSSARY)]);
+    const text = JSON.stringify([ALL_PATTERNS.map((r) => [r.zh, r.text, r.sources]), STARS, Object.keys(GLOSSARY), Object.values(ZH)]);
     const map = T2S as Record<string, string>;
     const missing = [...new Set(text.match(/[\u3400-\u9fff]/g))].filter((ch) => convert(ch) !== ch && map[ch] !== convert(ch));
     expect(missing).toEqual([]);

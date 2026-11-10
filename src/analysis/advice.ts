@@ -6,6 +6,7 @@
 
 import type { Finding } from './evaluate';
 import type { Ctx } from './predicates';
+import { L } from '../i18n/lang';
 import type { Source } from './rules/types';
 
 /** 全書: hidden good deeds (陰騭) carry a person through a bad period. */
@@ -40,15 +41,22 @@ const PEER_MONEY: Source[] = [
 const advice = (f: Omit<Finding, 'advice'>): Finding => ({ ...f, advice: true });
 
 /** A 化忌 (birth, decade or year) in the Siblings or Friends palace. */
+const LAYER_ZH: Record<string, string> = { 'the birth-year': '生年', 'the decade': '大限', 'the year': '流年' };
+const PERIOD_ZH: Record<string, string> = { '': '', ' during these ten years': '這十年間', ' this year': '今年' };
+
 function peerMoney(x: Ctx, at: number, id: string, layer: string, period: string): Finding[] {
   const name = x.p(at).name;
   if (name !== '兄弟' && name !== '僕役') return [];
   const who = name === '兄弟' ? 'siblings and close partners' : 'friends and colleagues';
+  const whoZh = name === '兄弟' ? '兄弟和親近的夥伴' : '朋友和同事';
   return [
     advice({
       id: `${id}.advice.peer-money`,
-      text: `Advice: with ${layer} 化忌 in the ${name === '兄弟' ? 'Siblings' : 'Friends'} palace, the case readings warn against joint ventures, guarantees and lending or borrowing money with ${who}${period}. Keep money matters with them in writing.`,
-      evidence: [`${layer} 化忌 in ${x.label(at)}`],
+      text: L(
+        `Advice: with ${layer} 化忌 in the ${name === '兄弟' ? 'Siblings' : 'Friends'} palace, the case readings warn against joint ventures, guarantees and lending or borrowing money with ${who}${period}. Keep money matters with them in writing.`,
+        `建議：${LAYER_ZH[layer]}化忌在${name}宮，命例解讀提醒${PERIOD_ZH[period]}不要與${whoZh}合夥、作保或借貸。與他們的金錢往來最好留下書面紀錄。`,
+      ),
+      evidence: [L(`${layer} 化忌 in ${x.label(at)}`, `${LAYER_ZH[layer]}化忌在${x.label(at)}`)],
       sources: PEER_MONEY,
     }),
   ];
@@ -66,8 +74,11 @@ export function palaceAdvice(x: Ctx, i: number, id: string, pressured: boolean):
     out.push(
       advice({
         id: `${id}.advice.channel`,
-        text: 'Advice: 巨門化忌 with 天刑 points to disputes and legal trouble. 倪海廈 reads the same stars as an asset in work that deals with conflict and rules, such as police, the military or law, and as trouble in the matching periods otherwise.',
-        evidence: [`⟨巨門⟩化忌 and ⟨天刑⟩ in ${x.label(i)}`],
+        text: L(
+          'Advice: 巨門化忌 with 天刑 points to disputes and legal trouble. 倪海廈 reads the same stars as an asset in work that deals with conflict and rules, such as police, the military or law, and as trouble in the matching periods otherwise.',
+          '建議：巨門化忌加天刑，主糾紛和官非。倪海廈認為，在處理衝突和規則的工作中，例如警察、軍人或法律，這組星反而是助力；否則在相應的運限容易惹麻煩。',
+        ),
+        evidence: [L(`⟨巨門⟩化忌 and ⟨天刑⟩ in ${x.label(i)}`, `⟨巨門⟩化忌與⟨天刑⟩同在${x.label(i)}`)],
         sources: [NI(13, '巨門, 天刑 and 化忌 in one palace mean lawsuits and disputes; excellent for a police officer or soldier, otherwise trouble in the matching periods')],
       }),
     );
@@ -76,8 +87,11 @@ export function palaceAdvice(x: Ctx, i: number, id: string, pressured: boolean):
     out.push(
       advice({
         id: `${id}.advice.steady-money`,
-        text: 'Advice: with the Wealth palace under pressure, the case readings favour property and long-term holdings over speculation and quick trading.',
-        evidence: [`${x.label(i)} rates under pressure`],
+        text: L(
+          'Advice: with the Wealth palace under pressure, the case readings favour property and long-term holdings over speculation and quick trading.',
+          '建議：財帛宮受壓時，命例解讀主張置產和長期持有，而不是投機或短線操作。',
+        ),
+        evidence: [L(`${x.label(i)} rates under pressure`, `${x.label(i)}評為受壓`)],
         sources: [FAN('十一', 'with a weak Wealth palace, buying property and long-term investment suit better than active money management')],
       }),
     );
@@ -86,8 +100,11 @@ export function palaceAdvice(x: Ctx, i: number, id: string, pressured: boolean):
     out.push(
       advice({
         id: `${id}.advice.partner`,
-        text: 'Advice: 廉貞 in the Life palace with 七殺 in the Spouse palace can make a relationship tense and quarrelsome. One case reading suggests a partner of steadier temperament, one whose Life palace holds 天府, 天同, 天梁 or 天相.',
-        evidence: [`⟨廉貞⟩ in ${x.label(x.ming)}`, `⟨七殺⟩ in ${x.label(i)}`],
+        text: L(
+          'Advice: 廉貞 in the Life palace with 七殺 in the Spouse palace can make a relationship tense and quarrelsome. One case reading suggests a partner of steadier temperament, one whose Life palace holds 天府, 天同, 天梁 or 天相.',
+          '建議：命宮廉貞、夫妻宮七殺，感情容易緊張、多爭吵。有命例解讀建議找性情較穩的伴侶，例如命宮有天府、天同、天梁或天相的人。',
+        ),
+        evidence: [L(`⟨廉貞⟩ in ${x.label(x.ming)}`, `⟨廉貞⟩在${x.label(x.ming)}`), L(`⟨七殺⟩ in ${x.label(i)}`, `⟨七殺⟩在${x.label(i)}`)],
         sources: [KUNDE],
       }),
     );
@@ -103,8 +120,11 @@ export function decadeAdvice(x: Ctx, i: number, id: string, challenging: boolean
     out.push(
       advice({
         id: `${id}.advice.tuo`,
-        text: 'Advice: 陀羅 sits in the decade palace, a sign of drawn-out delays. The classics answer it with patience and humility: don’t force matters, and let slow ones run their course.',
-        evidence: [`⟨陀羅⟩ in ${x.label(i)}`],
+        text: L(
+          'Advice: 陀羅 sits in the decade palace, a sign of drawn-out delays. The classics answer it with patience and humility: don’t force matters, and let slow ones run their course.',
+          '建議：陀羅在大限命宮，主事情拖延。古書的對策是忍耐和謙和：不要強求，慢的事就讓它慢慢走完。',
+        ),
+        evidence: [L(`⟨陀羅⟩ in ${x.label(i)}`, `⟨陀羅⟩在${x.label(i)}`)],
         sources: [TUO_PATIENCE],
       }),
     );
@@ -112,8 +132,11 @@ export function decadeAdvice(x: Ctx, i: number, id: string, challenging: boolean
     out.push(
       advice({
         id: `${id}.advice.yinzhi`,
-        text: 'Advice: for a hard period the 全書’s remedy is conduct, not ritual. People who quietly help others and correct their own faults are said to come through bad periods unharmed (陰騭). Giving, helping and keeping your dealings clean are the classical answer.',
-        evidence: ['the decade rates as challenging'],
+        text: L(
+          'Advice: for a hard period the 全書’s remedy is conduct, not ritual. People who quietly help others and correct their own faults are said to come through bad periods unharmed (陰騭). Giving, helping and keeping your dealings clean are the classical answer.',
+          '建議：遇到艱難的運限，全書給的方法是修身行善，而不是儀式。默默幫助別人、改正自己過錯的人，據說能平安度過壞運（陰騭）。布施、助人、做事光明磊落，就是古書的答案。',
+        ),
+        evidence: [L('the decade rates as challenging', '這十年評為艱難')],
         sources: YINZHI,
       }),
     );
@@ -131,8 +154,11 @@ export function yearAdvice(x: Ctx, id: string, challenging: boolean, ji: number)
       out.push(
         advice({
           id: `${id}.advice.wedding`,
-          text: `Advice: the year 化忌 ${name === '夫妻' ? 'falls in' : 'clashes into'} the Spouse palace. If a wedding is planned, 倪海廈’s rule is to marry after the 化忌 has passed (過忌成婚), not during it.`,
-          evidence: [`year 化忌 in ${x.label(ji)}`],
+          text: L(
+            `Advice: the year 化忌 ${name === '夫妻' ? 'falls in' : 'clashes into'} the Spouse palace. If a wedding is planned, 倪海廈’s rule is to marry after the 化忌 has passed (過忌成婚), not during it.`,
+            `建議：流年化忌${name === '夫妻' ? '落入' : '沖入'}夫妻宮。如果計畫結婚，倪海廈的原則是等化忌過去再成婚（過忌成婚），不要在化忌當年。`,
+          ),
+          evidence: [L(`year 化忌 in ${x.label(ji)}`, `流年化忌在${x.label(ji)}`)],
           sources: [NI(12, 'a marriage made under a 化忌 does not hold; marrying after it has passed (過忌成婚) is best')],
         }),
       );
@@ -141,8 +167,8 @@ export function yearAdvice(x: Ctx, id: string, challenging: boolean, ji: number)
     out.push(
       advice({
         id: `${id}.advice.study`,
-        text: 'Advice: in a difficult year, 倪海廈 suggests putting the energy into study or teaching rather than new ventures.',
-        evidence: ['the year rates as challenging'],
+        text: L('Advice: in a difficult year, 倪海廈 suggests putting the energy into study or teaching rather than new ventures.', '建議：不順的年份，倪海廈建議把精力放在進修或教學，而不是開創新事業。'),
+        evidence: [L('the year rates as challenging', '這一年評為艱難')],
         sources: [NI(12, 'when the year is bad, go and study or teach')],
       }),
     );

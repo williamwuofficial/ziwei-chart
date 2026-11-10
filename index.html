@@ -4,52 +4,53 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="color-scheme" content="light dark" />
-    <title>Zi Wei Chart</title>
-    <meta name="description" content="Zi Wei Dou Shu (紫微斗數) chart calculator with rule-based, cited analysis." />
+    <title data-zh="紫微斗數命盤">Zi Wei Chart</title>
+    <meta name="description" content="Zi Wei Dou Shu (紫微斗數) chart calculator with rule-based, cited analysis." data-zh-content="紫微斗數排盤與依規則、附出處的命盤解讀。" />
   </head>
   <body>
     <header class="site-header">
       <nav class="site-nav" aria-label="Site">
-        <a href="./" aria-current="page">Chart</a>
-        <a href="./learn.html">Learn</a>
-        <a href="./about.html">Methods &amp; sources</a>
+        <a href="./" aria-current="page" data-zh="排盤">Chart</a>
+        <a href="./learn.html" data-zh="入門">Learn</a>
+        <a href="./about.html" data-zh="方法與出處">Methods &amp; sources</a>
+        <div class="langs" role="group" aria-label="Language" data-zh-aria-label="語言"><button type="button" data-lang="zh-TW" lang="zh-Hant">繁</button><button type="button" data-lang="zh-CN" lang="zh-Hans">简</button><button type="button" data-lang="en">EN</button></div>
       </nav>
-      <h1>Zi Wei Chart <span lang="zh-Hant">紫微斗數</span></h1>
-      <p class="tagline">Purple Star Astrology chart and analysis. Every reading is traced to a classical star configuration.</p>
+      <h1 data-zh="紫微斗數命盤">Zi Wei Chart <span lang="zh-Hant">紫微斗數</span></h1>
+      <p class="tagline" data-zh="紫微斗數排盤與解讀。每一句解讀都可追溯到古典的星曜組合。">Purple Star Astrology chart and analysis. Every reading is traced to a classical star configuration.</p>
     </header>
 
     <main id="app">
       <form id="birth-form" class="card" novalidate>
-        <h2>Birth details</h2>
+        <h2 data-zh="出生資料">Birth details</h2>
 
         <fieldset class="field gender">
-          <legend>Gender</legend>
-          <label class="choice"><input type="radio" name="gender" value="male" required /> Male</label>
-          <label class="choice"><input type="radio" name="gender" value="female" /> Female</label>
-          <p class="hint">Sets the direction of the 10-year periods.</p>
+          <legend data-zh="性別">Gender</legend>
+          <label class="choice"><input type="radio" name="gender" value="male" required /> <span data-zh="男">Male</span></label>
+          <label class="choice"><input type="radio" name="gender" value="female" /> <span data-zh="女">Female</span></label>
+          <p class="hint" data-zh="決定大限的順逆方向。">Sets the direction of the 10-year periods.</p>
         </fieldset>
 
         <div class="row">
           <label class="field">
-            <span class="label">Date of birth</span>
+            <span class="label" data-zh="出生日期">Date of birth</span>
             <input type="date" name="date" min="1900-01-01" max="2099-12-31" required />
           </label>
 
           <div class="field">
-            <span class="label" id="time-label">Time of birth</span>
+            <span class="label" id="time-label" data-zh="出生時間">Time of birth</span>
             <div class="seg" role="radiogroup" aria-labelledby="time-label">
-              <label><input type="radio" name="timeMode" value="exact" checked /> Exact time</label>
-              <label><input type="radio" name="timeMode" value="shichen" /> Only the 時辰</label>
+              <label><input type="radio" name="timeMode" value="exact" checked /> <span data-zh="準確時間">Exact time</span></label>
+              <label><input type="radio" name="timeMode" value="shichen" /> <span data-zh="只知時辰">Only the 時辰</span></label>
             </div>
-            <input type="time" name="time" aria-label="Exact time of birth (local clock time)" />
-            <select name="shichen" aria-label="Two-hour period of birth" hidden></select>
+            <input type="time" name="time" aria-label="Exact time of birth (local clock time)" data-zh-aria-label="準確出生時間（當地鐘錶時間）" />
+            <select name="shichen" aria-label="Two-hour period of birth" data-zh-aria-label="出生時辰" hidden></select>
           </div>
         </div>
 
         <div class="field place-field">
-          <label class="label" for="place-input">Place of birth</label>
+          <label class="label" for="place-input" data-zh="出生地">Place of birth</label>
           <div class="combo">
-            <input id="place-input" type="search" autocomplete="off" placeholder="Start typing a city…" role="combobox"
+            <input id="place-input" type="search" autocomplete="off" placeholder="Start typing a city…" data-zh-placeholder="輸入城市名稱…" role="combobox"
               aria-expanded="false" aria-controls="place-list" aria-autocomplete="list" />
             <ul id="place-list" class="combo-list" role="listbox" hidden></ul>
           </div>
@@ -57,75 +58,68 @@
         </div>
 
         <details class="advanced">
-          <summary>Advanced settings</summary>
-          <label class="check"><input type="checkbox" name="useSolar" /> Use true solar time (longitude and equation of time)</label>
+          <summary data-zh="進階設定">Advanced settings</summary>
+          <label class="check"><input type="checkbox" name="useSolar" /> <span data-zh="使用真太陽時（經度與均時差）">Use true solar time (longitude and equation of time)</span></label>
           <label class="field">
-            <span class="label">Late 子 hour (23:00–24:00)</span>
+            <span class="label" data-zh="晚子時（23:00–24:00）">Late 子 hour (23:00–24:00)</span>
             <select name="dayDivide">
-              <option value="forward">Counts as the next day</option>
-              <option value="current">Counts as the same day</option>
+              <option value="forward" data-zh="算作次日">Counts as the next day</option>
+              <option value="current" data-zh="算作當日">Counts as the same day</option>
             </select>
           </label>
           <label class="field">
-            <span class="label">Year starts at</span>
+            <span class="label" data-zh="年份起點">Year starts at</span>
             <select name="yearDivide">
-              <option value="normal">Lunar New Year (usual for 紫微斗數, default)</option>
-              <option value="exact">立春, start of spring (usual for 八字)</option>
+              <option value="normal" data-zh="農曆新年（紫微斗數通常用法，預設）">Lunar New Year (usual for 紫微斗數, default)</option>
+              <option value="exact" data-zh="立春（八字通常用法）">立春, start of spring (usual for 八字)</option>
             </select>
-            <span class="hint">Only matters for births between Lunar New Year and 立春 (late January to early February).</span>
+            <span class="hint" data-zh="只影響農曆新年到立春之間（約一月下旬到二月初）出生的人。">Only matters for births between Lunar New Year and 立春 (late January to early February).</span>
           </label>
           <label class="field">
-            <span class="label">Leap-month (閏月) births</span>
+            <span class="label" data-zh="閏月出生">Leap-month (閏月) births</span>
             <select name="fixLeap">
-              <option value="true">Split at the 15th: later days count as the next month (default)</option>
-              <option value="false">Count the whole leap month as the previous month</option>
+              <option value="true" data-zh="以十五日為界：十五日後算作下個月（預設）">Split at the 15th: later days count as the next month (default)</option>
+              <option value="false" data-zh="整個閏月算作上個月">Count the whole leap month as the previous month</option>
             </select>
           </label>
           <label class="field">
-            <span class="label">Star placement school</span>
+            <span class="label" data-zh="安星派別">Star placement school</span>
             <select name="algorithm">
-              <option value="default">全書 (classical, default)</option>
-              <option value="zhongzhou">中州派 (Wang Ting Zhi)</option>
+              <option value="default" data-zh="全書（古典，預設）">全書 (classical, default)</option>
+              <option value="zhongzhou" data-zh="中州派（王亭之）">中州派 (Wang Ting Zhi)</option>
             </select>
           </label>
           <label class="field">
-            <span class="label">天馬 placement</span>
+            <span class="label" data-zh="天馬安法">天馬 placement</span>
             <select name="tianma">
-              <option value="year">By birth year (全書, default)</option>
-              <option value="month">By birth month (占驗派, e.g. 范振木)</option>
+              <option value="year" data-zh="依生年（全書，預設）">By birth year (全書, default)</option>
+              <option value="month" data-zh="依生月（占驗派，如范振木）">By birth month (占驗派, e.g. 范振木)</option>
             </select>
           </label>
           <label class="field" id="astro-type-field" hidden>
-            <span class="label">中州派 chart type</span>
+            <span class="label" data-zh="中州派盤別">中州派 chart type</span>
             <select name="astroType">
-              <option value="heaven">天盤 heaven chart (standard)</option>
-              <option value="earth">地盤 earth chart (身宮 as Life palace)</option>
-              <option value="human">人盤 human chart (福德 as Life palace)</option>
+              <option value="heaven" data-zh="天盤（標準）">天盤 heaven chart (standard)</option>
+              <option value="earth" data-zh="地盤（以身宮為命宮）">地盤 earth chart (身宮 as Life palace)</option>
+              <option value="human" data-zh="人盤（以福德為命宮）">人盤 human chart (福德 as Life palace)</option>
             </select>
           </label>
           <label class="field">
-            <span class="label">四化 table (disputed stems)</span>
+            <span class="label" data-zh="四化表（有爭議的天干）">四化 table (disputed stems)</span>
             <select name="sihua" aria-describedby="sihua-hint">
-              <option value="common">Common modern table (default)</option>
-              <option value="quanshu">全書 table (壬 天府化科)</option>
-              <option value="zhongzhou">中州派 (Wang Ting Zhi)</option>
-              <option value="beipai">北派 (He Luo)</option>
-              <option value="tianji">天紀 (Ni Haixia)</option>
+              <option value="common" data-zh="現代通行表（預設）">Common modern table (default)</option>
+              <option value="quanshu" data-zh="全書表（壬天府化科）">全書 table (壬 天府化科)</option>
+              <option value="zhongzhou" data-zh="中州派（王亭之）">中州派 (Wang Ting Zhi)</option>
+              <option value="beipai" data-zh="北派（河洛）">北派 (He Luo)</option>
+              <option value="tianji" data-zh="天紀（倪海廈）">天紀 (Ni Haixia)</option>
             </select>
-            <span class="hint" id="sihua-hint">Schools disagree on three stems. Common modern: 戊 右弼化科, 庚 陽武陰同, 壬 左輔化科. 全書 (卷二 「壬梁紫府武宿是」): as common but 壬 天府化科. 中州派: 戊 太陽化科, 庚 陽武府同, 壬 天府化科. 北派: 庚 陽武同相. 天紀: 庚 陽武同陰.</span>
+            <span class="hint" id="sihua-hint" data-zh="各派對三個天干看法不一。現代通行：戊右弼化科，庚陽武陰同，壬左輔化科。全書（卷二「壬梁紫府武宿是」）：與通行表相同，但壬天府化科。中州派：戊太陽化科，庚陽武府同，壬天府化科。北派：庚陽武同相。天紀：庚陽武同陰。">Schools disagree on three stems. Common modern: 戊 右弼化科, 庚 陽武陰同, 壬 左輔化科. 全書 (卷二 「壬梁紫府武宿是」): as common but 壬 天府化科. 中州派: 戊 太陽化科, 庚 陽武府同, 壬 天府化科. 北派: 庚 陽武同相. 天紀: 庚 陽武同陰.</span>
           </label>
-          <label class="field">
-            <span class="label">Chinese script</span>
-            <select name="script">
-              <option value="zh-TW">Traditional 繁體</option>
-              <option value="zh-CN">Simplified 简体</option>
-            </select>
-          </label>
-          <label class="check"><input type="checkbox" name="showDetails" /> Show brightness, miscellaneous stars (雜曜) and 長生 stages on the chart</label>
+          <label class="check"><input type="checkbox" name="showDetails" /> <span data-zh="在命盤上顯示亮度、雜曜和長生十二神">Show brightness, miscellaneous stars (雜曜) and 長生 stages on the chart</span></label>
         </details>
 
         <p class="form-error" id="form-error" role="alert" hidden></p>
-        <button type="submit" class="primary">Calculate chart</button>
+        <button type="submit" class="primary" data-zh="排盤">Calculate chart</button>
       </form>
 
       <section id="result" hidden>
@@ -134,35 +128,35 @@
         <div class="card chart-card">
           <div class="chart-head">
             <div class="chart-title">
-              <h2>Natal chart</h2>
+              <h2 data-zh="本命盤">Natal chart</h2>
               <div class="chart-tools">
-                <label class="check details-toggle" title="Brightness (廟旺…陷), miscellaneous stars (雜曜) and 長生 stages"><input type="checkbox" id="details-toggle" /> Details</label>
-                <button type="button" class="link" id="save-png">Save as PNG</button>
-                <button type="button" class="link" id="print-page">Print</button>
+                <label class="check details-toggle" title="Brightness (廟旺…陷), miscellaneous stars (雜曜) and 長生 stages" data-zh-title="亮度（廟旺…陷）、雜曜和長生十二神"><input type="checkbox" id="details-toggle" /> <span data-zh="詳細">Details</span></label>
+                <button type="button" class="link" id="save-png" data-zh="存成PNG">Save as PNG</button>
+                <button type="button" class="link" id="print-page" data-zh="列印">Print</button>
               </div>
             </div>
-            <p class="hint">Tap a palace to show its 三方四正 (the palace, its two trines and the opposite palace). The chart shows the 14 main stars and the 14 minor stars; tick Details for brightness, miscellaneous stars and 長生 stages.</p>
+            <p class="hint" data-zh="點選宮位可顯示其三方四正（本宮、兩個三合宮和對宮）。命盤顯示十四主星和十四輔星；勾選「詳細」可加上亮度、雜曜和長生十二神。">Tap a palace to show its 三方四正 (the palace, its two trines and the opposite palace). The chart shows the 14 main stars and the 14 minor stars; tick Details for brightness, miscellaneous stars and 長生 stages.</p>
           </div>
           <div class="chart-wrap">
             <div id="chart" class="chart"></div>
             <svg id="chart-lines" class="chart-lines" aria-hidden="true"></svg>
           </div>
           <div class="decades">
-            <span class="label">10-year period (大限)</span>
-            <div id="decade-list" class="decade-list" role="radiogroup" aria-label="Show a 10-year period"></div>
+            <span class="label" data-zh="大限">10-year period (大限)</span>
+            <div id="decade-list" class="decade-list" role="radiogroup" aria-label="Show a 10-year period" data-zh-aria-label="顯示大限"></div>
           </div>
           <div class="legend">
-            <span><i class="mut lu">祿</i> Prosperity</span>
-            <span><i class="mut quan">權</i> Power</span>
-            <span><i class="mut ke">科</i> Fame</span>
-            <span><i class="mut ji">忌</i> Obstacle</span>
-            <span><i class="mut lu dec">祿</i> outlined = from the selected 10-year period</span>
-            <span><b class="decade-name">大命</b> = palace role in the selected 10-year period</span>
-            <span class="legend-detail">Brightness: 廟 strongest → 旺 得 利 平 不 → 陷 weakest</span>
+            <span><i class="mut lu">祿</i> <span data-zh="化祿">Prosperity</span></span>
+            <span><i class="mut quan">權</i> <span data-zh="化權">Power</span></span>
+            <span><i class="mut ke">科</i> <span data-zh="化科">Fame</span></span>
+            <span><i class="mut ji">忌</i> <span data-zh="化忌">Obstacle</span></span>
+            <span><i class="mut lu dec">祿</i> <span data-zh="外框＝所選大限的四化">outlined = from the selected 10-year period</span></span>
+            <span><b class="decade-name">大命</b> <span data-zh="＝所選大限中的宮位">= palace role in the selected 10-year period</span></span>
+            <span class="legend-detail" data-zh="亮度：廟最強 → 旺 得 利 平 不 → 陷最弱">Brightness: 廟 strongest → 旺 得 利 平 不 → 陷 weakest</span>
           </div>
         </div>
         <section class="card glance" id="glance" hidden aria-live="polite"></section>
-        <nav class="result-tabs" id="result-tabs" aria-label="Readings"></nav>
+        <nav class="result-tabs" id="result-tabs" aria-label="Readings" data-zh-aria-label="解讀"></nav>
         <section class="card analysis" id="analysis" data-panels aria-live="polite"></section>
         <section class="card bazi" id="bazi" data-panel="bazi"></section>
         <section class="card compat" id="compat" data-panel="compat"></section>
@@ -170,8 +164,8 @@
     </main>
 
     <footer class="site-footer">
-      <p>For entertainment and cultural interest. Calculations run entirely in your browser; only the place name you type is sent to the place search. After the first visit the site also works offline (place search needs a connection).</p>
-      <p>Chart engine <a href="https://github.com/SylarLong/iztro">iztro</a> (MIT). Place search by <a href="https://open-meteo.com/">Open-Meteo</a> with <a href="https://www.geonames.org/">GeoNames</a> data (CC BY 4.0). <a href="https://github.com/williamwuofficial/ziwei-chart">Source</a>. <a href="./about.html">How the readings are made</a>.</p>
+      <p data-zh="僅供娛樂和文化參考。所有計算都在你的瀏覽器中進行；只有你輸入的地名會送到地點搜尋服務。第一次造訪後，網站也可以離線使用（地點搜尋需要網路）。">For entertainment and cultural interest. Calculations run entirely in your browser; only the place name you type is sent to the place search. After the first visit the site also works offline (place search needs a connection).</p>
+      <p data-zh='排盤引擎 <a href="https://github.com/SylarLong/iztro">iztro</a>（MIT）。地點搜尋由 <a href="https://open-meteo.com/">Open-Meteo</a> 提供，使用 <a href="https://www.geonames.org/">GeoNames</a> 資料（CC BY 4.0）。<a href="https://github.com/williamwuofficial/ziwei-chart">原始碼</a>。<a href="./about.html">解讀是怎麼產生的</a>。'>Chart engine <a href="https://github.com/SylarLong/iztro">iztro</a> (MIT). Place search by <a href="https://open-meteo.com/">Open-Meteo</a> with <a href="https://www.geonames.org/">GeoNames</a> data (CC BY 4.0). <a href="https://github.com/williamwuofficial/ziwei-chart">Source</a>. <a href="./about.html">How the readings are made</a>.</p>
     </footer>
     <script type="module" src="./src/main.ts"></script>
   </body>

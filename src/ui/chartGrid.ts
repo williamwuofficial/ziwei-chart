@@ -9,7 +9,8 @@ import {
 } from '../engine/chart';
 import { fmtDate, fmtTime, SHICHEN, type ResolvedBirth } from '../input/solarTime';
 import { placeLabel, type Place } from '../input/geocode';
-import { tip } from './zhText';
+import { isZh } from '../i18n/lang';
+import { tip, toScript, ui } from './zhText';
 import { BRANCH_ANIMAL, ELEMENT_COLOUR, ELEMENT_EN, JU_ELEMENT } from '../analysis/rules/elements';
 
 // iztro palace index 0–11 = branches 寅卯辰巳午未申酉戌亥子丑. Grid (row, col) of each, 1-based,
@@ -57,15 +58,15 @@ function starLine(
   const line = zh(h('span', `star ${cls}`), v.settings.script);
   const nameEl = h('span', 'star-name', star.name);
   const t = tip(star.name);
-  if (t) nameEl.title = t;
+  if (t && !isZh()) nameEl.title = t;
   line.append(nameEl);
   if (star.brightness && v.settings.showDetails) line.append(h('sup', 'bright', star.brightness));
   const kind = mutagenKind(star.mutagen);
-  if (star.mutagen && kind) line.append(mutBadge(star.mutagen, `Birth-year ${MUTAGEN_EN[kind]} (化${star.mutagen})`));
+  if (star.mutagen && kind) line.append(mutBadge(star.mutagen, ui(`Birth-year ${MUTAGEN_EN[kind]} (化${star.mutagen})`, `生年化${star.mutagen}`)));
   const dec = v.decade?.mutagens.get(star.name);
   if (dec) {
     const char = { lu: v.settings.script === 'zh-TW' ? '祿' : '禄', quan: v.settings.script === 'zh-TW' ? '權' : '权', ke: '科', ji: '忌' }[dec];
-    line.append(mutBadge(char, `10-year period ${MUTAGEN_EN[dec]}`, 'dec'));
+    line.append(mutBadge(char, ui(`10-year period ${MUTAGEN_EN[dec]}`, `大限化${char}`), 'dec'));
   }
   return line;
 }
@@ -92,7 +93,7 @@ export function renderChart(root: HTMLElement, v: ChartView, onSelect: (i: numbe
 
     const stars = h('div', 'stars');
     const major = h('div', 'major');
-    if (p.majorStars.length === 0) major.append(h('span', 'empty', 'No main star'));
+    if (p.majorStars.length === 0) major.append(h('span', 'empty', ui('No main star', '無主星')));
     for (const s of p.majorStars) major.append(starLine(s, 'major-star', v));
     const minor = h('div', 'minor');
     for (const s of p.minorStars) minor.append(starLine(s, `minor-star ${s.type}`, v));
@@ -110,13 +111,13 @@ export function renderChart(root: HTMLElement, v: ChartView, onSelect: (i: numbe
     const name = h('div', 'foot-right');
     if (v.decade) name.append(zh(h('span', 'decade-name', `大${v.decade.palaceNames[i].replace(/宮|宫/, '')}`), settings.script));
     const pname = zh(h('span', 'palace-name', p.name), settings.script);
-    pname.title = tip(p.name) ?? '';
+    if (!isZh()) pname.title = tip(p.name) ?? '';
     if (p.isBodyPalace) pname.append(zh(h('span', 'body-tag', '身'), settings.script));
     name.append(pname, zh(h('span', 'ganzhi', `${p.heavenlyStem}${p.earthlyBranch}`), settings.script));
     foot.append(left, name);
 
     cell.append(stars, foot);
-    cell.setAttribute('aria-label', `${p.name} palace, ${p.heavenlyStem}${p.earthlyBranch}, ages ${p.decadal.range.join(' to ')}`);
+    cell.setAttribute('aria-label', ui(`${p.name} palace, ${p.heavenlyStem}${p.earthlyBranch}, ages ${p.decadal.range.join(' to ')}`, `${p.name}宮，${p.heavenlyStem}${p.earthlyBranch}，${p.decadal.range.join('至')}歲`));
     cell.setAttribute('aria-pressed', String(v.selected === i));
     cell.addEventListener('click', () => onSelect(i));
     cells.push(cell);
@@ -137,48 +138,53 @@ function centrePanel(v: ChartView): HTMLElement {
   };
   const zhText = (t: string) => zh(h('span', undefined, t), settings.script);
 
-  row('Gender', v.gender === 'male' ? 'Male' : 'Female');
+  row(ui('Gender', '性別'), v.gender === 'male' ? ui('Male', '男') : ui('Female', '女'));
   if (birth.utcOffsetMin !== undefined) {
     const off = birth.utcOffsetMin;
     const sign = off >= 0 ? '+' : '−';
     const abs = Math.abs(off);
-    row('Clock time', `${fmtDate(birth.clock)} ${fmtTime(birth.clock)} (UTC${sign}${Math.floor(abs / 60)}${abs % 60 ? ':' + String(abs % 60).padStart(2, '0') : ''})`);
+    row(ui('Clock time', '鐘錶時間'), `${fmtDate(birth.clock)} ${fmtTime(birth.clock)} (UTC${sign}${Math.floor(abs / 60)}${abs % 60 ? ':' + String(abs % 60).padStart(2, '0') : ''})`);
   } else {
-    row('Date', fmtDate(birth.clock));
+    row(ui('Date', '日期'), fmtDate(birth.clock));
   }
-  if (v.place) row('Place', placeLabel(v.place));
+  if (v.place) row(ui('Place', '出生地'), placeLabel(v.place));
   if (birth.solar) {
     const shift = birth.solarShiftMin;
-    const note = shift === undefined ? 'neighbouring 時辰' : `${shift >= 0 ? '+' : '−'}${Math.abs(shift)} min`;
-    row('True solar time', `${fmtDate(birth.solar)} ${fmtTime(birth.solar)} (${note})`);
+    const note = shift === undefined ? ui('neighbouring 時辰', '相鄰時辰') : ui(`${shift >= 0 ? '+' : '−'}${Math.abs(shift)} min`, `${shift >= 0 ? '+' : '−'}${Math.abs(shift)}分鐘`);
+    row(ui('True solar time', '真太陽時'), `${fmtDate(birth.solar)} ${fmtTime(birth.solar)} (${toScript(note, settings.script)})`);
   }
   const hour = h('span');
   hour.append(zhText(chart.time), ` ${SHICHEN[birth.timeIndex].range}`);
-  row('Birth hour', hour);
+  row(ui('Birth hour', '出生時辰'), hour);
   const ld = chart.rawDates.lunarDate;
-  const lateZi = birth.timeIndex === 12 && settings.dayDivide === 'forward' ? ' (late 子 hour: stars are placed on the next day)' : '';
-  row('Lunar date', `Year ${ld.lunarYear}, ${ld.isLeap ? 'leap ' : ''}month ${ld.lunarMonth}, day ${ld.lunarDay}${lateZi}`);
-  row('Four pillars', zhText(chart.chineseDate));
+  const lateZi = birth.timeIndex === 12 && settings.dayDivide === 'forward' ? ui(' (late 子 hour: stars are placed on the next day)', '（晚子時：星曜按次日安放）') : '';
+  row(
+    ui('Lunar date', '農曆'),
+    ui(`Year ${ld.lunarYear}, ${ld.isLeap ? 'leap ' : ''}month ${ld.lunarMonth}, day ${ld.lunarDay}${lateZi}`, `${ld.lunarYear}年${ld.isLeap ? '閏' : ''}${ld.lunarMonth}月${ld.lunarDay}日${lateZi}`),
+  );
+  row(ui('Four pillars', '四柱'), zhText(chart.chineseDate));
   const yb = chart.chineseDate.split(' ')[0]?.[1] ?? '';
   const animal = BRANCH_ANIMAL[yb];
   if (animal) {
     const z = h('span');
-    z.append(zhText(`${yb} ${animal.zh}`), ` ${animal.en}`);
-    row('Zodiac', z);
+    z.append(zhText(`${yb} ${animal.zh}`));
+    if (!isZh()) z.append(` ${animal.en}`);
+    row(ui('Zodiac', '生肖'), z);
   }
   const fe = h('span');
-  fe.append(zhText(chart.fiveElementsClass), ` ${FIVE_ELEMENT_EN[chart.fiveElementsClass] ?? ''}`);
+  fe.append(zhText(chart.fiveElementsClass));
+  if (!isZh()) fe.append(` ${FIVE_ELEMENT_EN[chart.fiveElementsClass] ?? ''}`);
   const jel = JU_ELEMENT[chart.fiveElementsClass];
   if (jel) {
     const sw = h('span', 'swatch');
     sw.style.background = ELEMENT_COLOUR[jel].css;
-    sw.title = `Traditional colour of ${ELEMENT_EN[jel].toLowerCase()}: ${ELEMENT_COLOUR[jel].en}`;
+    sw.title = ui(`Traditional colour of ${ELEMENT_EN[jel].toLowerCase()}: ${ELEMENT_COLOUR[jel].en}`, `${jel}的傳統顏色：${ELEMENT_COLOUR[jel].zh}`);
     fe.append(' ', sw);
   }
-  row('Element class', fe);
+  row(ui('Element class', '五行局'), fe);
   const rulers = h('span');
-  rulers.append('Life ', zhText(chart.soul), ' · Body ', zhText(chart.body));
-  row('Rulers', rulers);
+  rulers.append(ui('Life ', '命主'), zhText(chart.soul), ui(' · Body ', '・身主'), zhText(chart.body));
+  row(ui('Rulers', '命主身主'), rulers);
   box.append(dl);
   return box;
 }
@@ -238,7 +244,7 @@ export function renderDecades(root: HTMLElement, v: ChartView, onPick: (i: numbe
     return b;
   };
   root.replaceChildren(
-    btn('Natal only', !v.decade, undefined),
+    btn(ui('Natal only', '只看本命'), !v.decade, undefined),
     ...order.map((d) => btn(`${d.from}–${d.to}`, v.decade?.palaceIndex === d.i, d.i, d.name)),
   );
 }

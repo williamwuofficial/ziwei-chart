@@ -2,15 +2,16 @@
 // shows. The choice is remembered per browser, and printing shows every panel (see style.css).
 
 import type { Script } from '../engine/chart';
+import { isZh } from '../i18n/lang';
 import { toScript } from './zhText';
 
-export const TABS: { key: string; en: string; zh: string }[] = [
-  { key: 'overview', en: 'Overview', zh: '命宮' },
-  { key: 'decades', en: '10-year periods', zh: '大限' },
-  { key: 'palaces', en: 'Palaces', zh: '十二宮' },
-  { key: 'patterns', en: 'Patterns', zh: '格局' },
-  { key: 'bazi', en: 'Four Pillars', zh: '八字' },
-  { key: 'compat', en: 'Compatibility', zh: '合婚' },
+export const TABS: { key: string; en: string; zh: string; full: string }[] = [
+  { key: 'overview', en: 'Overview', zh: '命宮', full: '命宮總論' },
+  { key: 'decades', en: '10-year periods', zh: '大限', full: '十年大限' },
+  { key: 'palaces', en: 'Palaces', zh: '十二宮', full: '十二宮' },
+  { key: 'patterns', en: 'Patterns', zh: '格局', full: '格局' },
+  { key: 'bazi', en: 'Four Pillars', zh: '八字', full: '八字' },
+  { key: 'compat', en: 'Compatibility', zh: '合婚', full: '合婚' },
 ];
 
 const STORE = 'ziwei-chart:tab';
@@ -37,8 +38,9 @@ export function setupTabs(nav: HTMLElement, script: Script): void {
     const zh = document.createElement('span');
     zh.className = 'zh';
     zh.lang = script === 'zh-TW' ? 'zh-Hant' : 'zh-Hans';
-    zh.textContent = toScript(t.zh, script);
-    b.append(t.en, ' ', zh);
+    zh.textContent = toScript(isZh() ? t.full : t.zh, script);
+    if (isZh()) b.append(zh);
+    else b.append(t.en, ' ', zh);
     b.addEventListener('click', () => select(t.key, true));
     b.addEventListener('keydown', (e) => {
       const k = available.findIndex((x) => x.key === t.key);

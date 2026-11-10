@@ -1,6 +1,7 @@
 import type { Script } from '../engine/chart';
 import { GLOSSARY } from '../i18n/glossary';
 import T2S from '../i18n/t2s.json';
+import { isZh, L, scriptOf } from '../i18n/lang';
 
 const t2s = T2S as Record<string, string>;
 const CJK = /[㐀-鿿]+/g;
@@ -13,6 +14,9 @@ export function toScript(text: string, script: Script): string {
   for (const ch of text) out += t2s[ch] ?? ch;
   return out;
 }
+
+/** UI text in the current language; the Chinese is written in Traditional and converted. */
+export const ui = (en: string, zh: string): string => L(en, toScript(zh, scriptOf()));
 
 /** Glossary lookup that accepts either script. */
 const S2T: Record<string, string> = Object.fromEntries(Object.entries(t2s).map(([t, s]) => [s, t]));
@@ -33,6 +37,11 @@ export function rich(text: string, script: Script): DocumentFragment {
   const frag = document.createDocumentFragment();
   const clean = text.replace(/[⟨⟩]/g, '');
   const lang = script === 'zh-TW' ? 'zh-Hant' : 'zh-Hans';
+  // In Chinese the terms need no English tooltips: the whole text is Chinese.
+  if (isZh()) {
+    frag.append(toScript(clean, script));
+    return frag;
+  }
   let last = 0;
   for (const m of clean.matchAll(CJK)) {
     if (m.index! > last) frag.append(clean.slice(last, m.index));

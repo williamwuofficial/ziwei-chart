@@ -8,7 +8,9 @@ import { readDecades } from './analysis/decades';
 import { readYears } from './analysis/years';
 import { toModel } from './analysis/model';
 import { renderAnalysis, showDecade } from './ui/analysis';
-import { toScript } from './ui/zhText';
+import { toScript, ui } from './ui/zhText';
+import { applyStatic, setupLang } from './ui/langSwitch';
+import { L } from './i18n/lang';
 import { renderCompat } from './ui/compat';
 import { renderBazi } from './ui/bazi';
 import { setupTabs, showTab } from './ui/tabs';
@@ -63,11 +65,6 @@ function show(input: BirthInput, birth: ResolvedBirth): void {
   const chart = buildChart(birth.dateStr, birth.timeIndex, input.gender, input.settings);
   view = { chart, birth, gender: input.gender, place: input.place, settings: input.settings };
   showNotices(input, birth, chart);
-  document.documentElement.dataset.script = input.settings.script;
-  // The static legend is written in Traditional; convert it for Simplified display.
-  const legend = document.querySelector<HTMLElement>('.legend')!;
-  legend.dataset.orig ??= legend.innerHTML;
-  legend.innerHTML = toScript(legend.dataset.orig, input.settings.script);
   result.hidden = false;
   draw();
   // Rules are written against Traditional names, so analyse a zh-TW build of the same chart.
@@ -120,7 +117,10 @@ function show(input: BirthInput, birth: ResolvedBirth): void {
   const next = month(shiftDate(birth.dateStr, 1));
   const nearTerm =
     !same(prev, pillars.month) || !same(next, pillars.month)
-      ? `This birth is within a day of a solar term (節氣), where the month pillar changes${!same(prev, pillars.month) ? ` (the day before is ⟨${prev.stem}${prev.branch}⟩)` : ` (the day after is ⟨${next.stem}${next.branch}⟩)`}. The app goes by date, so check the month pillar against the term’s exact time.`
+      ? L(
+          `This birth is within a day of a solar term (節氣), where the month pillar changes${!same(prev, pillars.month) ? ` (the day before is ⟨${prev.stem}${prev.branch}⟩)` : ` (the day after is ⟨${next.stem}${next.branch}⟩)`}. The app goes by date, so check the month pillar against the term’s exact time.`,
+          `出生日期在節氣前後一天內，月柱會在節氣時改變${!same(prev, pillars.month) ? `（前一天是⟨${prev.stem}${prev.branch}⟩）` : `（後一天是⟨${next.stem}${next.branch}⟩）`}。本工具以日期為準，請以節氣的精確時刻核對月柱。`,
+        )
       : undefined;
   renderBazi(baziRoot, readBazi(pillars, input.gender), input.settings.script, { nearTerm, lateZi: input.settings.dayDivide === 'forward' });
   const sihua = { overrides: SIHUA_TABLES[input.settings.sihua], label: SIHUA_LABEL[input.settings.sihua] };
@@ -190,10 +190,13 @@ function showNotices(input: BirthInput, birth: ResolvedBirth, chart: ReturnType<
   const yp = chart.chineseDate.split(' ')[0];
   const ayp = altYear.chineseDate.split(' ')[0];
   if (yp !== ayp) {
-    const name = (d: string) => (d === 'normal' ? 'Lunar New Year' : '立春');
+    const name = (d: string) => (d === 'normal' ? ui('Lunar New Year', '農曆新年') : '立春');
     note(
-      `Born between Lunar New Year and 立春: counting the year from ${name(s.yearDivide)} gives a ${yp} year, but counting from ${name(otherYear)} gives ${ayp}. This changes the chart.`,
-      `Use ${name(otherYear)} instead`,
+      ui(
+        `Born between Lunar New Year and 立春: counting the year from ${name(s.yearDivide)} gives a ${yp} year, but counting from ${name(otherYear)} gives ${ayp}. This changes the chart.`,
+        `出生在農曆新年與立春之間：從${name(s.yearDivide)}起算是${yp}年，從${name(otherYear)}起算則是${ayp}年。命盤會因此不同。`,
+      ),
+      ui(`Use ${name(otherYear)} instead`, `改用${name(otherYear)}`),
       () => switchSetting('yearDivide', otherYear),
     );
   }
@@ -203,8 +206,11 @@ function showNotices(input: BirthInput, birth: ResolvedBirth, chart: ReturnType<
     const altLeap = buildChart(birth.dateStr, birth.timeIndex, input.gender, { ...s, fixLeap: !s.fixLeap });
     if (signature(altLeap) !== signature(chart)) {
       note(
-        `Born in a leap month (閏${ld.lunarMonth}月, day ${ld.lunarDay}). Schools differ here: this chart ${s.fixLeap ? 'splits the leap month at the 15th, so it counts as the next month' : 'counts the whole leap month as the previous month'}, and the other reading gives a different chart.`,
-        s.fixLeap ? 'Count it as the previous month instead' : 'Split at the 15th instead',
+        ui(
+          `Born in a leap month (閏${ld.lunarMonth}月, day ${ld.lunarDay}). Schools differ here: this chart ${s.fixLeap ? 'splits the leap month at the 15th, so it counts as the next month' : 'counts the whole leap month as the previous month'}, and the other reading gives a different chart.`,
+          `出生在閏月（閏${ld.lunarMonth}月${ld.lunarDay}日）。各派做法不同：這張命盤${s.fixLeap ? '以十五日為界，十五日後算作下個月' : '把整個閏月算作上個月'}，另一種算法會排出不同的命盤。`,
+        ),
+        s.fixLeap ? ui('Count it as the previous month instead', '改為算作上個月') : ui('Split at the 15th instead', '改為以十五日為界'),
         () => switchSetting('fixLeap', String(!s.fixLeap)),
       );
     }
@@ -243,8 +249,11 @@ function showWarning(input: BirthInput, birth: ResolvedBirth): void {
   warning.replaceChildren();
   const p = document.createElement('p');
   p.append(
-    `The ${birth.solar ? 'true solar' : 'clock'} time ${fmtTime(t)} is ${birth.nearBoundaryMin} min from a 時辰 boundary. `,
-    'A small error in the recorded time would give a different chart. ',
+    ui(
+      `The ${birth.solar ? 'true solar' : 'clock'} time ${fmtTime(t)} is ${birth.nearBoundaryMin} min from a 時辰 boundary. `,
+      `${birth.solar ? '真太陽時' : '鐘錶時間'}${fmtTime(t)}距離時辰交界只有${birth.nearBoundaryMin}分鐘。`,
+    ),
+    ui('A small error in the recorded time would give a different chart. ', '記錄的時間只要稍有誤差，就會排出不同的命盤。'),
   );
   const btn = document.createElement('button');
   btn.type = 'button';
@@ -252,8 +261,8 @@ function showWarning(input: BirthInput, birth: ResolvedBirth): void {
   let showingAlt = false;
   const label = () =>
     (btn.textContent = showingAlt
-      ? `Back to ${SHICHEN[birth.timeIndex].zh}時 (${fmtTime(t)})`
-      : `View the ${SHICHEN[n.timeIndex].zh}時 chart instead`);
+      ? ui(`Back to ${SHICHEN[birth.timeIndex].zh}時 (${fmtTime(t)})`, `回到${SHICHEN[birth.timeIndex].zh}時（${fmtTime(t)}）`)
+      : ui(`View the ${SHICHEN[n.timeIndex].zh}時 chart instead`, `改看${SHICHEN[n.timeIndex].zh}時的命盤`));
   label();
   btn.addEventListener('click', () => {
     showingAlt = !showingAlt;
@@ -265,13 +274,23 @@ function showWarning(input: BirthInput, birth: ResolvedBirth): void {
   warning.append(p);
 }
 
-const formApi = setupForm(form, (input, auto) => {
+// Language first: the form reads it for the chart's script, and the readings are written in it.
+let formApi: ReturnType<typeof setupForm> | undefined;
+setupLang(() => {
+  formApi?.relabel();
+  // Redraw everything the code writes: the chart, the readings and the notes.
+  formApi?.submitIfReady();
+});
+
+formApi = setupForm(form, (input, auto) => {
   const birth = resolve(input);
   show(input, birth);
   showWarning(input, birth);
   if (!auto) result.scrollIntoView({ behavior: 'smooth', block: 'start' });
 });
 
+// The form adds its 時辰 options in code; convert them with the rest of the static text.
+applyStatic();
 new ResizeObserver(() => view && drawLines(lines, grid, view.selected)).observe(grid);
 formApi.submitIfReady();
 
@@ -281,7 +300,7 @@ saveBtn.addEventListener('click', async () => {
   if (!view) return;
   const label = saveBtn.textContent;
   saveBtn.disabled = true;
-  saveBtn.textContent = 'Saving…';
+  saveBtn.textContent = ui('Saving…', '儲存中…');
   try {
     // Loaded on demand so the main bundle stays smaller.
     const { toPng } = await import('html-to-image');
@@ -305,7 +324,7 @@ saveBtn.addEventListener('click', async () => {
     a.download = `ziwei-chart-${view.birth.dateStr}.png`;
     a.click();
   } catch (err) {
-    alert(`Could not create the image: ${String(err)}`);
+    alert(ui(`Could not create the image: ${String(err)}`, `無法產生圖片：${String(err)}`));
   } finally {
     saveBtn.disabled = false;
     saveBtn.textContent = label;

@@ -10,6 +10,7 @@
 
 import type { Finding } from './evaluate';
 import { ELEMENT_EN, type Element } from './rules/elements';
+import { L, tr } from '../i18n/lang';
 import type { Source } from './rules/types';
 
 export const STEMS = '甲乙丙丁戊己庚辛壬癸';
@@ -261,24 +262,34 @@ export function readBazi(p: Pillars, gender: 'male' | 'female'): BaziReading {
   const el = STEM_EL[dm];
   findings.push({
     id: 'bazi.daymaster',
-    text: `Your Day Master (日主) is ⟨${dm}⟩, ${d.en}: ${d.text} In 八字 the day stem stands for you, and everything else in the chart is read in relation to it.`,
-    evidence: [`day pillar ⟨${p.day.stem}${p.day.branch}⟩`, `${dm} is ${isYang(dm) ? 'yang' : 'yin'} ${ELEMENT_EN[el]}`],
+    text: L(
+      `Your Day Master (日主) is ⟨${dm}⟩, ${d.en}: ${d.text} In 八字 the day stem stands for you, and everything else in the chart is read in relation to it.`,
+      `你的日主是⟨${dm}⟩，${tr(d.en)}：${tr(d.text)}八字以日干代表自己，命盤中其他一切都以它為中心來看。`,
+    ),
+    evidence: [L(`day pillar ⟨${p.day.stem}${p.day.branch}⟩`, `日柱⟨${p.day.stem}${p.day.branch}⟩`), L(`${dm} is ${isYang(dm) ? 'yang' : 'yin'} ${ELEMENT_EN[el]}`, `${dm}為${isYang(dm) ? '陽' : '陰'}${el}`)],
     sources: [d.src, DAY_RULE],
   });
 
-  const fmt = (c: Record<Element, number>) => EL_ORDER.map((e) => `${ELEMENT_EN[e]} ${c[e]}`).join(', ');
+  const fmt = (c: Record<Element, number>) => EL_ORDER.map((e) => L(`${ELEMENT_EN[e]} ${c[e]}`, `${e}${c[e]}`)).join(L(', ', '、'));
+  const els = (xs: Element[]) => xs.join('、');
   const missing = EL_ORDER.filter((e) => counts[e] === 0);
   const missingHidden = EL_ORDER.filter((e) => countsHidden[e] === 0);
   const most = EL_ORDER.filter((e) => counts[e] === Math.max(...EL_ORDER.map((x) => counts[x])));
   findings.push({
     id: 'bazi.elements',
-    text:
+    text: L(
       `Across the eight characters: ${fmt(counts)}. ${most.map((e) => ELEMENT_EN[e]).join(' and ')} ${most.length > 1 ? 'are' : 'is'} the most common.` +
-      (missing.length
-        ? ` ${missing.map((e) => ELEMENT_EN[e]).join(' and ')} ${missing.length > 1 ? 'are' : 'is'} missing from the visible characters${missingHidden.length < missing.length ? `, though ${missing.filter((e) => !missingHidden.includes(e)).map((e) => ELEMENT_EN[e]).join(' and ')} ${missing.length - missingHidden.length > 1 ? 'appear' : 'appears'} among the hidden stems` : ''}.`
-        : ' Every element is present.') +
-      ' The classics go on to judge whether the Day Master is strong or weak and which element it needs; schools disagree on how, so this app leaves that out.',
-    evidence: [`eight characters: ${fmt(counts)}`, `with hidden stems: ${fmt(countsHidden)}`],
+        (missing.length
+          ? ` ${missing.map((e) => ELEMENT_EN[e]).join(' and ')} ${missing.length > 1 ? 'are' : 'is'} missing from the visible characters${missingHidden.length < missing.length ? `, though ${missing.filter((e) => !missingHidden.includes(e)).map((e) => ELEMENT_EN[e]).join(' and ')} ${missing.length - missingHidden.length > 1 ? 'appear' : 'appears'} among the hidden stems` : ''}.`
+          : ' Every element is present.') +
+        ' The classics go on to judge whether the Day Master is strong or weak and which element it needs; schools disagree on how, so this app leaves that out.',
+      `八個字的五行：${fmt(counts)}。以${els(most)}最多。` +
+        (missing.length
+          ? `明面的八字缺${els(missing)}${missingHidden.length < missing.length ? `，但${els(missing.filter((e) => !missingHidden.includes(e)))}見於藏干` : ''}。`
+          : '五行俱全。') +
+        '古書接著要判斷日主強弱和所需的五行（用神）；各派做法不一，本工具不作判斷。',
+    ),
+    evidence: [L(`eight characters: ${fmt(counts)}`, `八字：${fmt(counts)}`), L(`with hidden stems: ${fmt(countsHidden)}`, `連藏干：${fmt(countsHidden)}`)],
     sources: [COUNT_SRC, ...HIDDEN_SRC],
   });
 
@@ -288,20 +299,30 @@ export function readBazi(p: Pillars, gender: 'male' | 'female'): BaziReading {
   const light = EL_ORDER.filter((e) => countsHidden[e] === Math.min(...EL_ORDER.map((x) => countsHidden[x])));
   findings.push({
     id: 'bazi.cycle',
-    text:
+    text: L(
       `Around the pentagon each element feeds the next (Wood → Fire → Earth → Metal → Water → Wood) and checks the one two steps on. ` +
-      `Seen from your ${ELEMENT_EN[el]} Day Master, ${CYCLE.map((e) => `${ELEMENT_EN[e]} is ${e === el ? 'your own element' : `your ${roleOf(e).en.toLowerCase()}`} (${roleOf(e).zh})`).join(', ')}. ` +
-      `Counting hidden stems, the chart leans most to ${heavy.map((e) => `${ELEMENT_EN[e]} (${roleOf(e).en.toLowerCase()})`).join(' and ')} and least to ${light.map((e) => `${ELEMENT_EN[e]} (${roleOf(e).en.toLowerCase()})`).join(' and ')}.`,
-    evidence: [`Day Master ⟨${dm}⟩ ${ELEMENT_EN[el]}`, ...CYCLE.map((e) => `${ELEMENT_EN[e]}: ${roleOf(e).en} ${roleOf(e).zh}, ${counts[e]} visible, ${countsHidden[e]} with hidden stems`)],
+        `Seen from your ${ELEMENT_EN[el]} Day Master, ${CYCLE.map((e) => `${ELEMENT_EN[e]} is ${e === el ? 'your own element' : `your ${roleOf(e).en.toLowerCase()}`} (${roleOf(e).zh})`).join(', ')}. ` +
+        `Counting hidden stems, the chart leans most to ${heavy.map((e) => `${ELEMENT_EN[e]} (${roleOf(e).en.toLowerCase()})`).join(' and ')} and least to ${light.map((e) => `${ELEMENT_EN[e]} (${roleOf(e).en.toLowerCase()})`).join(' and ')}.`,
+      `五行循環中，每一行生下一行（木→火→土→金→水→木），並剋隔一位的那一行。` +
+        `從你的${el}日主來看，${CYCLE.map((e) => (e === el ? `${e}是你本身的五行（${roleOf(e).zh}）` : `${e}為${roleOf(e).zh}`)).join('、')}。` +
+        `連藏干計算，命盤最偏重${heavy.map((e) => `${e}（${roleOf(e).zh}）`).join('、')}，最少的是${light.map((e) => `${e}（${roleOf(e).zh}）`).join('、')}。`,
+    ),
+    evidence: [
+      L(`Day Master ⟨${dm}⟩ ${ELEMENT_EN[el]}`, `日主⟨${dm}⟩屬${el}`),
+      ...CYCLE.map((e) => L(`${ELEMENT_EN[e]}: ${roleOf(e).en} ${roleOf(e).zh}, ${counts[e]} visible, ${countsHidden[e]} with hidden stems`, `${e}：${roleOf(e).zh}，明面${counts[e]}個，連藏干${countsHidden[e]}個`)),
+    ],
     sources: [CYCLE_SRC, CLASSES_SRC],
   });
 
   // The Ten Gods that show in the stems.
-  const visible = pillars.filter((x) => x.god).map((x) => `${PILLAR_LABEL[x.key].en.toLowerCase()} stem ⟨${x.stem}⟩ is ⟨${x.god}⟩ (${TEN_GOD[x.god!].en})`);
+  const visible = pillars.filter((x) => x.god).map((x) => L(`${PILLAR_LABEL[x.key].en.toLowerCase()} stem ⟨${x.stem}⟩ is ⟨${x.god}⟩ (${TEN_GOD[x.god!].en})`, `${PILLAR_LABEL[x.key].zh.slice(0, 1)}干⟨${x.stem}⟩為⟨${x.god}⟩`));
   const gods = [...new Set(pillars.filter((x) => x.god).map((x) => x.god!))];
   findings.push({
     id: 'bazi.tengods',
-    text: `Seen from your Day Master, the other three stems are ${gods.map((g) => `⟨${g}⟩ (${TEN_GOD[g].en}), ${TEN_GOD[g].text.split(': ')[1]}`).join('; ')}. The month pillar weighs most: the classics call the month the main guide (提綱).`,
+    text: L(
+      `Seen from your Day Master, the other three stems are ${gods.map((g) => `⟨${g}⟩ (${TEN_GOD[g].en}), ${TEN_GOD[g].text.split(': ')[1]}`).join('; ')}. The month pillar weighs most: the classics call the month the main guide (提綱).`,
+      `從日主來看，其餘三個天干是${gods.map((g) => `⟨${g}⟩，${tr(TEN_GOD[g].text).split('：')[1] ?? tr(TEN_GOD[g].text)}`).join('；')}。月柱分量最重：古書稱月為提綱。`,
+    ),
     evidence: visible,
     sources: [...gods.map((g) => TEN_GOD[g].src), DAY_RULE],
   });
@@ -309,17 +330,22 @@ export function readBazi(p: Pillars, gender: 'male' | 'female'): BaziReading {
   // Spouse palace and spouse star.
   const starGod: TenGod = gender === 'male' ? '正財' : '正官';
   const where = pillars.flatMap((x) => [
-    ...(x.god === starGod ? [`the ${PILLAR_LABEL[x.key].en.toLowerCase()} stem`] : []),
-    ...x.hidden.filter((h) => h.god === starGod).map(() => `the ${PILLAR_LABEL[x.key].en.toLowerCase()} branch (hidden)`),
+    ...(x.god === starGod ? [L(`the ${PILLAR_LABEL[x.key].en.toLowerCase()} stem`, `${PILLAR_LABEL[x.key].zh.slice(0, 1)}干`)] : []),
+    ...x.hidden.filter((h) => h.god === starGod).map(() => L(`the ${PILLAR_LABEL[x.key].en.toLowerCase()} branch (hidden)`, `${PILLAR_LABEL[x.key].zh.slice(0, 1)}支藏干`)),
   ]);
-  const list = (xs: string[]) => (xs.length > 1 ? `${xs.slice(0, -1).join(', ')} and ${xs.at(-1)}` : xs[0]);
+  const list = (xs: string[]) => L(xs.length > 1 ? `${xs.slice(0, -1).join(', ')} and ${xs.at(-1)}` : xs[0], xs.join('、'));
+  const starStem = STEMS.split('').find((s) => tenGod(dm, s) === starGod);
   findings.push({
     id: 'bazi.spouse',
-    text:
+    text: L(
       `Your spouse palace, the day branch, is ⟨${p.day.branch}⟩ (${ELEMENT_EN[BRANCH_EL[p.day.branch]]}). ` +
-      `By the classics’ rule the spouse star in a ${gender === 'male' ? 'man' : 'woman'}’s chart is ⟨${starGod}⟩ (${TEN_GOD[starGod].en}), here ⟨${STEMS.split('').find((s) => tenGod(dm, s) === starGod)}⟩: ` +
-      (where.length ? `it appears in ${list(where)}.` : 'it is not among the stems or hidden stems, so the classics read the spouse through the day branch alone.'),
-    evidence: [`day branch ⟨${p.day.branch}⟩`, `spouse star ${starGod}: ${where.join(', ') || 'absent'}`],
+        `By the classics’ rule the spouse star in a ${gender === 'male' ? 'man' : 'woman'}’s chart is ⟨${starGod}⟩ (${TEN_GOD[starGod].en}), here ⟨${starStem}⟩: ` +
+        (where.length ? `it appears in ${list(where)}.` : 'it is not among the stems or hidden stems, so the classics read the spouse through the day branch alone.'),
+      `你的夫妻宮（日支）是⟨${p.day.branch}⟩（屬${BRANCH_EL[p.day.branch]}）。` +
+        `依古書，${gender === 'male' ? '男' : '女'}命的配偶星是⟨${starGod}⟩，在你的命盤中是⟨${starStem}⟩：` +
+        (where.length ? `見於${list(where)}。` : '天干和藏干中都沒有，古書便只從日支來看配偶。'),
+    ),
+    evidence: [L(`day branch ⟨${p.day.branch}⟩`, `日支⟨${p.day.branch}⟩`), L(`spouse star ${starGod}: ${where.join(', ') || 'absent'}`, `配偶星${starGod}：${where.join('、') || '無'}`)],
     sources: [SPOUSE_PALACE, gender === 'male' ? WIFE_STAR : HUSBAND_STAR],
   });
 
@@ -328,12 +354,12 @@ export function readBazi(p: Pillars, gender: 'male' | 'female'): BaziReading {
 
 // ── Compatibility (合婚) by the pillars ─────────────────────────────────────
 
-const STEM_HE: Record<string, { name: string; en: string }> = {
-  甲己: { name: '中正之合', en: 'the “upright” combination: steady, generous and fair-minded' },
-  乙庚: { name: '仁義之合', en: 'the “kindness and duty” combination: soft and firm balancing each other' },
-  丙辛: { name: '威制之合', en: 'the “authority” combination: a dignified, commanding pair' },
-  丁壬: { name: '淫慝之合', en: 'the “passion” combination: warm and quickly moved. The book’s name for it is unflattering, but it describes strong attraction' },
-  戊癸: { name: '無情之合', en: 'the “cool” combination: it binds without much warmth, and the book links it to a gap in age' },
+const STEM_HE: Record<string, { name: string; en: string; zh: string }> = {
+  甲己: { name: '中正之合', en: 'the “upright” combination: steady, generous and fair-minded', zh: '穩重、寬厚、公正' },
+  乙庚: { name: '仁義之合', en: 'the “kindness and duty” combination: soft and firm balancing each other', zh: '剛柔相濟' },
+  丙辛: { name: '威制之合', en: 'the “authority” combination: a dignified, commanding pair', zh: '莊重而有威儀的一對' },
+  丁壬: { name: '淫慝之合', en: 'the “passion” combination: warm and quickly moved. The book’s name for it is unflattering, but it describes strong attraction', zh: '熱情、容易動心。書中的名稱不太好聽，但說的是彼此吸引力強' },
+  戊癸: { name: '無情之合', en: 'the “cool” combination: it binds without much warmth, and the book links it to a gap in age', zh: '雖然相合，但熱度不高，書中把它與年齡差距聯繫在一起' },
 };
 export const STEM_HE_SRC: Source = { verse: '唯陰見陽，陽見陰為合，亦如男女相合而成夫婦之道', work: '三命通會', section: '論十干合', basis: '三命通會 卷二: a yin and a yang stem combine, like man and wife' };
 const STEM_CLASH_SRC: Source = { verse: '地支取七位為沖，猶天干取七位為煞之義', work: '三命通會', section: '論沖擊', basis: '三命通會 卷二: a stem seven places on (甲 and 庚) attacks, as a branch seven places on clashes' };
@@ -363,16 +389,16 @@ export function branchRelation(a: string, b: string): BranchRelation {
   const good: string[] = [];
   const bad: string[] = [];
   const kinds: string[] = [];
-  if (pairIn(SANHE, a, b)) (good.push('三合 (same trine)'), kinds.push('三合'));
-  if (pairIn(LIUHE, a, b)) (good.push('六合 (paired)'), kinds.push('六合'));
-  if ((BRANCHES.indexOf(a) + 6) % 12 === BRANCHES.indexOf(b)) (bad.push('六沖 (clash)'), kinds.push('六沖'));
-  if (pairIn(LIUHAI, a, b)) (bad.push('六害 (harm)'), kinds.push('六害'));
-  if (pairIn(XING, a, b)) (bad.push('相刑 (punishment)'), kinds.push('刑'));
-  if (a === b && SELF_XING.includes(a)) (bad.push('自刑 (self-punishment)'), kinds.push('刑'));
+  if (pairIn(SANHE, a, b)) (good.push(L('三合 (same trine)', '三合')), kinds.push('三合'));
+  if (pairIn(LIUHE, a, b)) (good.push(L('六合 (paired)', '六合')), kinds.push('六合'));
+  if ((BRANCHES.indexOf(a) + 6) % 12 === BRANCHES.indexOf(b)) (bad.push(L('六沖 (clash)', '六沖')), kinds.push('六沖'));
+  if (pairIn(LIUHAI, a, b)) (bad.push(L('六害 (harm)', '六害')), kinds.push('六害'));
+  if (pairIn(XING, a, b)) (bad.push(L('相刑 (punishment)', '相刑')), kinds.push('刑'));
+  if (a === b && SELF_XING.includes(a)) (bad.push(L('自刑 (self-punishment)', '自刑')), kinds.push('刑'));
   return { good, bad, kinds: [...new Set(kinds)] };
 }
 
-export type StemRelation = { kind: 'he'; name: string; en: string } | { kind: 'clash' } | { kind: 'none' };
+export type StemRelation = { kind: 'he'; name: string; en: string; zh: string } | { kind: 'clash' } | { kind: 'none' };
 export function stemRelation(a: string, b: string): StemRelation {
   const key = [a, b].sort((x, y) => STEMS.indexOf(x) - STEMS.indexOf(y)).join('');
   const he = STEM_HE[key];
@@ -401,11 +427,20 @@ export function baziCompat(a: Pillars, b: Pillars, whoA = 'You', whoB = 'Your pa
     id: 'compat.bazi.daystem',
     text:
       s.kind === 'he'
-        ? `Your Day Masters ⟨${a.day.stem}⟩ and ⟨${b.day.stem}⟩ combine (天干合, ${s.name}): ${s.en}. The classics liken a stem combination to a marriage.`
+        ? L(
+            `Your Day Masters ⟨${a.day.stem}⟩ and ⟨${b.day.stem}⟩ combine (天干合, ${s.name}): ${s.en}. The classics liken a stem combination to a marriage.`,
+            `兩人日主⟨${a.day.stem}⟩、⟨${b.day.stem}⟩相合（天干合，${s.name}）：${s.zh}。古書把天干相合比作夫婦結合。`,
+          )
         : s.kind === 'clash'
-          ? `Your Day Masters ⟨${a.day.stem}⟩ and ⟨${b.day.stem}⟩ are the same polarity and one checks the other (the 七殺 relation): two strong wills that need room.`
-          : `Your Day Masters ⟨${a.day.stem}⟩ (${ELEMENT_EN[STEM_EL[a.day.stem]]}) and ⟨${b.day.stem}⟩ (${ELEMENT_EN[STEM_EL[b.day.stem]]}) neither combine nor clash.`,
-    evidence: [`${whoA}: day stem ⟨${a.day.stem}⟩`, `${whoB}: day stem ⟨${b.day.stem}⟩`],
+          ? L(
+              `Your Day Masters ⟨${a.day.stem}⟩ and ⟨${b.day.stem}⟩ are the same polarity and one checks the other (the 七殺 relation): two strong wills that need room.`,
+              `兩人日主⟨${a.day.stem}⟩、⟨${b.day.stem}⟩陰陽相同而相剋（七殺關係）：兩個意志都強的人，需要給彼此空間。`,
+            )
+          : L(
+              `Your Day Masters ⟨${a.day.stem}⟩ (${ELEMENT_EN[STEM_EL[a.day.stem]]}) and ⟨${b.day.stem}⟩ (${ELEMENT_EN[STEM_EL[b.day.stem]]}) neither combine nor clash.`,
+              `兩人日主⟨${a.day.stem}⟩（${STEM_EL[a.day.stem]}）與⟨${b.day.stem}⟩（${STEM_EL[b.day.stem]}）既不相合，也不相沖。`,
+            ),
+    evidence: [L(`${whoA}: day stem ⟨${a.day.stem}⟩`, `${whoA}：日干⟨${a.day.stem}⟩`), L(`${whoB}: day stem ⟨${b.day.stem}⟩`, `${whoB}：日干⟨${b.day.stem}⟩`)],
     sources: s.kind === 'clash' ? [STEM_CLASH_SRC] : [STEM_HE_SRC],
   });
 
@@ -417,13 +452,13 @@ export function baziCompat(a: Pillars, b: Pillars, whoA = 'You', whoB = 'Your pa
       id,
       text:
         r.good.length && !r.bad.length
-          ? `${what} ⟨${x}⟩ and ⟨${y}⟩ are in harmony: ${r.good.join(' and ')}.`
+          ? L(`${what} ⟨${x}⟩ and ⟨${y}⟩ are in harmony: ${r.good.join(' and ')}.`, `${tr(what)}⟨${x}⟩、⟨${y}⟩相合：${r.good.join('、')}。`)
           : r.bad.length && !r.good.length
-            ? `${what} ⟨${x}⟩ and ⟨${y}⟩ meet with friction: ${r.bad.join(' and ')}. The classics advise care, not avoidance.`
+            ? L(`${what} ⟨${x}⟩ and ⟨${y}⟩ meet with friction: ${r.bad.join(' and ')}. The classics advise care, not avoidance.`, `${tr(what)}⟨${x}⟩、⟨${y}⟩有摩擦：${r.bad.join('、')}。古書的建議是多加留意，而不是避開。`)
             : r.bad.length
-              ? `${what} ⟨${x}⟩ and ⟨${y}⟩ are both in harmony (${r.good.join(', ')}) and in friction (${r.bad.join(', ')}).`
-              : `${what} ⟨${x}⟩ and ⟨${y}⟩ have no special relation.`,
-      evidence: [`${whoA}: ⟨${x}⟩`, `${whoB}: ⟨${y}⟩`, ...r.good, ...r.bad],
+              ? L(`${what} ⟨${x}⟩ and ⟨${y}⟩ are both in harmony (${r.good.join(', ')}) and in friction (${r.bad.join(', ')}).`, `${tr(what)}⟨${x}⟩、⟨${y}⟩既相合（${r.good.join('、')}）又有摩擦（${r.bad.join('、')}）。`)
+              : L(`${what} ⟨${x}⟩ and ⟨${y}⟩ have no special relation.`, `${tr(what)}⟨${x}⟩、⟨${y}⟩沒有特別的關係。`),
+      evidence: [`${whoA}${L(': ', '：')}⟨${x}⟩`, `${whoB}${L(': ', '：')}⟨${y}⟩`, ...r.good, ...r.bad],
       sources: [...extra, ...(r.kinds.length ? r.kinds.map((k) => BRANCH_SRC[k]) : [BRANCH_SRC['六合']])],
     });
   };

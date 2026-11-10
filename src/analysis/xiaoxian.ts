@@ -7,7 +7,8 @@
 import type { Finding } from './evaluate';
 import type { ChartM, Mut } from './model';
 import type { Ctx } from './predicates';
-import { MAJOR_NATURE, PALACE_DOMAIN } from './rules/stars';
+import { L, tr } from '../i18n/lang';
+import { MAJOR_NATURE, PALACE_DOMAIN, palaceTitle } from './rules/stars';
 import type { Source } from './rules/types';
 
 const START: Record<string, string> = { 寅: '辰', 午: '辰', 戌: '辰', 申: '戌', 子: '戌', 辰: '戌', 巳: '未', 酉: '未', 丑: '未', 亥: '丑', 卯: '丑', 未: '丑' };
@@ -54,10 +55,18 @@ export function readXiaoxian(x: Ctx, id: string, age: number, decadePalace: numb
   const borrowed = x.noMain(i);
   const src = borrowed ? (i + 6) % 12 : i;
   const stars = c.palaces[src].major.map((s) => `⟨${s.name}⟩ (${MAJOR_NATURE[s.name]?.en ?? 'main star'})`).join(' with ');
+  const starsZh = c.palaces[src].major.map((s) => `⟨${s.name}⟩`).join('、');
+  const pt = palaceTitle(p.name);
   findings.push({
     id: `${id}.xiaoxian`,
-    text: `The age palace (小限) for age ${age} is your natal ${dom.en} palace, which brings ${dom.domain} into play this year as well${stars ? `. It is coloured by ${stars}${borrowed ? ', borrowed from the opposite palace' : ''}` : ''}.`,
-    evidence: [`小限 at age ${age}: ${x.label(i)}`, `counted ${c.gender === 'male' ? 'forward' : 'backward'} from the ${START[c.yearBranch]} palace for a ${c.yearBranch} year`],
+    text: L(
+      `The age palace (小限) for age ${age} is your natal ${dom.en} palace, which brings ${dom.domain} into play this year as well${stars ? `. It is coloured by ${stars}${borrowed ? ', borrowed from the opposite palace' : ''}` : ''}.`,
+      `${age}歲的小限落在本命${pt}，今年${tr(dom.domain)}也會受到牽動${starsZh ? `。小限宮${borrowed ? '借對宮' : ''}有${starsZh}` : ''}。`,
+    ),
+    evidence: [
+      L(`小限 at age ${age}: ${x.label(i)}`, `${age}歲小限：${x.label(i)}`),
+      L(`counted ${c.gender === 'male' ? 'forward' : 'backward'} from the ${START[c.yearBranch]} palace for a ${c.yearBranch} year`, `${c.yearBranch}年生人從${START[c.yearBranch]}宮起，${c.gender === 'male' ? '男順' : '女逆'}數`),
+    ],
     sources: [PLACEMENT],
   });
 
@@ -69,20 +78,29 @@ export function readXiaoxian(x: Ctx, id: string, age: number, decadePalace: numb
     const star = (lu ?? quan)!;
     findings.push({
       id: `${id}.xiaoxian.good`,
-      text: `The 小限 reaches your birth 化${lu ? '祿' : '權'} on ⟨${star}⟩: the classics read this as a year of ${lu ? 'gain and advancement' : 'things going your way'} in ${dom.domain}.`,
-      evidence: [`birth-year 化${lu ? '祿' : '權'} on ⟨${star}⟩ in ${x.label(i)}`, `小限 at age ${age} in ${x.label(i)}`],
+      text: L(
+        `The 小限 reaches your birth 化${lu ? '祿' : '權'} on ⟨${star}⟩: the classics read this as a year of ${lu ? 'gain and advancement' : 'things going your way'} in ${dom.domain}.`,
+        `小限逢生年⟨${star}⟩化${lu ? '祿' : '權'}：古書認為這一年${tr(dom.domain)}方面${lu ? '有進財升遷之喜' : '諸事較為順遂'}。`,
+      ),
+      evidence: [
+        L(`birth-year 化${lu ? '祿' : '權'} on ⟨${star}⟩ in ${x.label(i)}`, `生年⟨${star}⟩化${lu ? '祿' : '權'}在${x.label(i)}`),
+        L(`小限 at age ${age} in ${x.label(i)}`, `${age}歲小限在${x.label(i)}`),
+      ],
       sources: [lu ? LU_SRC : QUAN_SRC],
     });
-    score.push([1, `小限 meets the birth 化${lu ? '祿' : '權'} (${x.label(i)})`]);
+    score.push([1, L(`小限 meets the birth 化${lu ? '祿' : '權'} (${x.label(i)})`, `小限逢生年化${lu ? '祿' : '權'}（${x.label(i)}）`)]);
   }
   if (ji) {
     findings.push({
       id: `${id}.xiaoxian.ji`,
-      text: `The 小限 reaches your birth 化忌 on ⟨${ji}⟩: the classics call it a year that falls short. Expect ${dom.domain} to need more care than usual.`,
-      evidence: [`birth-year 化忌 on ⟨${ji}⟩ in ${x.label(i)}`, `小限 at age ${age} in ${x.label(i)}`],
+      text: L(
+        `The 小限 reaches your birth 化忌 on ⟨${ji}⟩: the classics call it a year that falls short. Expect ${dom.domain} to need more care than usual.`,
+        `小限逢生年⟨${ji}⟩化忌：古書說這一年諸事不足，${tr(dom.domain)}方面要比平常多用心。`,
+      ),
+      evidence: [L(`birth-year 化忌 on ⟨${ji}⟩ in ${x.label(i)}`, `生年⟨${ji}⟩化忌在${x.label(i)}`), L(`小限 at age ${age} in ${x.label(i)}`, `${age}歲小限在${x.label(i)}`)],
       sources: [JI_SRC],
     });
-    score.push([-1, `小限 meets the birth 化忌 (${x.label(i)})`]);
+    score.push([-1, L(`小限 meets the birth 化忌 (${x.label(i)})`, `小限逢生年化忌（${x.label(i)}）`)]);
   }
 
   const withDecade = i === decadePalace;
@@ -93,12 +111,22 @@ export function readXiaoxian(x: Ctx, id: string, age: number, decadePalace: numb
     findings.push({
       id: `${id}.xiaoxian.meet`,
       text: both
-        ? `The 小限, the 10-year period and the year all fall on the ${dom.en} palace, so its stars weigh on this year with full force.${anyJi ? ' With a 化忌 there too, the classics warn of setbacks: a year for caution.' : ''}`
-        : `The 小限 falls on the same palace as the ${withDecade ? '10-year period' : 'year'} (${dom.en}), which doubles that palace’s weight this year.`,
-      evidence: [`小限 in ${x.label(i)}`, ...(withDecade ? [`大限 in ${x.label(decadePalace)}`] : []), ...(withYear ? [`流年 in ${x.label(yearPalace)}`] : [])],
+        ? L(
+            `The 小限, the 10-year period and the year all fall on the ${dom.en} palace, so its stars weigh on this year with full force.${anyJi ? ' With a 化忌 there too, the classics warn of setbacks: a year for caution.' : ''}`,
+            `小限、大限和流年同落${pt}，此宮星曜對今年的影響最為完整。${anyJi ? '宮中又有化忌，古書警告多有挫折：這一年宜謹慎。' : ''}`,
+          )
+        : L(
+            `The 小限 falls on the same palace as the ${withDecade ? '10-year period' : 'year'} (${dom.en}), which doubles that palace’s weight this year.`,
+            `小限與${withDecade ? '大限' : '流年'}同落${pt}，今年此宮的分量加倍。`,
+          ),
+      evidence: [
+        L(`小限 in ${x.label(i)}`, `小限在${x.label(i)}`),
+        ...(withDecade ? [L(`大限 in ${x.label(decadePalace)}`, `大限在${x.label(decadePalace)}`)] : []),
+        ...(withYear ? [L(`流年 in ${x.label(yearPalace)}`, `流年在${x.label(yearPalace)}`)] : []),
+      ],
       sources: both && anyJi ? [MEET_SRC, ALL_THREE_JI] : [MEET_SRC],
     });
-    if (both && anyJi) score.push([-1, `大限, 小限 and 流年 meet on a 化忌 (${x.label(i)})`]);
+    if (both && anyJi) score.push([-1, L(`大限, 小限 and 流年 meet on a 化忌 (${x.label(i)})`, `大限、小限、流年會於化忌（${x.label(i)}）`)]);
   }
 
   return { index: i, findings, score };

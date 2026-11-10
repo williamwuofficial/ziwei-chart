@@ -4,32 +4,27 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="color-scheme" content="light dark" />
-    <title>Methods &amp; sources · Zi Wei Chart</title>
-    <meta name="description" content="How Zi Wei Chart calculates a 紫微斗數 chart and makes its readings: the schools and settings, the analysis rules, the sources quoted, and how they were checked." />
+    <title data-zh="方法與出處・紫微斗數命盤">Methods &amp; sources · Zi Wei Chart</title>
+    <meta name="description" content="How Zi Wei Chart calculates a 紫微斗數 chart and makes its readings: the schools and settings, the analysis rules, the sources quoted, and how they were checked." data-zh-content="紫微斗數命盤的排盤和解讀方法：派別與設定、解讀規則、引用的出處，以及檢驗的方式。" />
   </head>
   <body>
     <header class="site-header">
       <nav class="site-nav" aria-label="Site">
-        <a href="./">Chart</a>
-        <a href="./learn.html">Learn</a>
-        <a href="./about.html" aria-current="page">Methods &amp; sources</a>
-        <label class="nav-script">Script
-          <select id="page-script">
-            <option value="zh-TW">繁體</option>
-            <option value="zh-CN">简体</option>
-          </select>
-        </label>
+        <a href="./" data-zh="排盤">Chart</a>
+        <a href="./learn.html" data-zh="入門">Learn</a>
+        <a href="./about.html" aria-current="page" data-zh="方法與出處">Methods &amp; sources</a>
+        <div class="langs" role="group" aria-label="Language" data-zh-aria-label="語言"><button type="button" data-lang="zh-TW" lang="zh-Hant">繁</button><button type="button" data-lang="zh-CN" lang="zh-Hans">简</button><button type="button" data-lang="en">EN</button></div>
       </nav>
-      <h1>Methods &amp; sources</h1>
-      <p class="tagline">How the chart is calculated, how the readings are made, where each rule comes from, and what was done to check them.</p>
-      <nav class="learn-toc" aria-label="On this page">
-        <a href="#approach">Approach</a>
-        <a href="#calculation">Calculating the chart</a>
-        <a href="#settings">Schools and settings</a>
-        <a href="#analysis">How the analysis works</a>
-        <a href="#sources">Sources</a>
-        <a href="#checks">How it was checked</a>
-        <a href="#limits">Limits</a>
+      <h1 data-zh="方法與出處">Methods &amp; sources</h1>
+      <p class="tagline" data-zh="命盤如何計算、解讀如何產生、每條規則的出處，以及如何檢驗。">How the chart is calculated, how the readings are made, where each rule comes from, and what was done to check them.</p>
+      <nav class="learn-toc" aria-label="On this page" data-zh-aria-label="本頁內容">
+        <a href="#approach" data-zh="做法">Approach</a>
+        <a href="#calculation" data-zh="排盤方法">Calculating the chart</a>
+        <a href="#settings" data-zh="派別與設定">Schools and settings</a>
+        <a href="#analysis" data-zh="解讀的方法">How the analysis works</a>
+        <a href="#sources" data-zh="出處">Sources</a>
+        <a href="#checks" data-zh="檢驗方法">How it was checked</a>
+        <a href="#limits" data-zh="限制">Limits</a>
       </nav>
     </header>
 
@@ -204,9 +199,180 @@
         <p class="hint">For entertainment and cultural interest. Not advice on health, money or relationships.</p>
       </section>
     </main>
+    <template id="about-zh">
+      <section class="card" id="approach">
+        <h2>做法</h2>
+        <p>本站每一句解讀都來自一條寫明的規則，每條規則都註明出處。沒有AI生成的文字，也沒有隱藏的評分：打開任何一個<strong>依據</strong>面板，就能看到觸發這句話的星曜，以及背後的古典原文。（滑鼠停在「依據」上會顯示內部的規則代號，回報問題時很方便。）</p>
+        <ul>
+          <li><strong>只用一派，並清楚說明。</strong>解讀依照《紫微斗數全書》的三合派方法，這是大多數派別的源頭。各派意見不一時，本工具會註明，影響較大的地方則提供設定選項。</li>
+          <li><strong>以古書為先。</strong>格局的定義依照全書本身的文字。現代資料用較寬鬆的定義時，本工具保留全書的定義，並註明差異。</li>
+          <li><strong>講傾向，不下定論。</strong>古書的用語可能很直接。本工具把解讀寫成傾向，自己的文字從不預言死亡、重病或災禍。所引用的古文可能更直白；請把它們當作傳統的說法，而不是預測。</li>
+        </ul>
+      </section>
+
+      <section class="card" id="calculation">
+        <h2>排盤方法</h2>
+        <p>安星使用 <a href="https://github.com/SylarLong/iztro">iztro</a> 2.6.3（MIT授權），固定在這個版本，命盤不會在你不知情時改變。iztro運算之前，本工具會先算出你出生的時辰：</p>
+        <ol>
+          <li><strong>鐘錶時間換算為真太陽時。</strong>依出生地當時的UTC時差（包括當年的夏令時間）求出世界時。每往東一度經度加4分鐘得到地方平太陽時，再以均時差（NOAA公式）依季節調整。可在進階設定中關閉，改用鐘錶時間。</li>
+          <li><strong>真太陽時換算為時辰。</strong>子時是23:00–01:00，丑時是01:00–03:00，依此類推。出生時間距離交界10分鐘以內時，會顯示警告，並提供兩種可能。</li>
+          <li><strong>農曆日期。</strong>iztro把陽曆換算成農曆。年份在農曆新年交替，晚子時（23:00–24:00）算作次日；兩者都可以更改。</li>
+        </ol>
+        <p>如果只知道時辰，直接選擇即可，不做真太陽時校正。</p>
+      </section>
+
+      <section class="card" id="settings">
+        <h2>派別與設定</h2>
+        <p>以下是各主要派別在安星或四化上做法不同的地方。預設值依照全書或最常見的現代做法；每個選項都是公認的派別，不是本工具自創的變化。</p>
+        <div class="table-wrap">
+          <table class="learn-table">
+            <tr><th>設定</th><th>預設</th><th>其他選項</th></tr>
+            <tr><td>安星</td><td>全書（古典）</td><td>中州派（王亭之），含天盤、地盤、人盤</td></tr>
+            <tr><td>天馬安法</td><td>依生年：「安天馬星訣 論本生年支」（全書）</td><td>依生月，如占驗派范振木的安法</td></tr>
+            <tr><td>年份交界</td><td>農曆新年</td><td>立春，與八字相同</td></tr>
+            <tr><td>閏月出生</td><td>以十五日為界</td><td>整個閏月算作上個月</td></tr>
+            <tr><td>晚子時</td><td>算作次日</td><td>算作當日</td></tr>
+            <tr><td>四化表</td><td>現代通行表</td><td>全書、中州派、北派、天紀（見下）</td></tr>
+          </table>
+        </div>
+
+        <h3 id="sihua">有爭議的四化天干</h3>
+        <p>在這裡提供的各表中，十個天干有七個所化的星都相同，另外三個不同：</p>
+        <div class="table-wrap">
+          <table class="learn-table">
+            <tr><th>表</th><th>戊</th><th>庚</th><th>壬</th><th>依據</th></tr>
+            <tr><td>現代通行（預設）</td><td>貪陰弼機</td><td>陽武陰同</td><td>梁紫輔武</td><td>iztro的預設；目前大多數軟體和老師使用的表</td></tr>
+            <tr><td>全書</td><td>貪陰弼機</td><td>陽武陰同</td><td>梁紫府武</td><td>全書卷二安祿權科忌四星變化訣：「戊貪月弼機為主…庚日武陰同為首…壬梁紫府武宿是」</td></tr>
+            <tr><td>中州派</td><td>貪陰陽機</td><td>陽武府同</td><td>梁紫府武</td><td>王亭之公開的表（左輔、右弼不化）</td></tr>
+            <tr><td>北派</td><td>貪陰弼機</td><td>陽武同相</td><td>梁紫輔武</td><td>河洛派和較早的鐵版文本</td></tr>
+            <tr><td>天紀</td><td>貪陰弼機</td><td>陽武同陰</td><td>梁紫輔武</td><td>由倪海廈的命例推得：他對庚年所說的「太陰化忌」只在這個表下才會出現</td></tr>
+          </table>
+        </div>
+        <p class="hint">字依序代表祿、權、科、忌。所選的表適用於生年、每個大限和每一年。</p>
+      </section>
+
+      <section class="card" id="analysis">
+        <h2>解讀的方法</h2>
+        <h3>星曜與宮位</h3>
+        <p>每一宮依其主星（無主星則借對宮）、主星亮度、同宮的輔星以及四化來解讀。解讀內容來自全書對每顆星的描述、標準的雙星組合，以及全書卷二中每顆星在各宮的論述。</p>
+        <h3>格局</h3>
+        <p>本工具以命盤逐一檢查<span id="pattern-count">每一個</span>有名稱的格局。吉格依命宮三方四正所會的星曜評級：</p>
+        <ul>
+          <li><strong>成格：</strong>結構具備，有吉星扶助（六吉、祿存或祿權科），不見煞星。</li>
+          <li><strong>破格：</strong>有吉星扶助，但也見四煞、空劫或化忌。吉象雖現，只能部分兌現。</li>
+          <li><strong>力弱：</strong>結構具備，但無吉星扶助。</li>
+          <li><strong>格破：</strong>結構遇煞星而無扶助。</li>
+        </ul>
+        <p>凶格則分為<strong>成立</strong>或<strong>減輕</strong>（有吉星依古書所說加以化解）。</p>
+        <h3>宮位評級</h3>
+        <p>每一宮評為得助、吉凶互見、受壓或平靜。本宮的星曜分量最重：吉星和祿權科加分，煞星減分，生年化忌在本宮大幅減分。三方四正的星曜只算四分之一；地空或地劫影響本宮（同宮、夾宮、三合或對宮）時會削弱它。權重是依兩位老師公開的宮位評語選定的（見<a href="#checks">檢驗</a>）。</p>
+        <h3>大限與流年</h3>
+        <p>每個大限依它落入的本命宮位、該宮的星曜和大限本身的四化來解讀。大限化忌落在生年化忌上，阻礙加倍（疊忌）；大限化祿遇生年化祿或祿存，收穫加倍（疊祿）。格局會以大限命宮當作命宮重新檢查。流年也一樣，流年化忌可以疊在生年和大限化忌之上。每一年有兩個宮位：流年命宮（流年地支所在）和小限，小限從生年決定的起點每年移一宮（全書卷二安小限訣）。小限逢生年化祿、化權或化忌會計入當年評分，並引用全書本身的小限文字；大限、小限和流年會於同一宮時也會註明。倪海廈和范振木都透過小限看每年的事件。每個大限和流年都會列出評分的加總過程。</p>
+        <h3>五行與生肖</h3>
+        <p>總論會列出你的生肖（生年地支）、命盤的五行局和命宮主星的五行，都引自全書。它也列出該五行的傳統顏色（五色），只作為文化背景：紫微斗數古書沒有規定顏色，本工具也不提供顏色或風水的化解方法。流年解讀會標出本命年和沖太歲之年，若全書卷三點出你的地支則引用；這些註記不影響當年的評分。</p>
+        <h3>建議</h3>
+        <p>有些解讀附有<strong>建議</strong>，說明遇到不順的運限或星曜時可以怎麼做（趨吉避凶）。每一條都出自全書或具名老師公開的命例，並註明出處：</p>
+        <ul>
+          <li>不順的運限：全書論陰騭：默默幫助別人、修正自己的行為，就能平安度過。</li>
+          <li>運限遇陀羅：「限遇陀羅事亦多，必然忍耐要謙和」（全書卷二）。</li>
+          <li>化忌在兄弟宮或僕役宮：不要與他們合夥或借貸（倪海廈、范振木）。</li>
+          <li>流年化忌在夫妻宮：等化忌過去再結婚（倪海廈）。</li>
+        </ul>
+        <p>風水化解和任何聲稱能避免疾病或死亡的說法都不收錄。</p>
+      </section>
+
+      <section class="card" id="bazi">
+        <h2>八字</h2>
+        <p>八字是與紫微斗數不同的另一套系統，用同一個出生時刻排出。命盤頁顯示四柱（年、月、日、時，每柱上為天干、下為地支），依子平法以日干，即日主為中心解讀。四柱一律以立春起年、以節氣分月，與八字的做法相同，不受紫微斗數年份設定影響。</p>
+        <ul>
+          <li><strong>日主。</strong>它的五行和性格，引自《滴天髓》天干論（例如「甲木參天，脱胎要火」）。</li>
+          <li><strong>十神。</strong>其他每個天干和藏干對日主的關係：比肩、劫財、食神、傷官、偏財、正財、七殺、正官、偏印、正印。定義引自《三命通會》卷五至卷六和《淵海子平》論日為主。</li>
+          <li><strong>藏干</strong>依《淵海子平》地支藏遁歌，並統計八個字的五行數量。</li>
+          <li><strong>五行圖。</strong>五行依相生的順序排列，內部的星形表示相剋，依《三命通會》論五行生剋。每個節點的大小代表數量，標籤是它對日主的角色（印、食傷、財、官殺、比劫），依《淵海子平》論日為主。</li>
+          <li><strong>夫妻宮與配偶星。</strong>日支是夫妻宮（「日為妻妾己身」）；配偶星男命為正財、女命為正官，依《淵海子平》。</li>
+        </ul>
+        <p>沒有涵蓋：日主強弱（身強／身弱）和用神（各派看法不一）、大運、格局和神煞。出生日期在節氣前後一天內時會有提示，因為本工具以日期為準，而月柱在節氣的精確時刻才改變。</p>
+      </section>
+
+      <section class="card" id="compatibility">
+        <h2>合婚</h2>
+        <p>紫微斗數全書只從一張命盤看婚姻，沒有比較兩張命盤的方法。解讀下方的比較依照一本台灣的現代彙編：紫微斗數集成全書（其中的紫微斗數論合婚與夫妻關係大全一節），以轉述而非引用的方式呈現。比較分為幾層，各自評級：</p>
+        <ol>
+          <li><strong>命宮主星。</strong>書中比較兩人命宮的主星：星曜相和表示性情相近，相剋表示有摩擦。</li>
+          <li><strong>星曜組合與互垣。</strong>把一宮三方的星曜分成書中的組合：殺破狼（大膽多變）、機月同梁（謹慎穩重）、紫微或天府加殺破狼（介於兩者之間）和巨日（穩重堅定）。一方的夫妻宮組合是另一方的命宮或身宮組合時最為相配，雙向成立（互垣）最好。書中較嚴的說法，即夫妻宮本身的星就是伴侶命宮或身宮的星，出現時也會註明。</li>
+          <li><strong>五行局。</strong>兩人的五行局是否相同，並附書中對各局性情的描述。</li>
+          <li><strong>目前運限。</strong>以同樣方法比較兩人今年的大限和小限星曜。</li>
+          <li><strong>八字。</strong>另一層八字比較，引自《三命通會》和《淵海子平》：兩人日主是否相合（天干合，比作夫婦）或相沖；兩人日支，也就是八字夫妻宮的關係（三合、六合、六沖、六害、刑），分量最重；以及生肖之間的同樣關係。</li>
+        </ol>
+        <h3>不足之處</h3>
+        <ul>
+          <li><strong>沒有古典依據。</strong>只依照一本現代書。其他派別，例如把一方的化祿、化忌飛入另一方命盤的飛星四化派，比較方法不同，結論可能不一樣。</li>
+          <li><strong>「相和」是本工具的讀法。</strong>書中從未說明星曜何時相和或相剋。本工具用全書所載每顆星的五行和五行生剋：同五行或相生為相合，相剋為摩擦。</li>
+          <li><strong>第五種組合。</strong>三方不屬書中四種組合的命盤（紫府廉武相），由本工具給一個名稱，書中沒有描述。</li>
+          <li><strong>兩個出生時間。</strong>任何一方時辰錯誤，大部分結果都會改變。伴侶的命盤只用時辰，沒有真太陽時。</li>
+          <li><strong>八字部分並不完整。</strong>只比較日柱和年柱，不比較整張命盤或各人的用神，那正是八字各派分歧最大的地方。生肖對同年出生的人都一樣，分量最輕。</li>
+          <li><strong>沒有分數。</strong>書中沒有給分，並說只要一方肯讓步，不相配也能相處。百分比會顯得這個方法比實際更精確。</li>
+          <li><strong>未經真實伴侶檢驗。</strong>沒有附出生資料的已發表伴侶命例可用，所以規則只檢查了一致性（例如兩人對調後評級相同），沒有與已知結果對照。這本書是為夫妻而寫；除了大限方向外，沒有任何部分取決於性別，所以任何伴侶都適用。</li>
+          <li><strong>隱私。</strong>伴侶的資料只留在頁面上，從不儲存。</li>
+        </ul>
+      </section>
+
+      <section class="card" id="sources">
+        <h2>出處</h2>
+        <h3>古典文獻（引用）</h3>
+        <ul>
+          <li><strong>《紫微斗數全書》</strong>，託名陳希夷，明代編成，卷一至卷三。公有領域；引自<a href="https://zh.wikisource.org/wiki/紫微斗數全書">維基文庫的抄本</a>。</li>
+          <li><strong>《紫微斗數》</strong>，託名陳摶，收於明萬曆《續道藏》。公有領域；用於少數星曜描述。</li>
+          <li><strong>《三命通會》</strong>，萬民英（明）著，卷一至卷九，用於八字十神、天干合和地支關係。<a href="https://zh.wikisource.org/wiki/三命通會">維基文庫</a>。</li>
+          <li><strong>《滴天髓》</strong>，託名劉基，天干論用於十個日主。<a href="https://zh.wikisource.org/wiki/滴天髓">維基文庫</a>。</li>
+          <li><strong>《淵海子平》</strong>，楊淙（明）著，用於藏干、日主法則和配偶星。<a href="https://zh.wikisource.org/wiki/淵海子平">維基文庫</a>。</li>
+        </ul>
+        <p>本工具中每一句古文引文，連同所屬的篇章，都由程式與這些抄本逐一核對，核對過的清單與測試一同保存。每次部署前都會執行測試，任何引文不在清單上，測試就會失敗。</p>
+        <h3>現代老師與命例（引述，不引用原文）</h3>
+        <ul>
+          <li><strong>范振木</strong>（占驗派），<a href="https://www.fjm.tw/xoops/modules/tadnews/index.php?ncsn=4">逸雲閣星相研究所</a>的命例：運限解讀、夾宮和空劫的技法、天馬依月安。</li>
+          <li><strong>倪海廈</strong>，天紀第10至15講，取自<a href="http://www.finalhopes.com/blog/79.html">finalhopes.com</a>的學生筆記：命例解讀、職業和時機的建議、他的庚年與壬年四化。</li>
+          <li><strong>kunde.org.tw</strong> 紫微案例故事「淑真的廉貞故事」：一張完整列印的命盤，附亮度和逐宮評語。</li>
+          <li><strong><a href="https://www.mingli.study/famous">mingli.study</a></strong>：公眾人物的命宮主星和格局標籤。</li>
+          <li>一份現代格局目錄（59個格局，附成格和破格條件），只採用其結構條件。</li>
+        </ul>
+        <p>這些作品受著作權保護，所以本工具用自己的話轉述，並註明作者和篇名。</p>
+        <h3>軟體</h3>
+        <ul>
+          <li><a href="https://github.com/SylarLong/iztro">iztro</a>（MIT）：安星和曆法換算。</li>
+          <li><a href="https://github.com/Renhuai123/ziwei-doushu">Renhuai123/ziwei-doushu</a>（MIT）：逐條比對其45個格局。</li>
+          <li><a href="https://open-meteo.com/">Open-Meteo</a> 地理編碼，使用 <a href="https://www.geonames.org/">GeoNames</a> 資料（CC BY 4.0）：地點搜尋。</li>
+        </ul>
+      </section>
+
+      <section class="card" id="checks">
+        <h2>檢驗方法</h2>
+        <p>已發表的命例很少給出精確的出生時間，所以大多數檢驗是反過來做：找出所有符合命例描述的命盤，再用這些命盤逐一檢驗每個說法。</p>
+        <ul>
+          <li><strong>安星。</strong>kunde.org.tw的列印命盤逐星相符，包括每個亮度、五行局、命主、身主和大限順序。范振木三個附出生資料的命例，把他的日期當作農曆後，每一宮都相符。</li>
+          <li><strong>倪海廈的命例。</strong>第10講和第12至15講的18個命例中，15個重現了所有提到的命盤特徵；另外三個各有一個說法始終不會出現（可能是筆記筆誤或亮度表不同）。</li>
+          <li><strong>格局。</strong>以mingli.study為39位可重現的公眾人物所標的格局對照，把定義對齊全書之後，相符的標籤從21個增加到49個。其餘差異大多是該站的定義比全書寬鬆。</li>
+          <li><strong>宮位評級。</strong>以kunde.org.tw和范振木公開的20個宮位評語對照，本工具有10個完全相符，從未給出相反的評級。</li>
+          <li><strong>全書本身的問題。</strong>它對財蔭夾印和財印夾祿的定義照字面無法出現（4,800張生成的命盤中出現0次），因為天相的鄰宮是固定的。把兩個定義中的夾星對調，兩者就都可行；本工具採用這種讀法，並加以說明。</li>
+        </ul>
+        <p>這些檢驗都寫成自動化測試，之後的修改若破壞了其中任何一項，建置就會失敗。完整說明見專案的<a href="https://github.com/williamwuofficial/ziwei-chart/blob/main/docs/CROSS-CHECK.md">交叉核對筆記</a>（英文）。</p>
+      </section>
+
+      <section class="card" id="limits">
+        <h2>限制</h2>
+        <ul>
+          <li><strong>出生時間很重要。</strong>時辰不同就是另一張命盤。若不確定，請比較相鄰時辰的命盤。</li>
+          <li><strong>只用一種方法。</strong>本工具以三合派解讀，尚未使用飛星自化、斗君或流月。合婚只依照一本現代書；見<a href="#compatibility">合婚</a>。</li>
+          <li><strong>亮度表各有不同。</strong>各派對某些亮度看法不一（例如火星）；本工具使用iztro的亮度表。</li>
+          <li><strong>沒有經過驗證的人生事件。</strong>命例檢驗證明的是規則的用法與老師一致，而不是解讀會應驗。</li>
+          <li><strong>隱私。</strong>所有計算都在你的瀏覽器中進行。只有你輸入的地名會送到地點搜尋服務；你的出生資料留在你的裝置上。</li>
+        </ul>
+        <p class="hint">僅供娛樂和文化參考，不是健康、金錢或感情方面的建議。</p>
+      </section>
+    </template>
 
     <footer class="site-footer">
-      <p><a href="./">Back to the chart</a> · <a href="./learn.html">Learn</a> · <a href="https://github.com/williamwuofficial/ziwei-chart">Source</a></p>
+      <p data-zh='<a href="./">回到命盤</a>・<a href="./learn.html">入門</a>・<a href="https://github.com/williamwuofficial/ziwei-chart">原始碼</a>'><a href="./">Back to the chart</a> · <a href="./learn.html">Learn</a> · <a href="https://github.com/williamwuofficial/ziwei-chart">Source</a></p>
     </footer>
     <script type="module" src="./src/about.ts"></script>
   </body>

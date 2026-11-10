@@ -7,9 +7,11 @@ import type { DecadeReading } from '../analysis/decades';
 import type { YearReading } from '../analysis/years';
 import { stemMutagens, type ChartM } from '../analysis/model';
 import { Ctx } from '../analysis/predicates';
-import { PALACE_DOMAIN } from '../analysis/rules/stars';
+import { PALACE_DOMAIN, palaceTitle } from '../analysis/rules/stars';
+import { isZh, tr } from '../i18n/lang';
+import { decadeTone } from './analysis';
 import type { Script } from '../engine/chart';
-import { rich, toScript } from './zhText';
+import { rich, toScript, ui } from './zhText';
 
 const h = <K extends keyof HTMLElementTagNameMap>(tag: K, cls?: string, text?: string) => {
   const e = document.createElement(tag);
@@ -18,11 +20,6 @@ const h = <K extends keyof HTMLElementTagNameMap>(tag: K, cls?: string, text?: s
   return e;
 };
 
-const TONE = {
-  favourable: { label: 'Favourable', cls: 'good' },
-  mixed: { label: 'Mixed', cls: 'mixed' },
-  challenging: { label: 'Challenging', cls: 'bad' },
-} as const;
 
 /** Split "+2: reason" / "−1: reason" score lines into the strongest pluses and minuses. */
 function reasons(parts: string[]): { good: string[]; bad: string[] } {
@@ -63,13 +60,15 @@ export function renderGlance(
   const title = h('h2');
   const gz = h('span', 'zh', toScript(`${y.stem}${y.branch}年`, script));
   gz.lang = script === 'zh-TW' ? 'zh-Hant' : 'zh-Hans';
-  title.append(`${y.year} at a glance `, gz);
-  head.append(title, h('span', `chip ${TONE[y.tone].cls}`, TONE[y.tone].label));
+  title.append(ui(`${y.year} at a glance `, `${y.year}年運勢速覽 `), gz);
+  head.append(title, h('span', `chip ${decadeTone(y.tone).cls}`, decadeTone(y.tone).label));
 
   const meta = h('p', 'hint');
   meta.append(
     rich(
-      `Age ${y.age} (nominal)${d ? `, in the ${d.range[0]}–${d.range[1]} period (大限 in your ${PALACE_DOMAIN[d.natalPalace].en} palace), rated ${TONE[d.tone].label.toLowerCase()}` : ''}.`,
+      isZh()
+        ? `虛歲${y.age}歲${d ? `，正行${d.range[0]}–${d.range[1]}歲大限（大限命宮在本命${palaceTitle(d.natalPalace)}），評為「${decadeTone(d.tone).label}」` : ''}。`
+        : `Age ${y.age} (nominal)${d ? `, in the ${d.range[0]}–${d.range[1]} period (大限 in your ${PALACE_DOMAIN[d.natalPalace].en} palace), rated ${decadeTone(d.tone).label.toLowerCase()}` : ''}.`,
       script,
     ),
   );
@@ -79,32 +78,45 @@ export function renderGlance(
   const xp = PALACE_DOMAIN[y.xiaoxianName];
   items.push(
     line(
-      'Focus',
-      y.palaceName === y.xiaoxianName
-        ? `${yp.domain} (your ⟨${y.palaceName}⟩ palace is both the year palace and the age palace)`
-        : `${yp.domain} (year palace ⟨${y.palaceName}⟩), and ${xp.domain} (age palace ⟨${y.xiaoxianName}⟩)`,
+      ui('Focus', '重點'),
+      isZh()
+        ? y.palaceName === y.xiaoxianName
+          ? `${tr(yp.domain)}（本命${palaceTitle(y.palaceName)}同時是流年命宮和小限）`
+          : `${tr(yp.domain)}（流年命宮在${palaceTitle(y.palaceName)}），以及${tr(xp.domain)}（小限在${palaceTitle(y.xiaoxianName)}）`
+        : y.palaceName === y.xiaoxianName
+          ? `${yp.domain} (your ⟨${y.palaceName}⟩ palace is both the year palace and the age palace)`
+          : `${yp.domain} (year palace ⟨${y.palaceName}⟩), and ${xp.domain} (age palace ⟨${y.xiaoxianName}⟩)`,
     ),
   );
   const muts = stemMutagens(y.stem, c.mutOverrides);
   if (muts) {
     const at = (star: string) => {
       const i = x.find(star);
+      if (isZh()) return i < 0 ? '不在命盤中' : `本命${palaceTitle(c.palaces[i].name)}`;
       return i < 0 ? 'not in the chart' : `your ⟨${c.palaces[i].name}⟩ palace (${PALACE_DOMAIN[c.palaces[i].name].en.toLowerCase()})`;
     };
-    items.push(line('Year 四化', `⟨${muts[0]}⟩ 化祿 brings ease to ${at(muts[0])}; ⟨${muts[3]}⟩ 化忌 asks for care in ${at(muts[3])}.`));
+    items.push(
+      line(
+        ui('Year 四化', '流年四化'),
+        isZh()
+          ? `⟨${muts[0]}⟩化祿為${at(muts[0])}帶來順利；⟨${muts[3]}⟩化忌提醒${at(muts[3])}要多用心。`
+          : `⟨${muts[0]}⟩ 化祿 brings ease to ${at(muts[0])}; ⟨${muts[3]}⟩ 化忌 asks for care in ${at(muts[3])}.`,
+      ),
+    );
   }
   const r = reasons(y.scoreParts);
-  if (r.good.length) items.push(line('Going for you', r.good.join('; ')));
-  if (r.bad.length) items.push(line('Watch', r.bad.join('; ')));
+  const sep = isZh() ? '；' : '; ';
+  if (r.good.length) items.push(line(ui('Going for you', '有利'), r.good.join(sep)));
+  if (r.bad.length) items.push(line(ui('Watch', '留意'), r.bad.join(sep)));
   const zodiac = y.findings.find((f) => /\.zodiac\./.test(f.id));
-  if (zodiac) items.push(line('Zodiac', zodiac.text));
+  if (zodiac) items.push(line(ui('Zodiac', '生肖'), zodiac.text));
   const advice = y.findings.find((f) => f.advice);
   if (advice) {
-    const t = advice.text.replace(/^Advice: /, '');
-    items.push(line('Advice', t.charAt(0).toUpperCase() + t.slice(1)));
+    const t = advice.text.replace(/^(Advice: |建議：)/, '');
+    items.push(line(ui('Advice', '建議'), t.charAt(0).toUpperCase() + t.slice(1)));
   }
 
-  const more = h('button', 'link', 'Read the full year →');
+  const more = h('button', 'link', ui('Read the full year →', '查看全年解讀 →'));
   more.type = 'button';
   more.addEventListener('click', openFull);
 

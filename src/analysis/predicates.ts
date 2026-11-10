@@ -1,3 +1,4 @@
+import { L } from '../i18n/lang';
 import type { Brightness, ChartM, Mut, PalaceM, PalaceName } from './model';
 
 // Star groups used across the classical rules.
@@ -127,6 +128,6 @@ export class Ctx {
   /** "命宮 (子)" style label, with ⟨⟩ term markers for the renderer. */
   label(i: number): string {
     const p = this.p(i);
-    return `⟨${p.name}⟩ (${p.branch})`;
+    return L(`⟨${p.name}⟩ (${p.branch})`, `⟨${p.name}⟩（${p.branch}）`);
   }
 }
