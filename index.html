@@ -31,10 +31,12 @@
         </fieldset>
 
         <div class="row">
-          <label class="field">
-            <span class="label" data-zh="出生日期">Date of birth</span>
-            <input type="date" name="date" min="1900-01-01" max="2099-12-31" required />
-          </label>
+          <div class="field">
+            <span class="label" id="date-label" data-zh="出生日期（國曆）">Date of birth (Gregorian calendar)</span>
+            <input type="hidden" name="date" />
+            <div id="date-parts"></div>
+            <span class="hint" data-zh="請填寫國曆（陽曆）日期，也就是出生證明上的日期。農曆日期會自動換算，不必自己查。">The ordinary calendar date, as on a birth certificate. The lunar date is worked out for you.</span>
+          </div>
 
           <div class="field">
             <span class="label" id="time-label" data-zh="出生時間">Time of birth</span>

@@ -11,6 +11,7 @@ import { fmtDate, fmtTime, SHICHEN, type ResolvedBirth } from '../input/solarTim
 import { placeLabel, type Place } from '../input/geocode';
 import { isZh } from '../i18n/lang';
 import { tip, toScript, ui } from './zhText';
+import { formatDate } from './dateInput';
 import { BRANCH_ANIMAL, ELEMENT_COLOUR, ELEMENT_EN, JU_ELEMENT } from '../analysis/rules/elements';
 
 // iztro palace index 0–11 = branches 寅卯辰巳午未申酉戌亥子丑. Grid (row, col) of each, 1-based,
@@ -143,15 +144,15 @@ function centrePanel(v: ChartView): HTMLElement {
     const off = birth.utcOffsetMin;
     const sign = off >= 0 ? '+' : '−';
     const abs = Math.abs(off);
-    row(ui('Clock time', '鐘錶時間'), `${fmtDate(birth.clock)} ${fmtTime(birth.clock)} (UTC${sign}${Math.floor(abs / 60)}${abs % 60 ? ':' + String(abs % 60).padStart(2, '0') : ''})`);
+    row(ui('Clock time', '國曆鐘錶時間'), `${formatDate(fmtDate(birth.clock))} ${fmtTime(birth.clock)} (UTC${sign}${Math.floor(abs / 60)}${abs % 60 ? ':' + String(abs % 60).padStart(2, '0') : ''})`);
   } else {
-    row(ui('Date', '日期'), fmtDate(birth.clock));
+    row(ui('Date', '國曆日期'), formatDate(fmtDate(birth.clock)));
   }
   if (v.place) row(ui('Place', '出生地'), placeLabel(v.place));
   if (birth.solar) {
     const shift = birth.solarShiftMin;
     const note = shift === undefined ? ui('neighbouring 時辰', '相鄰時辰') : ui(`${shift >= 0 ? '+' : '−'}${Math.abs(shift)} min`, `${shift >= 0 ? '+' : '−'}${Math.abs(shift)}分鐘`);
-    row(ui('True solar time', '真太陽時'), `${fmtDate(birth.solar)} ${fmtTime(birth.solar)} (${toScript(note, settings.script)})`);
+    row(ui('True solar time', '真太陽時'), `${formatDate(fmtDate(birth.solar))} ${fmtTime(birth.solar)} (${toScript(note, settings.script)})`);
   }
   const hour = h('span');
   hour.append(zhText(chart.time), ` ${SHICHEN[birth.timeIndex].range}`);

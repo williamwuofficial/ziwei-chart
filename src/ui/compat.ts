@@ -9,6 +9,7 @@ import type { Gender, Script } from '../engine/chart';
 import { finding } from './analysis';
 import { isZh, L, tr } from '../i18n/lang';
 import { rich, toScript, ui } from './zhText';
+import { dateField } from './dateInput';
 
 const h = <K extends keyof HTMLElementTagNameMap>(tag: K, cls?: string, text?: string) => {
   const e = document.createElement(tag);
@@ -71,15 +72,15 @@ export function renderCompat(root: HTMLElement, own: Side, build: (p: Partner) =
     g.append(lab);
   }
   const row = h('div', 'row');
-  const dl = h('label', 'field');
-  dl.append(h('span', 'label', ui('Partner’s date of birth', '伴侶出生日期')));
+  const dl = h('div', 'field');
+  const dlab = h('span', 'label', ui('Partner’s date of birth (Gregorian)', '伴侶出生日期（國曆）'));
+  dlab.id = 'pdate-label';
   const date = h('input');
-  date.type = 'date';
+  date.type = 'hidden';
   date.name = 'pdate';
-  date.min = '1900-01-01';
-  date.max = '2099-12-31';
-  date.value = partner?.date ?? '';
-  dl.append(date);
+  const df = dateField(date, 'pdate-label');
+  if (partner) df.set(partner.date);
+  dl.append(dlab, df.el);
   const tl = h('label', 'field');
   tl.append(h('span', 'label', ui('Partner’s time of birth (時辰)', '伴侶出生時辰')));
   const sel = h('select');

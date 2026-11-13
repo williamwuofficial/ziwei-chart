@@ -3,6 +3,7 @@ import { placeDetail, placeLabel, searchPlaces, type Place } from '../input/geoc
 import { SHICHEN } from '../input/solarTime';
 import { scriptOf } from '../i18n/lang';
 import { ui } from './zhText';
+import { dateField } from './dateInput';
 
 export interface BirthInput {
   gender: Gender;
@@ -53,6 +54,10 @@ export function setupForm(form: HTMLFormElement, onSubmit: (input: BirthInput, a
   const placeStatus = el<HTMLParagraphElement>('#place-status');
   const errorBox = el<HTMLParagraphElement>('#form-error');
   const placeHint = () => ui('Needed with an exact time, to work out the time zone and true solar time.', '填寫準確時間時需要，用來推算時區和真太陽時。');
+
+  const dateHidden = el<HTMLInputElement>('input[name="date"]');
+  const date = dateField(dateHidden, 'date-label');
+  el<HTMLElement>('#date-parts').replaceWith(date.el);
 
   for (const [i, s] of SHICHEN.entries()) shichenSelect.add(new Option(`${s.zh}時 · ${s.range}`, String(i)));
 
@@ -157,7 +162,7 @@ export function setupForm(form: HTMLFormElement, onSubmit: (input: BirthInput, a
   const prev = load();
   const settings: Settings = { ...DEFAULT_SETTINGS, ...prev?.settings };
   if (prev?.gender) el<HTMLInputElement>(`input[name="gender"][value="${prev.gender}"]`).checked = true;
-  if (prev?.date) el<HTMLInputElement>('input[name="date"]').value = prev.date;
+  if (prev?.date) date.set(prev.date);
   if (prev?.time) timeInput.value = prev.time;
   if (prev?.shichen !== undefined) shichenSelect.value = String(prev.shichen);
   const mode = prev?.timeMode ?? 'exact';
@@ -190,7 +195,7 @@ export function setupForm(form: HTMLFormElement, onSubmit: (input: BirthInput, a
     const date = String(data.get('date') ?? '');
     const timeMode = data.get('timeMode') as 'exact' | 'shichen';
     if (!gender) return ui('Choose a gender.', '請選擇性別。');
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) return ui('Enter a date of birth.', '請輸入出生日期。');
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) return ui('Enter a full date of birth: day, month and year (1900–2099).', '請完整輸入出生日期：年、月、日（1900至2099年）。');
     const year = Number(date.slice(0, 4));
     if (year < 1900 || year > 2099) return ui('Dates from 1900 to 2099 are supported.', '支援1900至2099年的日期。');
     const s: Settings = {
@@ -236,6 +241,7 @@ export function setupForm(form: HTMLFormElement, onSubmit: (input: BirthInput, a
     },
     /** Redraw the text the form writes itself, after a language switch. */
     relabel() {
+      date.relabel();
       showPlace(place);
       if (!errorBox.hidden) {
         const r = read();
